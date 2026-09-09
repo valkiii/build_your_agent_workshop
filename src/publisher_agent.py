@@ -1,5 +1,8 @@
 # publisher_agent.py
-import requests, os, re
+import os, re
+from datetime import date
+
+import requests
 import markdown as md
 from ebooklib import epub
 from config import OUTPUT_DIR
@@ -35,11 +38,12 @@ def render_tags(tags):
 
 def build_epub(articles, filename=None):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    filename = filename or os.path.join(OUTPUT_DIR, "curated_reading.epub")
+    title = f"Curated News of {date.today().isoformat()}"     # e.g. "Curated News of 2026-09-09"
+    filename = filename or os.path.join(OUTPUT_DIR, f"{title}.epub")
 
     book = epub.EpubBook()
-    book.set_identifier("curated-reading-list")
-    book.set_title("Curated Reading List")
+    book.set_identifier(f"curated-news-{date.today().isoformat()}")
+    book.set_title(title)
     book.set_language("en")
 
     # Embed the CSS once, shared across all chapters

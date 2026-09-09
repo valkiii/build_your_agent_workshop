@@ -2,6 +2,8 @@
 # Editable interest prompt (can be saved back to prompts/interest.txt) + source
 # list (session-only) + demo limits, a run button, a progress log, and an EPUB
 # download button.
+import os
+
 import streamlit as st
 
 import config
@@ -140,6 +142,6 @@ if st.button("▶️ Run the agent"):
         path = build_epub(approved)
         st.success(f"✅ {len(approved)} article(s) compiled!")
         with open(path, "rb") as f:
-            st.download_button("⬇️ Download your EPUB", f, file_name="curated_reading.epub")
+            st.download_button("⬇️ Download your EPUB", f, file_name=os.path.basename(path))
     else:
         st.warning("No articles matched your interest this run.")
