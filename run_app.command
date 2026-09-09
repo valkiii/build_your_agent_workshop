@@ -91,14 +91,10 @@ if [ "$SKIP_MODEL" != "1" ]; then
     ollama pull "$MODEL"
   fi
 
-  # Text-to-speech voices for the optional audio "podcast" output (~130 MB).
-  if ! ls voices/*.onnx >/dev/null 2>&1; then
-    VOICES=$(PYTHONPATH=src ./.venv/bin/python -c "import config; print(config.PODCAST_VOICE_A, config.PODCAST_VOICE_B)" 2>/dev/null)
-    [ -z "$VOICES" ] && VOICES="en_US-amy-medium en_US-ryan-medium"
-    echo "Downloading text-to-speech voices (~130 MB, one time)..."
-    ./.venv/bin/python -m piper.download_voices --download-dir voices $VOICES \
-      || echo "(voice download failed — the podcast option will be unavailable)"
-  fi
+  # Text-to-speech model files for the optional audio "podcast" output.
+  echo "Checking text-to-speech voices..."
+  PYTHONPATH=src ./.venv/bin/python src/fetch_voices.py \
+    || echo "(voice download failed — the podcast option will be unavailable)"
   # Portable ffmpeg for MP3 encoding, only if the system has none.
   command -v ffmpeg >/dev/null 2>&1 || \
     ./.venv/bin/python -c "import imageio_ffmpeg; imageio_ffmpeg.get_ffmpeg_exe()" >/dev/null 2>&1 || true

@@ -11,6 +11,7 @@ streamlit>=1.30
 trafilatura>=1.8
 
 # Optional audio "podcast" output (narrator_agent.py)
-piper-tts>=1.3
+kokoro-onnx>=0.4      # natural neural TTS, CPU (default engine)
+piper-tts>=1.3        # tiny robotic TTS, fallback engine (config.TTS_ENGINE = "piper")
 numpy>=1.24
 imageio-ffmpeg>=0.5   # portable ffmpeg for MP3 encoding (falls back to WAV if absent)

@@ -131,7 +131,8 @@ non-coders don't need another tool.
 | `src/evaluation_agent.py` | — | Runs scraper → summarizer → curator → quiz for one URL. |
 | `src/checkpoint.py` | — | Save / load the kept articles of a run (`output/…​.json`) so the Act steps can be re-run later without re-curating. |
 | `src/publisher_agent.py` | Act | Builds the EPUB: downloads images, renders tag badges and the quiz, links the title back to the source. Filename + title `Curated News of <YYYY-MM-DD>`. |
-| `src/narrator_agent.py` | Act | Optional. Local LLM rewrites each approved article as a two-host dialogue (`prompts/podcast.txt`); local Piper voices speak it; the turns are stitched into one `Curated News of <date>.mp3`. |
+| `src/narrator_agent.py` | Act | Optional. Local LLM rewrites each approved article as a two-host dialogue (`prompts/podcast.txt`); a local TTS engine (Kokoro or Piper, `config.TTS_ENGINE`) speaks it; the turns are stitched into one `Curated News of <date>.mp3`. |
+| `src/fetch_voices.py` | — | Downloads the TTS model files for `config.TTS_ENGINE` into `voices/`. Run by setup; safe to re-run. |
 | `src/main.py` | — | CLI orchestrator (coder track). |
 | `src/app.py` | — | Streamlit UI (non-coder track). |
 
@@ -148,10 +149,10 @@ Model, sources, and timing live in `src/config.py`:
 - **`MAX_APPROVED`** / **`MAX_CHECKED`** — stop a run early so a live demo stays
   short (defaults 3 / 15; set to `None` to disable). Overridable per run from the
   CLI flags above and from the app's **Run settings**.
-- **`PODCAST_VOICE_A` / `_B`, `PODCAST_HOST_A` / `_B`** — the two Piper voices and
-  host names for the audio output. Any voice from
-  `python -m piper.download_voices --help` works; setup downloads the two named
-  here into `voices/`.
+- **`TTS_ENGINE`** (`kokoro` / `piper`), **`KOKORO_VOICE_A` / `_B`** (or
+  `PIPER_VOICE_A` / `_B`), **`PODCAST_HOST_A` / `_B`**, **`PODCAST_SPEED`** — the
+  audio output. Switching `TTS_ENGINE` and re-running `setup` (or
+  `python src/fetch_voices.py`) fetches the right model files.
 
 Prompts live in `prompts/*.txt`.
 
@@ -169,13 +170,21 @@ upload). On the CLI: `python src/main.py --audio`, or
 `python src/main.py --from "<checkpoint>.json" --audio` to make it from an earlier
 run.
 
-The local LLM rewrites each kept article as a back-and-forth between two hosts,
-[Piper](https://github.com/OHF-Voice/piper1-gpl) speaks the lines with two local
-voices, and the turns are stitched into one `Curated News of <date>.mp3` (WAV if
-no ffmpeg is available — `imageio-ffmpeg` provides a portable one). Fully offline.
-Piper is well over 10× real-time on CPU, so the LLM scripting (~30–60s per
-article) is the slow part, not the audio. `setup` downloads the two ~63 MB voice
-files into `voices/`. `samples/sample_run.json` is a checkpoint you can try
+The local LLM rewrites each kept article as a back-and-forth between two hosts, a
+local text-to-speech engine speaks the lines with two voices, and the turns are
+stitched into one `Curated News of <date>.mp3` (WAV if no ffmpeg is available —
+`imageio-ffmpeg` provides a portable one). Fully offline.
+
+Two engines, set by `config.TTS_ENGINE`:
+
+- **`kokoro`** (default) — [Kokoro](https://github.com/thewh1teagle/kokoro-onnx),
+  an 82M Apache-2.0 model. Natural voices; ~3× real-time on CPU; ~340 MB of model
+  files. Voice list: any name in `Kokoro(...).get_voices()`.
+- **`piper`** — [Piper](https://github.com/OHF-Voice/piper1-gpl). Robotic but
+  tiny (~130 MB) and ~15× real-time — for slow or low-RAM machines.
+
+`setup` runs `src/fetch_voices.py`, which downloads whatever the chosen engine
+needs into `voices/`. `samples/sample_run.json` is a checkpoint you can try
 `--from` on without curating anything first.
 
 ## Requirements

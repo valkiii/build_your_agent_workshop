@@ -96,16 +96,11 @@ if not defined CURATOR_SKIP_MODEL (
     ollama pull !MODEL!
   )
 
-  REM Text-to-speech voices for the optional audio "podcast" output (~130 MB).
-  if not exist "voices\*.onnx" (
-    set "PYTHONPATH=src"
-    set "VOICES="
-    for /f "delims=" %%i in ('".venv\Scripts\python.exe" -c "import config; print(config.PODCAST_VOICE_A, config.PODCAST_VOICE_B)" 2^>nul') do set "VOICES=%%i"
-    set "PYTHONPATH="
-    if "!VOICES!"=="" set "VOICES=en_US-amy-medium en_US-ryan-medium"
-    echo Downloading text-to-speech voices ^(~130 MB, one time^)...
-    ".venv\Scripts\python.exe" -m piper.download_voices --download-dir voices !VOICES!
-  )
+  REM Text-to-speech model files for the optional audio "podcast" output.
+  echo Checking text-to-speech voices...
+  set "PYTHONPATH=src"
+  ".venv\Scripts\python.exe" src\fetch_voices.py
+  set "PYTHONPATH="
   REM Portable ffmpeg for MP3 encoding, only if the system has none.
   where ffmpeg >nul 2>&1 || ".venv\Scripts\python.exe" -c "import imageio_ffmpeg; imageio_ffmpeg.get_ffmpeg_exe()" >nul 2>&1
 )

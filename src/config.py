@@ -38,13 +38,21 @@ SOURCES = [
 ]
 
 # --- Optional audio "podcast" output (narrator_agent.py) ---------------------
-# Local Piper text-to-speech. The two voice files are downloaded by setup into
-# voices/. Any voice from `python -m piper.download_voices --help` works.
+# Model files are downloaded by setup into voices/ (see src/fetch_voices.py).
 VOICES_DIR = str(PROJECT_ROOT / "voices")
-PODCAST_VOICE_A = "en_US-amy-medium"     # host A
-PODCAST_VOICE_B = "en_US-ryan-medium"    # host B
-PODCAST_HOST_A = "Amy"
-PODCAST_HOST_B = "Ryan"
+
+# "kokoro" — natural neural voices, ~3x real-time on CPU, ~340 MB of model files.
+# "piper"  — robotic but tiny (~130 MB) and ~15x real-time; fallback for slow /
+#            low-RAM machines.
+TTS_ENGINE = "kokoro"
+PODCAST_SPEED = 1.0                      # 1.0 = normal; <1 slower, >1 faster
+PODCAST_HOST_A = "Maya"
+PODCAST_HOST_B = "Ethan"
+
+KOKORO_VOICE_A = "af_heart"              # host A (see `Kokoro(...).get_voices()` for the full list)
+KOKORO_VOICE_B = "am_michael"            # host B
+PIPER_VOICE_A = "en_US-amy-medium"       # used only when TTS_ENGINE = "piper"
+PIPER_VOICE_B = "en_US-ryan-medium"
 
 # --- Prompts (edit the .txt files in ../prompts/, not this file) --------------
 INTEREST_PROMPT = _load_prompt("interest.txt")     # the agent's judgment, in plain English
