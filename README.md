@@ -83,6 +83,10 @@ pip install -r requirements.txt
 ollama pull gemma4:e2b                    # or gemma4:e4b if you have ~16GB+ RAM
 
 python src/main.py                        # run the whole pipeline on the CLI
+python src/main.py --reset                # forget seen URLs, re-check everything
+python src/main.py --max-approved 3       # stop after 3 approved (0 = no limit)
+python src/main.py --max-checked 10       # evaluate 10 articles at most
+python src/main.py --no-record            # don't remember what was checked
 streamlit run src/app.py                  # or run the UI
 ```
 
@@ -104,7 +108,7 @@ non-coders don't need another tool.
 
 | File | Step | What it does |
 |------|------|--------------|
-| `src/config.py` | — | `MODEL_NAME`, `SOURCES`, `DAYS_LOOKBACK`, output paths; loads the prompt files from `prompts/`. |
+| `src/config.py` | — | `MODEL_NAME`, `SOURCES`, `DAYS_LOOKBACK`, `MAX_APPROVED` / `MAX_CHECKED` demo limits, output paths; loads the prompt files from `prompts/`. |
 | `prompts/*.txt` | — | The system prompts, as plain text. `interest.txt` is the agent's judgment; `curator.txt` holds a `[READER_INTEREST]` placeholder filled in at run time. |
 | `src/discovery_agent.py` | Perceive | RSS-first; falls back to homepage link-scraping when a feed is missing. Resolves relative URLs. |
 | `src/state.py` / `state.json` | Perceive | Tracks `seen_urls` so re-runs skip already-processed articles (rejects included). Created on first run. |
@@ -127,9 +131,16 @@ Model, sources, and timing live in `src/config.py`:
 - **`SOURCES`** — list of `{"name", "rss", "homepage"}`. If `rss` is missing or
   dead, the homepage is scraped for post links instead.
 - **`DAYS_LOOKBACK`** — how far back to consider articles (default 30).
+- **`MAX_APPROVED`** / **`MAX_CHECKED`** — stop a run early so a live demo stays
+  short (defaults 3 / 15; set to `None` to disable). Overridable per run from the
+  CLI flags above and from the app's **Run settings**.
 
-Prompts live in `prompts/*.txt`. To re-evaluate articles you've already
-processed, delete `state.json`.
+Prompts live in `prompts/*.txt`.
+
+**Re-running the same articles against a tweaked prompt** (the prompt-tuning
+demo): delete `state.json`, or `python src/main.py --reset`, or in the app click
+**🔄 Forget seen articles** (or just untick **Remember which articles were
+checked** so each run starts fresh).
 
 ---
 

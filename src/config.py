@@ -22,6 +22,12 @@ DAYS_LOOKBACK = 30
 STATE_FILE = str(PROJECT_ROOT / "state.json")
 OUTPUT_DIR = str(PROJECT_ROOT / "output")
 
+# --- Demo limits --------------------------------------------------------------
+# Keep a live demo short: stop a run early instead of grinding through every
+# article on a CPU. Set either to None (or 0 in the app / CLI) to disable.
+MAX_APPROVED = 3      # stop once this many articles have been approved
+MAX_CHECKED = 15     # evaluate at most this many articles per run
+
 # --- Sources ------------------------------------------------------------------
 # Each entry: {"name", "rss", "homepage"}. If "rss" is missing or dead, the
 # homepage is scraped for post links instead.

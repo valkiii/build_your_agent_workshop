@@ -33,9 +33,11 @@ Half the workshop audience does not code. Anything participant-facing must stay 
 - `quiz_agent.py` — generates 3 comprehension Q&A pairs, only called for *approved* articles (don't waste a model call on rejects). Prompt: `config.QUIZ_PROMPT`.
 - `evaluation_agent.py` — orchestrates scraper → summarizer → curator → quiz for one URL.
 - `publisher_agent.py` — Act step. Builds the EPUB: downloads images (correct MIME type detected from URL extension, not hardcoded), renders tags as rounded-rectangle CSS badges, renders the quiz, makes the article title a clickable link back to the source.
-- `main.py` — CLI orchestrator for the coder track (`python src/main.py`).
-- `app.py` — Streamlit UI for the non-coder track: editable interest prompt (with a **Save as the default** button that writes `prompts/interest.txt`), editable source list (session-state only), run button, progress log, EPUB download button.
-- `config.py` — `MODEL_NAME`, `SOURCES`, `DAYS_LOOKBACK`; `PROJECT_ROOT`/`PROMPTS_DIR`; `STATE_FILE`/`OUTPUT_DIR` (absolute, from `PROJECT_ROOT`); and `INTEREST_PROMPT` / `SUMMARIZER_PROMPT` / `CURATOR_PROMPT` / `QUIZ_PROMPT` loaded from `prompts/`.
+- `main.py` — CLI orchestrator for the coder track (`python src/main.py`). Flags: `--reset` (clear seen URLs first), `--no-record` (don't save seen URLs), `--max-approved N` / `--max-checked N` (0 = no limit; default to the config values).
+- `app.py` — Streamlit UI for the non-coder track: editable interest prompt (with a **Save as the default** button that writes `prompts/interest.txt`), editable source list (session-state only), a **Run settings** block (max-approved / max-checked number inputs, a **Remember which articles were checked** checkbox, a **🔄 Forget seen articles** button → `state.reset_seen()`), run button, progress log, EPUB download button.
+- `state.py` — `load_state` / `save_state` plus `reset_seen()` (overwrites `seen_urls` with `[]` — used by `--reset` and the app button for the prompt-tuning demo).
+- Early-stop semantics: both orchestrators only `mark_as_seen(candidates[:checked], ...)` — the articles actually evaluated — so a `MAX_*` stop doesn't silently skip the remainder on the next run.
+- `config.py` — `MODEL_NAME`, `SOURCES`, `DAYS_LOOKBACK`, `MAX_APPROVED` / `MAX_CHECKED` (demo limits, default 3 / 15, `None` disables); `PROJECT_ROOT`/`PROMPTS_DIR`; `STATE_FILE`/`OUTPUT_DIR` (absolute, from `PROJECT_ROOT`); and `INTEREST_PROMPT` / `SUMMARIZER_PROMPT` / `CURATOR_PROMPT` / `QUIZ_PROMPT` loaded from `prompts/`.
 
 ## Known simplifications (intentional, not bugs)
 - Streamlit source-list edits are session-scoped, not written back to `config.py` — fine for a single workshop session.

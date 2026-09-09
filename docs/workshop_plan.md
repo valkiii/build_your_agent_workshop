@@ -114,11 +114,11 @@ Hand out 3 pre-written article summaries. Everyone privately decides approve/rej
 **0:55–1:10 — Break**
 
 **1:10–1:40 — Prompt-tuning exercise (non-coders) / own extension (coders)**
-- Non-coders: structured rounds tuning the actual system prompts — start with a deliberately vague interest prompt in the Streamlit app, watch it approve too much; tighten it over 2–3 rounds and watch decisions change each round. This is their real "build" — authoring the agent's judgment in plain English, no orchestration required. Add/remove sources with the editor too.
+- Non-coders: structured rounds tuning the actual system prompts — start with a deliberately vague interest prompt in the Streamlit app, watch it approve too much; tighten it over 2–3 rounds and watch decisions change each round. Between rounds, click **🔄 Forget seen articles** (or untick "Remember which articles were checked") so each round re-judges the same articles. Keep "Stop after this many approved" low (2–3) so a round finishes fast on a CPU. This is their real "build" — authoring the agent's judgment in plain English, no orchestration required. Add/remove sources with the editor too.
 - Coders: pick an extension to build — add a new RSS source, tune the tag-generation prompt, or attempt the quiz feature if not already wired in. Offer 2–3 concrete "stretch goal" options so nobody stalls on a blank page.
 
 **1:40–2:10 — Run it end-to-end + "break it and see what happens"**
-Everyone runs their tuned version on a real feed via the Streamlit app (non-coders) or `python src/main.py` (coders), downloads the EPUB. Then deliberately mistune the interest prompt (too strict / too loose) and rerun against the same articles — watch decisions flip. Good energy moment, reinforces that judgment lives in the prompt, not magic.
+Everyone runs their tuned version on a real feed via the Streamlit app (non-coders) or `python src/main.py` (coders — `--reset` to re-check the same articles, `--max-checked N` to keep it quick), downloads the EPUB. Then deliberately mistune the interest prompt (too strict / too loose) and rerun against the same articles — watch decisions flip. Good energy moment, reinforces that judgment lives in the prompt, not magic.
 
 **2:10–2:30 — Read the result + regroup**
 Everyone loads their own EPUB into Calibre/Apple Books/their e-reader and actually reads a page — a genuinely satisfying close, since it's a real object they made, not just terminal output. Coders and non-coders regroup to compare what they each built.
