@@ -1,15 +1,19 @@
 # main.py — CLI orchestrator for the coder track.
 # (Non-coders use app.py / the Streamlit UI instead.)
 #
-#   python src/main.py                     # normal run (limits from config.py)
+#   python src/main.py                     # curate + build the EPUB, save a checkpoint
+#   python src/main.py --audio             # curate + build the podcast instead
+#   python src/main.py --epub --audio      # curate + build both
 #   python src/main.py --reset             # forget seen URLs first, re-check everything
 #   python src/main.py --max-approved 3    # stop after 3 approved (0 = no limit)
 #   python src/main.py --max-checked 10    # look at 10 articles at most (0 = no limit)
 #   python src/main.py --no-record         # don't remember what was checked this run
-#   python src/main.py --audio             # also make a spoken two-host podcast (MP3)
-#   python src/main.py --audio --no-epub   # podcast only
+#
+#   # second step: act on a saved run without re-curating
+#   python src/main.py --from "output/Curated News of 2026-09-09.json" --audio
 import argparse
 
+import checkpoint
 import config
 from discovery_agent import discover_new_articles, mark_as_seen
 from evaluation_agent import evaluate_article
@@ -17,8 +21,26 @@ from publisher_agent import build_epub
 from state import reset_seen
 
 
+def _act(approved, want_epub, want_audio):
+    if want_epub:
+        path = build_epub(approved)
+        print(f"{len(approved)} articles compiled into {path}")
+    if want_audio:
+        from narrator_agent import build_podcast
+        audio_path = build_podcast(approved, on_progress=lambda m: print(f"  [audio] {m}"))
+        print(f"Podcast: {audio_path}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run the content-curation pipeline.")
+    parser.add_argument("--epub", action="store_true",
+                        help="produce the EPUB (the default when neither --epub nor --audio is given)")
+    parser.add_argument("--audio", action="store_true",
+                        help="produce the spoken two-host podcast (MP3)")
+    parser.add_argument("--from", dest="from_checkpoint", metavar="FILE",
+                        help="skip discovery — load a saved run (JSON) and just (re)build outputs from it")
+    parser.add_argument("--checkpoint", metavar="FILE",
+                        help="where to save this run (default: output/Curated News of <date>.json)")
     parser.add_argument("--reset", action="store_true",
                         help="forget previously-seen URLs before running (re-check everything)")
     parser.add_argument("--no-record", action="store_true",
@@ -27,12 +49,19 @@ def main():
                         help="stop after N approved articles (0 = no limit)")
     parser.add_argument("--max-checked", type=int, default=config.MAX_CHECKED, metavar="N",
                         help="evaluate at most N articles (0 = no limit)")
-    parser.add_argument("--audio", action="store_true",
-                        help="also produce a spoken two-host podcast (MP3) of the approved articles")
-    parser.add_argument("--no-epub", action="store_true",
-                        help="skip the EPUB (pair with --audio for audio only)")
     args = parser.parse_args()
 
+    want_audio = args.audio
+    want_epub = args.epub or not args.audio      # default to the EPUB unless only --audio was asked
+
+    # --- Second step: act on a previously saved run --------------------------
+    if args.from_checkpoint:
+        approved = checkpoint.load(args.from_checkpoint)
+        print(f"Loaded {len(approved)} saved article(s) from {args.from_checkpoint}\n")
+        _act(approved, want_epub, want_audio)
+        return
+
+    # --- Normal run: discover -> evaluate -> save -> act --------------------
     max_approved = args.max_approved or None
     max_checked = args.max_checked or None
 
@@ -75,13 +104,9 @@ def main():
                 break
 
     if approved:
-        if not args.no_epub:
-            path = build_epub(approved)
-            print(f"{len(approved)} articles compiled into {path}")
-        if args.audio:
-            from narrator_agent import build_podcast
-            audio_path = build_podcast(approved, on_progress=lambda m: print(f"  [audio] {m}"))
-            print(f"Podcast: {audio_path}")
+        saved = checkpoint.save(approved, args.checkpoint)
+        print(f"Saved this run to {saved}")
+        _act(approved, want_epub, want_audio)
     else:
         print("No new articles matched your interest this run.")
 

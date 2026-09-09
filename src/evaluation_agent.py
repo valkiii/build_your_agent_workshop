@@ -22,7 +22,8 @@ def evaluate_article(url):
     return {
         "url": url,
         "title": article["title"],
-        "markdown": article["markdown"],
+        "markdown": article["markdown"],   # for the EPUB body (keeps images / structure)
+        "text": article["text"],           # plain text, for the podcast script
         "summary": summary,
         "approved": decision["approved"],
         "reason": decision["reason"],

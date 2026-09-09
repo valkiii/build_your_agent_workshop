@@ -83,15 +83,24 @@ source .venv/bin/activate                # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ollama pull gemma4:e2b                    # or gemma4:e4b if you have ~16GB+ RAM
 
-python src/main.py                        # run the whole pipeline on the CLI
+python src/main.py                        # curate + EPUB, and save a checkpoint
+python src/main.py --audio                # curate + podcast instead
+python src/main.py --epub --audio         # curate + both
 python src/main.py --reset                # forget seen URLs, re-check everything
 python src/main.py --max-approved 3       # stop after 3 approved (0 = no limit)
 python src/main.py --max-checked 10       # evaluate 10 articles at most
 python src/main.py --no-record            # don't remember what was checked
-python src/main.py --audio                # also make a spoken two-host podcast (MP3)
-python src/main.py --audio --no-epub      # podcast only
 streamlit run src/app.py                  # or run the UI
+
+# second step: act on a saved run without re-curating
+python src/main.py --from "output/Curated News of 2026-09-09.json" --audio
 ```
+
+Every normal run writes a **checkpoint** — `output/Curated News of <date>.json`,
+the list of kept articles. `--from FILE` skips discovery and the LLM entirely and
+just (re)builds the EPUB / podcast from it, so you can curate once and produce
+the audio later (or on another machine). The app does the same as its
+**Step 1 — Curate** / **Step 2 — Podcast** sections.
 
 `src/` is put on `sys.path` when you run `src/main.py` or `streamlit run
 src/app.py`, so the modules import each other by bare name (`import config`,
@@ -120,6 +129,7 @@ non-coders don't need another tool.
 | `src/curator.py` | Decide | Returns `{"approved", "reason", "tags"}` by judging the summary against `INTEREST_PROMPT`. |
 | `src/quiz_agent.py` | Act | 3 comprehension Q&A pairs — only for approved articles. |
 | `src/evaluation_agent.py` | — | Runs scraper → summarizer → curator → quiz for one URL. |
+| `src/checkpoint.py` | — | Save / load the kept articles of a run (`output/…​.json`) so the Act steps can be re-run later without re-curating. |
 | `src/publisher_agent.py` | Act | Builds the EPUB: downloads images, renders tag badges and the quiz, links the title back to the source. Filename + title `Curated News of <YYYY-MM-DD>`. |
 | `src/narrator_agent.py` | Act | Optional. Local LLM rewrites each approved article as a two-host dialogue (`prompts/podcast.txt`); local Piper voices speak it; the turns are stitched into one `Curated News of <date>.mp3`. |
 | `src/main.py` | — | CLI orchestrator (coder track). |
@@ -154,14 +164,19 @@ checked** so each run starts fresh).
 
 ## Audio podcast
 
-Tick **🎙️ Also make an audio podcast** in the app, or pass `--audio` to
-`main.py`. The local LLM rewrites each approved article as a back-and-forth
-between two hosts, [Piper](https://github.com/OHF-Voice/piper1-gpl) speaks the
-lines with two local voices, and the turns are stitched into one
-`Curated News of <date>.mp3` (WAV if no ffmpeg is available — `imageio-ffmpeg`
-provides a portable one). Fully offline. Piper is well over 10× real-time on CPU,
-so the LLM scripting (~30–60s per article) is the slow part, not the audio.
-`setup` downloads the two ~63 MB voice files into `voices/`.
+In the app: **Step 2 — Podcast** (on this session's run, or a checkpoint file you
+upload). On the CLI: `python src/main.py --audio`, or
+`python src/main.py --from "<checkpoint>.json" --audio` to make it from an earlier
+run.
+
+The local LLM rewrites each kept article as a back-and-forth between two hosts,
+[Piper](https://github.com/OHF-Voice/piper1-gpl) speaks the lines with two local
+voices, and the turns are stitched into one `Curated News of <date>.mp3` (WAV if
+no ffmpeg is available — `imageio-ffmpeg` provides a portable one). Fully offline.
+Piper is well over 10× real-time on CPU, so the LLM scripting (~30–60s per
+article) is the slow part, not the audio. `setup` downloads the two ~63 MB voice
+files into `voices/`. `samples/sample_run.json` is a checkpoint you can try
+`--from` on without curating anything first.
 
 ## Requirements
 

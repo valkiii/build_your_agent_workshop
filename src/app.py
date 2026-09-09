@@ -1,18 +1,26 @@
 # app.py — Streamlit UI for the non-coder track.
-# Editable interest prompt (can be saved back to prompts/interest.txt) + source
-# list (session-only) + demo limits, a run button, a progress log, and an EPUB
-# download button.
+#
+# Two steps:
+#   1. Curate — discover, judge, build the EPUB, and save a checkpoint of the
+#      kept articles.
+#   2. Podcast — turn a run (this session's, or a saved checkpoint file) into a
+#      spoken two-host episode. Runs on its own, so you can do it later.
 import os
 
 import streamlit as st
 
+import checkpoint
 import config
 from discovery_agent import discover_new_articles, mark_as_seen
 from evaluation_agent import evaluate_article
 from publisher_agent import build_epub
-from state import reset_seen
 
 st.title("📚 Content Curator Agent")
+
+# ============================================================================
+#  Step 1 — Curate
+# ============================================================================
+st.header("Step 1 — Curate")
 
 st.subheader("What are you interested in reading about?")
 interest_prompt = st.text_area(
@@ -68,12 +76,8 @@ remember = st.checkbox(
     value=True,
     help="Uncheck to re-run on the same articles next time — handy for comparing prompt tweaks.",
 )
-make_podcast = st.checkbox(
-    "🎙️ Also make an audio podcast (spoken two-host dialogue)",
-    value=False,
-    help="Local Piper text-to-speech. Adds ~30–60s of scripting per article.",
-)
 if st.button("🔄 Forget seen articles"):
+    from state import reset_seen
     reset_seen()
     st.toast("Cleared — the next run will re-check every article.")
 
@@ -144,25 +148,58 @@ if st.button("▶️ Run the agent"):
         st.info(stop_note)
 
     if approved:
-        path = build_epub(approved)
-        st.success(f"✅ {len(approved)} article(s) compiled!")
-        with open(path, "rb") as f:
-            st.download_button("⬇️ Download your EPUB", f, file_name=os.path.basename(path))
-
-        if make_podcast:
-            from narrator_agent import build_podcast, voices_available
-            if not voices_available():
-                st.warning(
-                    "Podcast voices aren't downloaded yet. Re-run setup, or from a "
-                    "terminal: `python -m piper.download_voices --download-dir voices "
-                    f"{config.PODCAST_VOICE_A} {config.PODCAST_VOICE_B}`"
-                )
-            else:
-                with st.status("Making the podcast…", expanded=True) as status:
-                    audio_path = build_podcast(approved, on_progress=status.write)
-                    status.update(label="Podcast ready", state="complete")
-                st.audio(audio_path)
-                with open(audio_path, "rb") as f:
-                    st.download_button("⬇️ Download the podcast", f, file_name=os.path.basename(audio_path))
+        epub_path = build_epub(approved)
+        cp_path = checkpoint.save(approved)
+        st.session_state["last_run"] = {"approved": approved, "label": os.path.basename(cp_path)}
+        st.success(f"✅ {len(approved)} article(s) curated. Checkpoint saved: `{os.path.basename(cp_path)}`")
+        with open(epub_path, "rb") as f:
+            st.download_button("⬇️ Download the EPUB", f, file_name=os.path.basename(epub_path))
+        with open(cp_path, "rb") as f:
+            st.download_button("💾 Download the checkpoint (for Step 2 later)", f,
+                               file_name=os.path.basename(cp_path))
     else:
         st.warning("No articles matched your interest this run.")
+
+# ============================================================================
+#  Step 2 — Podcast  (runs on its own, on this session's run or a saved one)
+# ============================================================================
+st.divider()
+st.header("Step 2 — Podcast")
+st.caption("Turn a curated run into a spoken two-host episode. You can do this "
+           "right after Step 1, or later from a saved checkpoint file.")
+
+sources = []
+if st.session_state.get("last_run"):
+    sources.append("This session's run")
+sources.append("Upload a saved checkpoint")
+choice = st.radio("Use", sources, horizontal=True, label_visibility="collapsed")
+
+podcast_articles = None
+if choice == "This session's run":
+    podcast_articles = st.session_state["last_run"]["approved"]
+    st.write(f"Ready: **{len(podcast_articles)}** article(s) from "
+             f"`{st.session_state['last_run']['label']}`.")
+else:
+    up = st.file_uploader("Checkpoint JSON (from Step 1)", type="json")
+    if up is not None:
+        try:
+            podcast_articles = checkpoint.load(up)
+            st.write(f"Loaded **{len(podcast_articles)}** article(s) from `{up.name}`.")
+        except ValueError as e:
+            st.error(str(e))
+
+if st.button("🎙️ Generate podcast", disabled=not podcast_articles):
+    from narrator_agent import build_podcast, voices_available
+    if not voices_available():
+        st.warning(
+            "Podcast voices aren't downloaded yet. Re-run setup, or from a terminal: "
+            f"`python -m piper.download_voices --download-dir voices "
+            f"{config.PODCAST_VOICE_A} {config.PODCAST_VOICE_B}`"
+        )
+    else:
+        with st.status("Making the podcast…", expanded=True) as status:
+            audio_path = build_podcast(podcast_articles, on_progress=status.write)
+            status.update(label="Podcast ready", state="complete")
+        st.audio(audio_path)
+        with open(audio_path, "rb") as f:
+            st.download_button("⬇️ Download the podcast", f, file_name=os.path.basename(audio_path))
