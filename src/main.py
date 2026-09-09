@@ -6,6 +6,8 @@
 #   python src/main.py --max-approved 3    # stop after 3 approved (0 = no limit)
 #   python src/main.py --max-checked 10    # look at 10 articles at most (0 = no limit)
 #   python src/main.py --no-record         # don't remember what was checked this run
+#   python src/main.py --audio             # also make a spoken two-host podcast (MP3)
+#   python src/main.py --audio --no-epub   # podcast only
 import argparse
 
 import config
@@ -25,6 +27,10 @@ def main():
                         help="stop after N approved articles (0 = no limit)")
     parser.add_argument("--max-checked", type=int, default=config.MAX_CHECKED, metavar="N",
                         help="evaluate at most N articles (0 = no limit)")
+    parser.add_argument("--audio", action="store_true",
+                        help="also produce a spoken two-host podcast (MP3) of the approved articles")
+    parser.add_argument("--no-epub", action="store_true",
+                        help="skip the EPUB (pair with --audio for audio only)")
     args = parser.parse_args()
 
     max_approved = args.max_approved or None
@@ -69,8 +75,13 @@ def main():
                 break
 
     if approved:
-        path = build_epub(approved)
-        print(f"{len(approved)} articles compiled into {path}")
+        if not args.no_epub:
+            path = build_epub(approved)
+            print(f"{len(approved)} articles compiled into {path}")
+        if args.audio:
+            from narrator_agent import build_podcast
+            audio_path = build_podcast(approved, on_progress=lambda m: print(f"  [audio] {m}"))
+            print(f"Podcast: {audio_path}")
     else:
         print("No new articles matched your interest this run.")
 

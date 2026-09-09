@@ -11,7 +11,8 @@ The agent runs a four-step loop — **perceive → extract → decide → act**:
 3. **Decide** — judge each summary against an interest you write in plain English,
    and generate topic tags (`src/curator.py`)
 4. **Act** — compile the approved articles into an **EPUB** with tags and a short
-   comprehension quiz (`src/quiz_agent.py`, `src/publisher_agent.py`)
+   comprehension quiz (`src/quiz_agent.py`, `src/publisher_agent.py`), or into a
+   spoken **two-host podcast** (`src/narrator_agent.py`)
 
 The interesting part isn't the code — it's that **the agent's judgment lives in a
 prompt you can edit**: `prompts/interest.txt`, or the text box in the app. Tighten
@@ -87,6 +88,8 @@ python src/main.py --reset                # forget seen URLs, re-check everythin
 python src/main.py --max-approved 3       # stop after 3 approved (0 = no limit)
 python src/main.py --max-checked 10       # evaluate 10 articles at most
 python src/main.py --no-record            # don't remember what was checked
+python src/main.py --audio                # also make a spoken two-host podcast (MP3)
+python src/main.py --audio --no-epub      # podcast only
 streamlit run src/app.py                  # or run the UI
 ```
 
@@ -117,7 +120,8 @@ non-coders don't need another tool.
 | `src/curator.py` | Decide | Returns `{"approved", "reason", "tags"}` by judging the summary against `INTEREST_PROMPT`. |
 | `src/quiz_agent.py` | Act | 3 comprehension Q&A pairs — only for approved articles. |
 | `src/evaluation_agent.py` | — | Runs scraper → summarizer → curator → quiz for one URL. |
-| `src/publisher_agent.py` | Act | Builds the EPUB: downloads images, renders tag badges and the quiz, links the title back to the source. |
+| `src/publisher_agent.py` | Act | Builds the EPUB: downloads images, renders tag badges and the quiz, links the title back to the source. Filename + title `Curated News of <YYYY-MM-DD>`. |
+| `src/narrator_agent.py` | Act | Optional. Local LLM rewrites each approved article as a two-host dialogue (`prompts/podcast.txt`); local Piper voices speak it; the turns are stitched into one `Curated News of <date>.mp3`. |
 | `src/main.py` | — | CLI orchestrator (coder track). |
 | `src/app.py` | — | Streamlit UI (non-coder track). |
 
@@ -134,6 +138,10 @@ Model, sources, and timing live in `src/config.py`:
 - **`MAX_APPROVED`** / **`MAX_CHECKED`** — stop a run early so a live demo stays
   short (defaults 3 / 15; set to `None` to disable). Overridable per run from the
   CLI flags above and from the app's **Run settings**.
+- **`PODCAST_VOICE_A` / `_B`, `PODCAST_HOST_A` / `_B`** — the two Piper voices and
+  host names for the audio output. Any voice from
+  `python -m piper.download_voices --help` works; setup downloads the two named
+  here into `voices/`.
 
 Prompts live in `prompts/*.txt`.
 
@@ -143,6 +151,17 @@ demo): delete `state.json`, or `python src/main.py --reset`, or in the app click
 checked** so each run starts fresh).
 
 ---
+
+## Audio podcast
+
+Tick **🎙️ Also make an audio podcast** in the app, or pass `--audio` to
+`main.py`. The local LLM rewrites each approved article as a back-and-forth
+between two hosts, [Piper](https://github.com/OHF-Voice/piper1-gpl) speaks the
+lines with two local voices, and the turns are stitched into one
+`Curated News of <date>.mp3` (WAV if no ffmpeg is available — `imageio-ffmpeg`
+provides a portable one). Fully offline. Piper is well over 10× real-time on CPU,
+so the LLM scripting (~30–60s per article) is the slow part, not the audio.
+`setup` downloads the two ~63 MB voice files into `voices/`.
 
 ## Requirements
 

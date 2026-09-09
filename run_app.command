@@ -90,6 +90,18 @@ if [ "$SKIP_MODEL" != "1" ]; then
     echo "Downloading the AI model ($MODEL) — a few GB, one time only. Please wait..."
     ollama pull "$MODEL"
   fi
+
+  # Text-to-speech voices for the optional audio "podcast" output (~130 MB).
+  if ! ls voices/*.onnx >/dev/null 2>&1; then
+    VOICES=$(PYTHONPATH=src ./.venv/bin/python -c "import config; print(config.PODCAST_VOICE_A, config.PODCAST_VOICE_B)" 2>/dev/null)
+    [ -z "$VOICES" ] && VOICES="en_US-amy-medium en_US-ryan-medium"
+    echo "Downloading text-to-speech voices (~130 MB, one time)..."
+    ./.venv/bin/python -m piper.download_voices --download-dir voices $VOICES \
+      || echo "(voice download failed — the podcast option will be unavailable)"
+  fi
+  # Portable ffmpeg for MP3 encoding, only if the system has none.
+  command -v ffmpeg >/dev/null 2>&1 || \
+    ./.venv/bin/python -c "import imageio_ffmpeg; imageio_ffmpeg.get_ffmpeg_exe()" >/dev/null 2>&1 || true
 fi
 
 # --- 5. Done / launch ------------------------------------------------

@@ -1,0 +1,14 @@
+You are writing a short two-host podcast segment about ONE article.
+The hosts are [HOST_A] and [HOST_B]. They are friendly, curious, and concise.
+
+Turn the article into a natural spoken conversation:
+- [HOST_A] opens by saying what the article is about, in a sentence or two.
+- The hosts go back and forth: the main idea, why it matters, and one concrete
+  detail, result, or number from the article.
+- Close with a short takeaway.
+- 6 to 10 short turns total. Spoken style, contractions, plain language, no long
+  jargon dumps.
+- No stage directions, no sound effects, no markdown — only the words each host says.
+
+Return ONLY valid JSON: a list of turns, like
+[{"speaker": "A", "line": "..."}, {"speaker": "B", "line": "..."}, {"speaker": "A", "line": "..."}]

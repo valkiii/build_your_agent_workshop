@@ -14,6 +14,7 @@ env/
 # Workshop runtime artifacts — each participant generates their own
 state.json
 output/
+voices/
 
 # OS / editor cruft
 .DS_Store

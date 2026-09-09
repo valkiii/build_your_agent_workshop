@@ -68,6 +68,11 @@ remember = st.checkbox(
     value=True,
     help="Uncheck to re-run on the same articles next time — handy for comparing prompt tweaks.",
 )
+make_podcast = st.checkbox(
+    "🎙️ Also make an audio podcast (spoken two-host dialogue)",
+    value=False,
+    help="Local Piper text-to-speech. Adds ~30–60s of scripting per article.",
+)
 if st.button("🔄 Forget seen articles"):
     reset_seen()
     st.toast("Cleared — the next run will re-check every article.")
@@ -143,5 +148,21 @@ if st.button("▶️ Run the agent"):
         st.success(f"✅ {len(approved)} article(s) compiled!")
         with open(path, "rb") as f:
             st.download_button("⬇️ Download your EPUB", f, file_name=os.path.basename(path))
+
+        if make_podcast:
+            from narrator_agent import build_podcast, voices_available
+            if not voices_available():
+                st.warning(
+                    "Podcast voices aren't downloaded yet. Re-run setup, or from a "
+                    "terminal: `python -m piper.download_voices --download-dir voices "
+                    f"{config.PODCAST_VOICE_A} {config.PODCAST_VOICE_B}`"
+                )
+            else:
+                with st.status("Making the podcast…", expanded=True) as status:
+                    audio_path = build_podcast(approved, on_progress=status.write)
+                    status.update(label="Podcast ready", state="complete")
+                st.audio(audio_path)
+                with open(audio_path, "rb") as f:
+                    st.download_button("⬇️ Download the podcast", f, file_name=os.path.basename(audio_path))
     else:
         st.warning("No articles matched your interest this run.")

@@ -37,8 +37,18 @@ SOURCES = [
     {"name": "Hacker News (front page)", "rss": "https://news.ycombinator.com/rss", "homepage": "https://news.ycombinator.com/"},
 ]
 
+# --- Optional audio "podcast" output (narrator_agent.py) ---------------------
+# Local Piper text-to-speech. The two voice files are downloaded by setup into
+# voices/. Any voice from `python -m piper.download_voices --help` works.
+VOICES_DIR = str(PROJECT_ROOT / "voices")
+PODCAST_VOICE_A = "en_US-amy-medium"     # host A
+PODCAST_VOICE_B = "en_US-ryan-medium"    # host B
+PODCAST_HOST_A = "Amy"
+PODCAST_HOST_B = "Ryan"
+
 # --- Prompts (edit the .txt files in ../prompts/, not this file) --------------
 INTEREST_PROMPT = _load_prompt("interest.txt")     # the agent's judgment, in plain English
 SUMMARIZER_PROMPT = _load_prompt("summarizer.txt")
 CURATOR_PROMPT = _load_prompt("curator.txt")       # contains the [READER_INTEREST] placeholder
 QUIZ_PROMPT = _load_prompt("quiz.txt")
+PODCAST_PROMPT = _load_prompt("podcast.txt")       # contains [HOST_A] / [HOST_B] placeholders

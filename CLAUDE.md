@@ -11,6 +11,7 @@ Half the workshop audience does not code. Anything participant-facing must stay 
 ## Stack
 - **LLM runtime**: Ollama, running `gemma4:e4b` (or `e2b` on lower-RAM machines) locally. No `<|think|>` token in any system prompt — thinking mode is intentionally off for speed/predictability on CPU.
 - **Scraping/extraction**: `trafilatura` for plain-text extraction (feeds the summarizer), plus a custom BeautifulSoup-based DOM walk for image extraction — see note below on why.
+- **Audio (optional)**: Piper (`piper-tts`) local neural TTS, two voice files in `voices/` (gitignored, downloaded by setup). MP3 via system ffmpeg or the `imageio-ffmpeg` bundled binary; WAV fallback.
 - **UI for non-coders**: Streamlit (`src/app.py`).
 - **Packaging**: `pyproject.toml` / `uv.lock` present, but participant-facing scripts use plain `venv` + `pip` (not `uv`) to avoid introducing another tool non-coders would need to install.
 
@@ -19,7 +20,7 @@ Half the workshop audience does not code. Anything participant-facing must stay 
 - `prompts/` — every system prompt as a plain `.txt` file, loaded by `src/config.py` at import. Non-coders edit `prompts/interest.txt`. `prompts/curator.txt` contains a literal `[READER_INTEREST]` placeholder that `curator.py` fills in per call via `str.replace` (not `.format` — the file has literal `{ }` JSON braces).
 - `docs/` — `workshop_plan.md`, `SIMPLE_SETUP_GUIDE.md`.
 - `samples/` — pre-generated EPUB, facilitator backup.
-- `output/`, `state.json` — generated at the project root (paths computed in `config.py` from `PROJECT_ROOT`, so they're CWD-independent). Both gitignored.
+- `output/`, `state.json`, `voices/` — generated / downloaded at the project root (paths computed in `config.py` from `PROJECT_ROOT`, so they're CWD-independent). All gitignored. `voices/` holds the two Piper `.onnx` TTS voices; `setup` downloads them after the model pull (skipped under `CURATOR_SKIP_MODEL`).
 - Root scripts: `run_app.command`/`run_app.bat` (double-click to start — self-installs on first run), `setup.command`/`setup.bat` (optional ahead-of-time install). Keep all four consistent with `docs/SIMPLE_SETUP_GUIDE.md`.
 
 ## File map (all under `src/`)
@@ -33,6 +34,7 @@ Half the workshop audience does not code. Anything participant-facing must stay 
 - `quiz_agent.py` — generates 3 comprehension Q&A pairs, only called for *approved* articles (don't waste a model call on rejects). Prompt: `config.QUIZ_PROMPT`.
 - `evaluation_agent.py` — orchestrates scraper → summarizer → curator → quiz for one URL.
 - `publisher_agent.py` — Act step. Builds the EPUB (default name + book title `Curated News of <YYYY-MM-DD>`; `build_epub(articles, filename=...)` still overridable): downloads images (correct MIME type detected from URL extension, not hardcoded), renders tags as rounded-rectangle CSS badges, renders the quiz, makes the article title a clickable link back to the source. `app.py`'s download button uses `os.path.basename(path)`, not a hardcoded name.
+- `narrator_agent.py` — Act step, optional alternative output. `build_podcast(articles, filename=None, on_progress=None)`: per article, one Ollama call (`config.PODCAST_PROMPT`, `[HOST_A]`/`[HOST_B]` placeholders) → JSON list of `{"speaker": "A"|"B", "line": ...}` (tolerant parse + fallback if the model misbehaves); Piper (`piper-tts`, voices in `voices/`, downloaded by setup) speaks each line via `voice.synthesize()` → int16 numpy; concatenated with silence gaps into one WAV, then `_to_mp3()` transcodes via system `ffmpeg` or `imageio-ffmpeg`'s bundled binary (keeps WAV if neither). `voices_available()` guards the UI. All offline; Piper is ~15x real-time on CPU so the LLM scripting dominates. Wired into `main.py` (`--audio`, `--no-epub`) and `app.py` (checkbox + `st.status` + `st.audio`).
 - `main.py` — CLI orchestrator for the coder track (`python src/main.py`). Flags: `--reset` (clear seen URLs first), `--no-record` (don't save seen URLs), `--max-approved N` / `--max-checked N` (0 = no limit; default to the config values).
 - `app.py` — Streamlit UI for the non-coder track: editable interest prompt (with a **Save as the default** button that writes `prompts/interest.txt`), editable source list (session-state only), a **Run settings** block (max-approved / max-checked number inputs, a **Remember which articles were checked** checkbox, a **🔄 Forget seen articles** button → `state.reset_seen()`), run button, progress log, EPUB download button.
 - `state.py` — `load_state` / `save_state` plus `reset_seen()` (overwrites `seen_urls` with `[]` — used by `--reset` and the app button for the prompt-tuning demo).
@@ -48,8 +50,8 @@ Half the workshop audience does not code. Anything participant-facing must stay 
 Finalized for the workshop repo:
 - `requirements.txt` is the source of truth for deps; `pyproject.toml` / `uv.lock` kept in sync (coder track only).
 - **`run_app.command` (Mac) / `run_app.bat` (Windows) is the single real script per platform**; `setup.*` is a 2-line shim that calls it with `--no-launch`. On first run it: finds Python 3.10+ (installs it — winget on Windows, `brew` on Mac, else opens python.org); ensures Ollama (winget / `brew --cask` / opens ollama.com); makes `.venv` + `pip install -r requirements.txt`; `ollama serve` + `ollama pull` the model from `config.py`; then `streamlit run src/app.py` (skipped with `--no-launch`). Fast on later runs. This full auto-install assumes **personal machines** (see memory `workshop-audience-personal-machines`), not locked-down corporate laptops.
-  - Env hatch `CURATOR_SKIP_MODEL=1` skips the Ollama-install + model steps (CI only). `pause`/`read` are suppressed non-interactively (`[ -t 0 ]` / `if not defined CI`).
-- `.github/workflows/smoke-test.yml` runs `setup.command` / `setup.bat` on `macos-latest` + `windows-latest` each push: venv, clean `requirements.txt` install, import every module, boot Streamlit. Does NOT test the winget/brew system-installs or the model pull.
+  - Env hatch `CURATOR_SKIP_MODEL=1` skips the Ollama-install + model steps **and the Piper voice download** (CI only). `pause`/`read` are suppressed non-interactively (`[ -t 0 ]` / `if not defined CI`).
+- `.github/workflows/smoke-test.yml` runs `setup.command` / `setup.bat` on `macos-latest` + `windows-latest` each push: venv, clean `requirements.txt` install (now includes `piper-tts` / `numpy` / `imageio-ffmpeg`), import every module (incl. `narrator_agent`), boot Streamlit. Does NOT test the winget/brew system-installs, the model pull, the voice download, or actual audio synthesis.
 - `START_HERE.txt` orients non-coders. `README.md`, `LICENSE` (MIT), `.gitignore` in place.
 - `samples/curated_reading_sample.epub` is a known-good run kept as a facilitator backup.
 - End-to-end verified on a fresh Python 3.12 venv: RSS discovery (Google Research + DeepMind + HN), scrape → summarize → curate → quiz → EPUB with embedded images. `gemma4:e2b` confirmed as a real public Ollama registry model (~7.2 GB).
