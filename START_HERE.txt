@@ -1,0 +1,34 @@
+CONTENT CURATOR — QUICK START
+=============================
+
+1. Get the project: green "Code" button on the GitHub page -> "Download ZIP" -> unzip.
+
+2. Open the folder and double-click:
+
+     Mac      ->  run_app.command      (first time: right-click -> Open)
+     Windows  ->  run_app.bat
+
+That's it. The first run sets everything up for you — installs Python and Ollama
+if they're missing, installs the code's dependencies, and downloads the AI model
+(a few GB, several minutes, one time only). You may get a permission pop-up while
+Python/Ollama install — click Yes.
+
+  Mac without Homebrew: the window opens the Python and Ollama download pages
+  instead. Install those two, then double-click run_app.command again.
+
+After the first run it just opens the app in your browser.
+
+Want the slow model download done before the workshop? Double-click setup.command
+(Mac) / setup.bat (Windows) ahead of time — same thing, minus opening the app.
+
+--------------------------------------------------------------------------
+What's in this folder
+--------------------------------------------------------------------------
+  run_app.command / run_app.bat   the button you press
+  setup.command   / setup.bat     optional: do the install ahead of time
+  prompts/                        the agent's instructions, as plain-text files
+                                  (edit prompts/interest.txt to change what it keeps)
+  src/                            the Python code (for the coder track)
+  docs/                           workshop plan + a plain-language setup guide
+  samples/                        an example finished EPUB
+  output/                         your generated EPUBs land here (created on first run)

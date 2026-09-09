@@ -1,0 +1,24 @@
+[project]
+name = "content-curator-workshop"
+version = "0.1.0"
+description = "Distraction-Free Content Curator — a local, offline agentic-AI teaching example (RSS -> local LLM summarize/judge -> EPUB with tags and a quiz)."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "beautifulsoup4>=4.12",
+    "ebooklib>=0.18",
+    "feedparser>=6.0",
+    "lxml>=5.0",
+    "markdown>=3.5",
+    "ollama>=0.3",
+    "requests>=2.31",
+    "streamlit>=1.30",
+    "trafilatura>=1.8",
+]
+
+# Notes:
+# - The code lives in src/ and is run as scripts (`python src/main.py`,
+#   `streamlit run src/app.py`), not installed as a package.
+# - Participant-facing setup uses plain `venv` + `pip install -r requirements.txt`
+#   (see run_app.command / run_app.bat). This file and uv.lock are for the coder
+#   track only and are kept in sync with requirements.txt.

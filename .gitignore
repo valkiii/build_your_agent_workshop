@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Workshop runtime artifacts — each participant generates their own
+state.json
+output/
+
+# OS / editor cruft
+.DS_Store
+*.swp
+.idea/
+.vscode/

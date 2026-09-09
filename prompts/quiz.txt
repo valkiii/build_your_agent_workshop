@@ -1,0 +1,4 @@
+Given an article's text, write exactly 3 short comprehension questions that test
+whether someone understood the key ideas — not trivia, but the core concepts.
+Return ONLY valid JSON:
+{"questions": [{"q": "...", "a": "..."}, {"q": "...", "a": "..."}, {"q": "...", "a": "..."}]}

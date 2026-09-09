@@ -1,0 +1,6 @@
+I want substantive articles about machine learning, AI research, and how software
+and hardware systems actually work. Prefer technical depth: how something is
+built, why a design choice was made, real measurements or results.
+
+Reject marketing announcements, funding and hiring news, policy/PR pieces, and
+lightweight opinion with no technical content.

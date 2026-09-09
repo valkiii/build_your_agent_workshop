@@ -1,0 +1,11 @@
+# Runtime dependencies for the Content Curator workshop project.
+# Installed by setup.command / setup.bat into a local .venv.
+beautifulsoup4>=4.12
+ebooklib>=0.18
+feedparser>=6.0
+lxml>=5.0
+markdown>=3.5
+ollama>=0.3
+requests>=2.31
+streamlit>=1.30
+trafilatura>=1.8
