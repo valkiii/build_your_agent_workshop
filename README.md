@@ -43,8 +43,8 @@ it and the approve/reject decisions change.
 
 In the app: not sure what to put? Open **🤖 New here?** and chat with the local
 model — it drafts an interest prompt and suggests blogs you can apply with one
-click. Otherwise just edit the interest prompt (optionally **Save as the
-default**), add/remove sources, click **Run the agent**, then download your EPUB.
+click. Otherwise edit the interest prompt and sources yourself, hit **💾 Save my
+setup** so it sticks next time, click **Run the agent**, then download your EPUB.
 Open the EPUB in [Calibre](https://calibre-ebook.com/) (any OS), Apple Books
 (Mac/iOS), or any e-reader app.
 
@@ -69,14 +69,14 @@ src/                               the Python code
   publisher_agent.py                 Act: build the EPUB
   narrator_agent.py  fetch_voices.py  Act: build the audio podcast
   checkpoint.py                      save/load a run so Act steps can be redone
-  assistant.py                       the "🤖 New here?" setup chat
+  assistant.py  settings.py          the "🤖 New here?" chat; persisted user setup
   state.py                           tracks already-seen URLs
   main.py                            CLI orchestrator (coder track)
   app.py                             Streamlit UI (non-coder track)
 docs/                              workshop plan + plain-language setup guide
 samples/                           example EPUB, podcast, and a checkpoint
 output/                            generated EPUB / MP3 / checkpoint (first run)
-voices/  state.json                TTS models, seen-URL memory (created on first run)
+voices/  state.json  my_settings.json   TTS models, seen-URL memory, saved setup
 ```
 
 ---
@@ -140,6 +140,7 @@ non-coders don't need another tool.
 | `src/narrator_agent.py` | Act | Optional. Local LLM rewrites each approved article as a two-host dialogue (`prompts/podcast.txt`); a local TTS engine (Kokoro or Piper, `config.TTS_ENGINE`) speaks it; the turns are stitched into one `Curated News of <date>.mp3`. |
 | `src/fetch_voices.py` | — | Downloads the TTS model files for `config.TTS_ENGINE` into `voices/`. Run by setup; safe to re-run. |
 | `src/assistant.py` | — | The "🤖 New here?" chat: streams a reply from the local model (`prompts/assistant.txt`) and extracts a suggested interest prompt + source list. |
+| `src/settings.py` | — | Persists the app's interest prompt + source list to `my_settings.json` so they survive a restart (`config.py` values are the fallback). |
 | `src/main.py` | — | CLI orchestrator (coder track). |
 | `src/app.py` | — | Streamlit UI (non-coder track). |
 
@@ -222,9 +223,10 @@ The Ollama install and the multi-GB model download are skipped in CI
 
 ## Notes and known simplifications
 
-- Streamlit source-list edits are session-scoped, not written back to
-  `config.py`. The interest prompt *can* be saved back to `prompts/interest.txt`
-  with the **Save as the default** button.
+- The app's interest prompt + source-list edits persist between runs in
+  `my_settings.json` (gitignored) once you click **💾 Save my setup** — applying
+  the assistant's suggestions saves automatically. **↩️ Back to the example**
+  clears it. `config.INTEREST_PROMPT` / `config.SOURCES` are the fallback.
 - Image extraction is a pragmatic document-order DOM heuristic (filter by file
   extension, skip `.svg` icons and thumbnails), tested against a handful of real
   sites — it may need tuning for sites not yet tested.

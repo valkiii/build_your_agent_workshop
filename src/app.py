@@ -14,6 +14,7 @@ import streamlit as st
 import assistant
 import checkpoint
 import config
+import settings
 from discovery_agent import discover_new_articles, mark_as_seen
 from evaluation_agent import evaluate_article
 from publisher_agent import build_epub
@@ -22,6 +23,20 @@ from publisher_agent import build_epub
 def _new_id():
     return uuid.uuid4().hex
 
+
+# The interest prompt + source list persist between app runs in my_settings.json
+# (config.py holds the shipped example). Seed session state from it once, and
+# handle the "back to the example" reset here — before any widget is created, so
+# clearing the widget-backed keys is safe.
+if st.session_state.pop("_reset_setup", False):
+    settings.clear()
+    st.session_state.pop("interest_prompt", None)
+    st.session_state.pop("sources", None)
+
+if "interest_prompt" not in st.session_state or "sources" not in st.session_state:
+    _saved = settings.load()
+    st.session_state["interest_prompt"] = _saved["interest"]
+    st.session_state["sources"] = [{**dict(s), "id": _new_id()} for s in _saved["sources"]]
 
 st.title("📚 Content Curator Agent")
 
@@ -62,23 +77,19 @@ with st.expander("🤖 New here? Ask the assistant to help you set this up"):
                 st.session_state["interest_prompt"] = sugg_interest
             if sugg_sources:
                 st.session_state.sources = [{**s, "id": _new_id()} for s in sugg_sources]
+            # persist so it survives closing / re-opening the app
+            settings.save(st.session_state["interest_prompt"], st.session_state.sources)
+            st.toast("Applied and saved.")
             st.rerun()
 
 st.subheader("What are you interested in reading about?")
-st.session_state.setdefault("interest_prompt", config.INTEREST_PROMPT)
 interest_prompt = st.text_area(
     "Interest prompt (edit this, then click Run)",
     key="interest_prompt",
     height=180,
 )
-if st.button("💾 Save as the default interest"):
-    (config.PROMPTS_DIR / "interest.txt").write_text(interest_prompt.strip() + "\n", encoding="utf-8")
-    st.toast("Saved to prompts/interest.txt")
 
 st.subheader("Blog & feed sources")
-
-if "sources" not in st.session_state:
-    st.session_state.sources = [{**dict(s), "id": _new_id()} for s in config.SOURCES]
 
 for source in st.session_state.sources:
     sid = source["id"]
@@ -100,6 +111,18 @@ for source in st.session_state.sources:
 if st.button("➕ Add source"):
     st.session_state.sources.append({"name": "", "homepage": "", "rss": None, "id": _new_id()})
     st.rerun()
+
+save_col, reset_col, _ = st.columns([2, 2, 3])
+with save_col:
+    if st.button("💾 Save my setup"):
+        settings.save(st.session_state["interest_prompt"], st.session_state.sources)
+        st.toast("Saved — this is what you'll get next time you open the app.")
+with reset_col:
+    if st.button("↩️ Back to the example", disabled=not settings.load()["exists"]):
+        st.session_state["_reset_setup"] = True
+        st.rerun()
+st.caption("Your interest prompt and sources are remembered between runs once you "
+           "save (applying the assistant's suggestions saves automatically).")
 
 st.subheader("Run settings")
 c1, c2 = st.columns(2)
