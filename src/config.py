@@ -60,3 +60,4 @@ SUMMARIZER_PROMPT = _load_prompt("summarizer.txt")
 CURATOR_PROMPT = _load_prompt("curator.txt")       # contains the [READER_INTEREST] placeholder
 QUIZ_PROMPT = _load_prompt("quiz.txt")
 PODCAST_PROMPT = _load_prompt("podcast.txt")       # contains [HOST_A] / [HOST_B] placeholders
+ASSISTANT_PROMPT = _load_prompt("assistant.txt")   # the "help me set up" chat helper

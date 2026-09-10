@@ -2,18 +2,26 @@
 #
 # Two steps:
 #   1. Curate — discover, judge, build the EPUB, and save a checkpoint of the
-#      kept articles.
+#      kept articles. An optional assistant helps first-timers write their
+#      interest prompt and pick sources.
 #   2. Podcast — turn a run (this session's, or a saved checkpoint file) into a
 #      spoken two-host episode. Runs on its own, so you can do it later.
 import os
+import uuid
 
 import streamlit as st
 
+import assistant
 import checkpoint
 import config
 from discovery_agent import discover_new_articles, mark_as_seen
 from evaluation_agent import evaluate_article
 from publisher_agent import build_epub
+
+
+def _new_id():
+    return uuid.uuid4().hex
+
 
 st.title("📚 Content Curator Agent")
 
@@ -22,10 +30,45 @@ st.title("📚 Content Curator Agent")
 # ============================================================================
 st.header("Step 1 — Curate")
 
+# --- Optional: chat with the local model to set things up --------------------
+with st.expander("🤖 New here? Ask the assistant to help you set this up"):
+    st.caption("The interest prompt and sources below are just an example. Tell "
+               "the local model what you like to read — it'll draft an interest "
+               "prompt and suggest blogs you can apply with one click.")
+    st.session_state.setdefault("assistant_msgs", [])
+
+    for m in st.session_state.assistant_msgs:
+        st.chat_message(m["role"]).write(m["content"])
+
+    if user_msg := st.chat_input("e.g. I want deep technical ML write-ups, not company news"):
+        st.session_state.assistant_msgs.append({"role": "user", "content": user_msg})
+        st.chat_message("user").write(user_msg)
+        with st.chat_message("assistant"):
+            answer = st.write_stream(assistant.reply_stream(st.session_state.assistant_msgs))
+        st.session_state.assistant_msgs.append({"role": "assistant", "content": answer})
+
+    last_answer = next((m["content"] for m in reversed(st.session_state.assistant_msgs)
+                        if m["role"] == "assistant"), "")
+    sugg_interest, sugg_sources = assistant.extract(last_answer)
+    if sugg_interest or sugg_sources:
+        st.divider()
+        if sugg_interest:
+            st.markdown("**Suggested interest prompt**")
+            st.code(sugg_interest, language=None)
+        if sugg_sources:
+            st.markdown("**Suggested sources:** " + ", ".join(s["name"] for s in sugg_sources))
+        if st.button("✅ Use these suggestions"):
+            if sugg_interest:
+                st.session_state["interest_prompt"] = sugg_interest
+            if sugg_sources:
+                st.session_state.sources = [{**s, "id": _new_id()} for s in sugg_sources]
+            st.rerun()
+
 st.subheader("What are you interested in reading about?")
+st.session_state.setdefault("interest_prompt", config.INTEREST_PROMPT)
 interest_prompt = st.text_area(
     "Interest prompt (edit this, then click Run)",
-    value=config.INTEREST_PROMPT,
+    key="interest_prompt",
     height=180,
 )
 if st.button("💾 Save as the default interest"):
@@ -35,28 +78,27 @@ if st.button("💾 Save as the default interest"):
 st.subheader("Blog & feed sources")
 
 if "sources" not in st.session_state:
-    st.session_state.sources = [dict(s) for s in config.SOURCES]
+    st.session_state.sources = [{**dict(s), "id": _new_id()} for s in config.SOURCES]
 
-for i, source in enumerate(st.session_state.sources):
+for source in st.session_state.sources:
+    sid = source["id"]
     col1, col2, col3 = st.columns([2, 3, 1])
     with col1:
         source["name"] = st.text_input(
-            f"Name {i}", value=source["name"], key=f"name_{i}", label_visibility="collapsed"
+            "Name", value=source["name"], key=f"name_{sid}", label_visibility="collapsed"
         )
     with col2:
         source["homepage"] = st.text_input(
-            f"URL {i}",
-            value=source.get("homepage", ""),
-            key=f"url_{i}",
-            label_visibility="collapsed",
+            "Homepage URL", value=source.get("homepage", ""),
+            key=f"url_{sid}", label_visibility="collapsed", placeholder="https://…",
         )
     with col3:
-        if st.button("🗑️", key=f"del_{i}"):
-            st.session_state.sources.pop(i)
+        if st.button("🗑️", key=f"del_{sid}"):
+            st.session_state.sources = [s for s in st.session_state.sources if s["id"] != sid]
             st.rerun()
 
 if st.button("➕ Add source"):
-    st.session_state.sources.append({"name": "", "homepage": "", "rss": None})
+    st.session_state.sources.append({"name": "", "homepage": "", "rss": None, "id": _new_id()})
     st.rerun()
 
 st.subheader("Run settings")
@@ -168,11 +210,11 @@ st.header("Step 2 — Podcast")
 st.caption("Turn a curated run into a spoken two-host episode. You can do this "
            "right after Step 1, or later from a saved checkpoint file.")
 
-sources = []
+pick = []
 if st.session_state.get("last_run"):
-    sources.append("This session's run")
-sources.append("Upload a saved checkpoint")
-choice = st.radio("Use", sources, horizontal=True, label_visibility="collapsed")
+    pick.append("This session's run")
+pick.append("Upload a saved checkpoint")
+choice = st.radio("Use", pick, horizontal=True, label_visibility="collapsed")
 
 podcast_articles = None
 if choice == "This session's run":
@@ -192,9 +234,8 @@ if st.button("🎙️ Generate podcast", disabled=not podcast_articles):
     from narrator_agent import build_podcast, voices_available
     if not voices_available():
         st.warning(
-            "Podcast voices aren't downloaded yet. Re-run setup, or from a terminal: "
-            f"`python -m piper.download_voices --download-dir voices "
-            f"{config.PODCAST_VOICE_A} {config.PODCAST_VOICE_B}`"
+            "Text-to-speech voices aren't downloaded yet. Re-run setup, or from a "
+            "terminal: `python src/fetch_voices.py`"
         )
     else:
         with st.status("Making the podcast…", expanded=True) as status:

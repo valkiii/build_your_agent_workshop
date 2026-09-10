@@ -41,10 +41,12 @@ it and the approve/reject decisions change.
 > session. `run_app` still works without it — it just does that setup on the
 > first launch.
 
-In the app: edit the interest prompt (optionally **Save as the default**),
-add/remove sources, click **Run the agent**, then download your EPUB. Open the
-EPUB in [Calibre](https://calibre-ebook.com/) (any OS), Apple Books (Mac/iOS), or
-any e-reader app.
+In the app: not sure what to put? Open **🤖 New here?** and chat with the local
+model — it drafts an interest prompt and suggests blogs you can apply with one
+click. Otherwise just edit the interest prompt (optionally **Save as the
+default**), add/remove sources, click **Run the agent**, then download your EPUB.
+Open the EPUB in [Calibre](https://calibre-ebook.com/) (any OS), Apple Books
+(Mac/iOS), or any e-reader app.
 
 Full step-by-step in plain language:
 [`docs/SIMPLE_SETUP_GUIDE.md`](docs/SIMPLE_SETUP_GUIDE.md).
@@ -59,18 +61,22 @@ setup.command   / setup.bat        optional: do the install ahead of time
 requirements.txt                   the Python dependencies
 prompts/                           the agent's instructions, as editable .txt files
   interest.txt                       what to keep vs. reject  (the main non-coder edit)
-  summarizer.txt  curator.txt  quiz.txt
+  summarizer.txt  curator.txt  quiz.txt  podcast.txt  assistant.txt
 src/                               the Python code
-  config.py                          model name, sources, paths, lookback window
+  config.py                          model, sources, paths, limits, TTS settings
   discovery_agent.py  article_scraper.py  summarizer.py
-  curator.py  quiz_agent.py  evaluation_agent.py  publisher_agent.py
+  curator.py  quiz_agent.py  evaluation_agent.py
+  publisher_agent.py                 Act: build the EPUB
+  narrator_agent.py  fetch_voices.py  Act: build the audio podcast
+  checkpoint.py                      save/load a run so Act steps can be redone
+  assistant.py                       the "🤖 New here?" setup chat
   state.py                           tracks already-seen URLs
   main.py                            CLI orchestrator (coder track)
   app.py                             Streamlit UI (non-coder track)
 docs/                              workshop plan + plain-language setup guide
-samples/                           an example finished EPUB (facilitator backup)
-output/                            your generated EPUBs (created on first run)
-state.json                         seen-URL memory (created on first run)
+samples/                           example EPUB, podcast, and a checkpoint
+output/                            generated EPUB / MP3 / checkpoint (first run)
+voices/  state.json                TTS models, seen-URL memory (created on first run)
 ```
 
 ---
@@ -133,6 +139,7 @@ non-coders don't need another tool.
 | `src/publisher_agent.py` | Act | Builds the EPUB: downloads images, renders tag badges and the quiz, links the title back to the source. Filename + title `Curated News of <YYYY-MM-DD>`. |
 | `src/narrator_agent.py` | Act | Optional. Local LLM rewrites each approved article as a two-host dialogue (`prompts/podcast.txt`); a local TTS engine (Kokoro or Piper, `config.TTS_ENGINE`) speaks it; the turns are stitched into one `Curated News of <date>.mp3`. |
 | `src/fetch_voices.py` | — | Downloads the TTS model files for `config.TTS_ENGINE` into `voices/`. Run by setup; safe to re-run. |
+| `src/assistant.py` | — | The "🤖 New here?" chat: streams a reply from the local model (`prompts/assistant.txt`) and extracts a suggested interest prompt + source list. |
 | `src/main.py` | — | CLI orchestrator (coder track). |
 | `src/app.py` | — | Streamlit UI (non-coder track). |
 
