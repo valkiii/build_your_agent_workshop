@@ -7,17 +7,23 @@
 #   2. Podcast — turn a run (this session's, or a saved checkpoint file) into a
 #      spoken two-host episode. Runs on its own, so you can do it later.
 import os
+import random
 import uuid
 
 import streamlit as st
 
 import assistant
+import autoquit
 import checkpoint
 import config
+import feedback
 import settings
 from discovery_agent import discover_new_articles, mark_as_seen
 from evaluation_agent import evaluate_article
 from publisher_agent import build_epub
+
+# Stop the local server a while after the browser tab closes (see config.py).
+autoquit.start(config.AUTO_SHUTDOWN_SECONDS)
 
 
 def _new_id():
@@ -33,12 +39,23 @@ if st.session_state.pop("_reset_setup", False):
     st.session_state.pop("interest_prompt", None)
     st.session_state.pop("sources", None)
 
+# Buttons further down the page can't assign the interest-prompt widget's state
+# directly (it's already been created), so they stash it here and rerun.
+if "_pending_interest" in st.session_state:
+    st.session_state["interest_prompt"] = st.session_state.pop("_pending_interest")
+
 if "interest_prompt" not in st.session_state or "sources" not in st.session_state:
     _saved = settings.load()
     st.session_state["interest_prompt"] = _saved["interest"]
     st.session_state["sources"] = [{**dict(s), "id": _new_id()} for s in _saved["sources"]]
 
 st.title("📚 Content Curator Agent")
+
+with st.sidebar:
+    st.caption("Runs entirely on your machine.")
+    if st.button("⏻ Quit the app"):
+        st.write("Stopping… you can close this tab.")
+        autoquit.quit_now()
 
 # ============================================================================
 #  Step 1 — Curate
@@ -136,6 +153,11 @@ with c2:
         "Check at most this many articles", min_value=0, step=1,
         value=int(config.MAX_CHECKED or 0), help="0 = no limit.",
     )
+discovery_ratio = st.slider(
+    "🎲 Discovery ratio", 0.0, 0.5, float(config.DISCOVERY_RATIO), 0.05,
+    help="Epsilon-greedy exploration: this fraction of articles is kept at random, "
+         "regardless of the interest match — to surface topics you didn't ask for.",
+)
 remember = st.checkbox(
     "Remember which articles were checked",
     value=True,
@@ -160,6 +182,7 @@ if st.button("▶️ Run the agent"):
     st.write(f"Found **{len(candidates)}** new articles to check.")
 
     approved = []
+    all_results = []
     checked = 0
     total = len(candidates)
     denom = min(total, limit_checked) if limit_checked else total
@@ -189,7 +212,15 @@ if st.button("▶️ Run the agent"):
             progress_bar.progress(min(checked / denom, 1.0) if denom else 1.0)
             continue
 
-        verdict = "✅ approved" if result["approved"] else "❌ rejected"
+        if not result["approved"] and discovery_ratio and random.random() < discovery_ratio:
+            result["approved"] = True
+            result["discovery"] = True
+            result["reason"] = "random discovery pick (explore)"
+            result["tags"] = result.get("tags") or ["Discovery"]
+
+        all_results.append(result)
+        verdict = ("🎲 discovery pick" if result.get("discovery")
+                   else "✅ approved" if result["approved"] else "❌ rejected")
         with log:
             st.markdown(
                 f"&nbsp;&nbsp;→ {verdict} — {result['reason']}  \n"
@@ -208,6 +239,7 @@ if st.button("▶️ Run the agent"):
     # Only remember the articles we actually looked at.
     if remember:
         mark_as_seen(candidates[:checked], state)
+    st.session_state["last_results"] = all_results
 
     if stop_note:
         st.info(stop_note)
@@ -224,6 +256,48 @@ if st.button("▶️ Run the agent"):
                                file_name=os.path.basename(cp_path))
     else:
         st.warning("No articles matched your interest this run.")
+
+# --- Review the last run and refine the interest prompt from it -------------
+if st.session_state.get("last_results"):
+    with st.expander("📝 Review this run & refine the prompt"):
+        st.caption("Mark the picks you liked / didn't, then let the model rewrite "
+                   "your interest prompt to match. Feedback accumulates across runs.")
+        ratings = {}
+        for r in st.session_state["last_results"]:
+            mark = ("🎲" if r.get("discovery") else "✅" if r["approved"] else "❌")
+            left, right = st.columns([5, 3])
+            left.markdown(f"{mark} **{r['title']}**  \n<small>{r['reason']}</small>",
+                          unsafe_allow_html=True)
+            ratings[r["url"]] = right.radio(
+                "rate", ["—", "👍 keep", "👎 drop"], key=f"fb_{r['url']}",
+                horizontal=True, label_visibility="collapsed",
+            )
+        rcol, ccol = st.columns([3, 2])
+        if rcol.button("✨ Refine interest prompt from this feedback"):
+            items = [
+                {"url": r["url"], "title": r["title"], "summary": r.get("summary", ""),
+                 "rating": {"👍 keep": "keep", "👎 drop": "drop"}.get(ratings[r["url"]])}
+                for r in st.session_state["last_results"]
+            ]
+            items = [it for it in items if it["rating"]]
+            if not items:
+                st.warning("Rate at least one article first.")
+            else:
+                feedback.record(items)
+                with st.spinner("Refining the interest prompt…"):
+                    new_prompt = feedback.refine_interest(
+                        st.session_state["interest_prompt"], feedback.load())
+                if new_prompt:
+                    st.session_state["_pending_interest"] = new_prompt
+                    settings.save(new_prompt, st.session_state.sources)
+                    st.success("Interest prompt updated and saved — scroll up to see it, "
+                               "then run again to compare.")
+                    st.rerun()
+                else:
+                    st.error("Couldn't refine from that — try rating a few more.")
+        if feedback.load() and ccol.button("Clear feedback history"):
+            feedback.clear()
+            st.toast("Feedback cleared.")
 
 # ============================================================================
 #  Step 2 — Podcast  (runs on its own, on this session's run or a saved one)

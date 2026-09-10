@@ -28,6 +28,15 @@ OUTPUT_DIR = str(PROJECT_ROOT / "output")
 MAX_APPROVED = 3      # stop once this many articles have been approved
 MAX_CHECKED = 15     # evaluate at most this many articles per run
 
+# Epsilon-greedy "exploration": this fraction of evaluated articles is kept at
+# random, regardless of the interest match — to surface topics you didn't ask
+# for. 0.0 = off. Tweakable in the app.
+DISCOVERY_RATIO = 0.0
+
+# Stop the local server this many seconds after the browser tab is closed (so a
+# background launch doesn't linger). 0 = never auto-stop.
+AUTO_SHUTDOWN_SECONDS = 30
+
 # --- Sources ------------------------------------------------------------------
 # Each entry: {"name", "rss", "homepage"}. If "rss" is missing or dead, the
 # homepage is scraped for post links instead.
@@ -61,3 +70,4 @@ CURATOR_PROMPT = _load_prompt("curator.txt")       # contains the [READER_INTERE
 QUIZ_PROMPT = _load_prompt("quiz.txt")
 PODCAST_PROMPT = _load_prompt("podcast.txt")       # contains [HOST_A] / [HOST_B] placeholders
 ASSISTANT_PROMPT = _load_prompt("assistant.txt")   # the "help me set up" chat helper
+REFINE_PROMPT = _load_prompt("refine.txt")         # rewrite the interest prompt from feedback

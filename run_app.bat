@@ -16,6 +16,14 @@ set "NO_LAUNCH=0"
 if /i "%~1"=="--no-launch" set "NO_LAUNCH=1"
 REM CURATOR_SKIP_MODEL=1 (env) -> skip Ollama + the model download (used by CI smoke test)
 
+REM Already set up? Hand straight to the no-window launcher and get out.
+if not "%NO_LAUNCH%"=="1" if not defined CURATOR_SKIP_MODEL (
+  if exist ".venv\Scripts\streamlit.exe" (
+    start "" "%~dp0Content Curator.vbs"
+    exit /b 0
+  )
+)
+
 REM --- 1. Python 3.10+ ---------------------------------------------------
 call :find_python
 if not defined PYTHON (
@@ -117,9 +125,9 @@ if "%NO_LAUNCH%"=="1" (
 )
 
 echo.
-echo Starting the Content Curator - a browser tab should open in a moment.
-echo Leave this window open while you use the app. Close it when done.
-".venv\Scripts\streamlit.exe" run src\app.py
+echo Setup complete. Starting the Content Curator with no console window...
+echo From now on, double-click "Content Curator.vbs" to start it.
+start "" "%~dp0Content Curator.vbs"
 exit /b 0
 
 :find_python

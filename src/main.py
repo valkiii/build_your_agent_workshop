@@ -8,10 +8,12 @@
 #   python src/main.py --max-approved 3    # stop after 3 approved (0 = no limit)
 #   python src/main.py --max-checked 10    # look at 10 articles at most (0 = no limit)
 #   python src/main.py --no-record         # don't remember what was checked this run
+#   python src/main.py --discovery-ratio 0.15   # also keep ~15% of articles at random
 #
 #   # second step: act on a saved run without re-curating
 #   python src/main.py --from "output/Curated News of 2026-09-09.json" --audio
 import argparse
+import random
 
 import checkpoint
 import config
@@ -49,6 +51,8 @@ def main():
                         help="stop after N approved articles (0 = no limit)")
     parser.add_argument("--max-checked", type=int, default=config.MAX_CHECKED, metavar="N",
                         help="evaluate at most N articles (0 = no limit)")
+    parser.add_argument("--discovery-ratio", type=float, default=config.DISCOVERY_RATIO, metavar="R",
+                        help="epsilon-greedy: keep this fraction (0..1) of articles at random")
     args = parser.parse_args()
 
     want_audio = args.audio
@@ -95,8 +99,14 @@ def main():
         if result is None:
             print("  -> extraction failed, skipping\n")
             continue
+        if not result["approved"] and args.discovery_ratio and random.random() < args.discovery_ratio:
+            result["approved"] = True
+            result["discovery"] = True
+            result["reason"] = "random discovery pick (explore)"
+            result["tags"] = result.get("tags") or ["Discovery"]
         print(f"  -> Summary: {result['summary']}")
-        print(f"  -> Approved: {result['approved']} ({result['reason']})\n")
+        tag = "discovery" if result.get("discovery") else "approved"
+        print(f"  -> {tag.title()}: {result['approved']} ({result['reason']})\n")
         if result["approved"]:
             approved.append(result)
             if max_approved and len(approved) >= max_approved:

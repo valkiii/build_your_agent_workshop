@@ -31,7 +31,7 @@ jobs:
         shell: cmd
         run: |
           set PYTHONPATH=src
-          .venv\Scripts\python.exe -c "import config, discovery_agent, article_scraper, summarizer, curator, quiz_agent, evaluation_agent, publisher_agent, narrator_agent, fetch_voices, checkpoint, assistant, settings, main; print('imports OK; model =', config.MODEL_NAME)"
+          .venv\Scripts\python.exe -c "import config, discovery_agent, article_scraper, summarizer, curator, quiz_agent, evaluation_agent, publisher_agent, narrator_agent, fetch_voices, checkpoint, assistant, settings, feedback, autoquit, main; print('imports OK; model =', config.MODEL_NAME)"
       - name: Streamlit app boots
         shell: pwsh
         run: |
@@ -57,7 +57,7 @@ jobs:
         run: test -x .venv/bin/streamlit
       - name: Every module imports
         run: |
-          PYTHONPATH=src ./.venv/bin/python -c "import config, discovery_agent, article_scraper, summarizer, curator, quiz_agent, evaluation_agent, publisher_agent, narrator_agent, fetch_voices, checkpoint, assistant, settings, main; print('imports OK; model =', config.MODEL_NAME)"
+          PYTHONPATH=src ./.venv/bin/python -c "import config, discovery_agent, article_scraper, summarizer, curator, quiz_agent, evaluation_agent, publisher_agent, narrator_agent, fetch_voices, checkpoint, assistant, settings, feedback, autoquit, main; print('imports OK; model =', config.MODEL_NAME)"
       - name: Streamlit app boots
         run: |
           ./.venv/bin/streamlit run src/app.py --server.headless true --server.port 8501 &

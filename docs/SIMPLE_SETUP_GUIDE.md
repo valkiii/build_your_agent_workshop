@@ -41,9 +41,20 @@ Python and Ollama download pages. Install those two (normal double-click
 installers — on the Python one there's nothing special to tick on Mac), then
 double-click `run_app.command` again. It handles everything else.
 
-When a browser tab opens with the app, you're ready. If it doesn't open on its
-own, look in the black window for a line like `Local URL: http://localhost:8501`
-and paste that into your browser.
+When a browser tab opens with the app, you're ready.
+
+---
+
+## Step 3 — From now on
+
+The first run leaves a launcher next to the other files:
+
+- **Mac**: `Content Curator.app`
+- **Windows**: `Content Curator.vbs`
+
+Double-click that to start the app **with no black window** — it opens straight
+in your browser. The app shuts itself down a little after you close the browser
+tab, or you can click **⏻ Quit the app** in the sidebar.
 
 ---
 
@@ -52,8 +63,7 @@ and paste that into your browser.
 The AI-model download is the slow part. To get it out of the way before the
 session, double-click **`setup.bat`** (Windows) / **`setup.command`** (Mac)
 instead — same setup, but it stops when it's done rather than opening the app.
-When it says **"All done! Setup complete"**, you're set. On the day, just
-double-click `run_app` and the app opens right away.
+When it says **"All done! Setup complete"**, you're set.
 
 ---
 

@@ -120,6 +120,8 @@ Hand out 3 pre-written article summaries. Everyone privately decides approve/rej
 **1:40–2:10 — Run it end-to-end + "break it and see what happens"**
 Everyone runs their tuned version on a real feed via the Streamlit app (non-coders) or `python src/main.py` (coders — `--reset` to re-check the same articles, `--max-checked N` to keep it quick), downloads the EPUB. Then deliberately mistune the interest prompt (too strict / too loose) and rerun against the same articles — watch decisions flip. Good energy moment, reinforces that judgment lives in the prompt, not magic.
 
+Two knobs to demo here: **📝 Review this run & refine** — thumbs-up/down the picks and let the model rewrite the interest prompt from that feedback (agent memory / learning-from-examples); and the **🎲 Discovery ratio** slider — an epsilon-greedy "explore" fraction that keeps some articles at random, a concrete hook for the explore/exploit tradeoff.
+
 **2:10–2:30 — Read the result + regroup**
 Everyone loads their own EPUB into Calibre/Apple Books/their e-reader and actually reads a page — a genuinely satisfying close, since it's a real object they made, not just terminal output. Coders and non-coders regroup to compare what they each built.
 

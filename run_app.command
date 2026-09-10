@@ -106,12 +106,58 @@ if [ "$NO_LAUNCH" = "1" ]; then
   echo "=================================================="
   echo " All done! Setup complete."
   echo "=================================================="
-  echo "Next: double-click run_app.command to start the app."
+  echo "Next: double-click run_app.command (or 'Content Curator.app') to start."
   pause
   exit 0
 fi
 
+PROJECT_DIR="$(pwd)"
+URL="http://localhost:8501"
+HEALTH="http://127.0.0.1:8501/_stcore/health"
+
+# A tiny .app that starts the server in the background and opens the browser —
+# no Terminal window. Generated locally, so Gatekeeper doesn't quarantine it.
+mkdir -p "Content Curator.app/Contents/MacOS"
+cat > "Content Curator.app/Contents/Info.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleName</key><string>Content Curator</string>
+  <key>CFBundleIdentifier</key><string>local.content-curator.launcher</string>
+  <key>CFBundleVersion</key><string>1</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleExecutable</key><string>launch</string>
+  <key>LSUIElement</key><true/>
+</dict></plist>
+PLIST
+cat > "Content Curator.app/Contents/MacOS/launch" <<LAUNCH
+#!/bin/bash
+cd "$PROJECT_DIR" || exit 1
+if ! curl -fsS -o /dev/null "$HEALTH" 2>/dev/null; then
+  command -v ollama >/dev/null 2>&1 && (ollama serve >/dev/null 2>&1 &)
+  nohup ./.venv/bin/streamlit run src/app.py --server.headless=true --server.port=8501 \
+    > "\$HOME/Library/Logs/ContentCurator.log" 2>&1 &
+  for _ in \$(seq 1 60); do curl -fsS -o /dev/null "$HEALTH" 2>/dev/null && break; sleep 1; done
+fi
+open "$URL"
+LAUNCH
+chmod +x "Content Curator.app/Contents/MacOS/launch"
+
+# Launch now (also in the background) and open the browser.
+if curl -fsS -o /dev/null "$HEALTH" 2>/dev/null; then
+  echo "The app is already running — opening it."
+else
+  echo "Starting the Content Curator in the background…"
+  nohup ./.venv/bin/streamlit run src/app.py --server.headless=true --server.port=8501 \
+    > "$HOME/Library/Logs/ContentCurator.log" 2>&1 &
+  disown 2>/dev/null || true
+  for _ in $(seq 1 60); do curl -fsS -o /dev/null "$HEALTH" 2>/dev/null && break; sleep 1; done
+fi
+open "$URL"
 echo
-echo "Starting the Content Curator — a browser tab should open in a moment."
-echo "Leave this window open while you use the app. Close it (or press Ctrl+C) when done."
-exec ./.venv/bin/streamlit run src/app.py
+echo "The app is open in your browser. From now on you can use 'Content Curator.app'"
+echo "(no black window). It stops itself a little after you close the browser tab,"
+echo "or use the Quit button in the app's sidebar."
+
+# Close this Terminal window — the server keeps running in the background.
+osascript -e 'tell application "Terminal" to close (first window whose frontmost is true)' >/dev/null 2>&1 || true

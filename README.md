@@ -34,7 +34,11 @@ it and the approve/reject decisions change.
      two, then double-click `run_app.command` again.
    - *Mac, first time:* if double-clicking does nothing, right-click the file →
      **Open**.
-   - After that, the same double-click just opens the app in your browser.
+   - After the first run, use the launcher it creates — **`Content Curator.app`**
+     (Mac) / **`Content Curator.vbs`** (Windows). No terminal window: it starts
+     the server in the background, opens your browser, and the server stops
+     itself a little after you close the tab (or use the **⏻ Quit** button in the
+     app's sidebar).
 
 > Running the workshop? Have participants double-click `setup.command` /
 > `setup.bat` **ahead of time** so the slow model download is done before the
@@ -58,10 +62,11 @@ Full step-by-step in plain language:
 ```
 run_app.command / run_app.bat    ◀ double-click to start (installs on first run)
 setup.command   / setup.bat        optional: do the install ahead of time
+Content Curator.vbs                Windows no-window launcher (Mac makes a .app on first run)
 requirements.txt                   the Python dependencies
 prompts/                           the agent's instructions, as editable .txt files
   interest.txt                       what to keep vs. reject  (the main non-coder edit)
-  summarizer.txt  curator.txt  quiz.txt  podcast.txt  assistant.txt
+  summarizer.txt  curator.txt  quiz.txt  podcast.txt  assistant.txt  refine.txt
 src/                               the Python code
   config.py                          model, sources, paths, limits, TTS settings
   discovery_agent.py  article_scraper.py  summarizer.py
@@ -70,13 +75,15 @@ src/                               the Python code
   narrator_agent.py  fetch_voices.py  Act: build the audio podcast
   checkpoint.py                      save/load a run so Act steps can be redone
   assistant.py  settings.py          the "🤖 New here?" chat; persisted user setup
+  feedback.py  autoquit.py           rate picks -> refine prompt; browser-close shutdown
   state.py                           tracks already-seen URLs
   main.py                            CLI orchestrator (coder track)
   app.py                             Streamlit UI (non-coder track)
 docs/                              workshop plan + plain-language setup guide
 samples/                           example EPUB, podcast, and a checkpoint
 output/                            generated EPUB / MP3 / checkpoint (first run)
-voices/  state.json  my_settings.json   TTS models, seen-URL memory, saved setup
+voices/  state.json                TTS models, seen-URL memory
+my_settings.json  feedback.json    saved setup, and your keep/drop ratings
 ```
 
 ---
@@ -96,6 +103,7 @@ python src/main.py --reset                # forget seen URLs, re-check everythin
 python src/main.py --max-approved 3       # stop after 3 approved (0 = no limit)
 python src/main.py --max-checked 10       # evaluate 10 articles at most
 python src/main.py --no-record            # don't remember what was checked
+python src/main.py --discovery-ratio 0.15 # also keep ~15% of articles at random
 streamlit run src/app.py                  # or run the UI
 
 # second step: act on a saved run without re-curating
@@ -141,6 +149,8 @@ non-coders don't need another tool.
 | `src/fetch_voices.py` | — | Downloads the TTS model files for `config.TTS_ENGINE` into `voices/`. Run by setup; safe to re-run. |
 | `src/assistant.py` | — | The "🤖 New here?" chat: streams a reply from the local model (`prompts/assistant.txt`) and extracts a suggested interest prompt + source list. |
 | `src/settings.py` | — | Persists the app's interest prompt + source list to `my_settings.json` so they survive a restart (`config.py` values are the fallback). |
+| `src/feedback.py` | — | Stores 👍/👎 ratings (`feedback.json`) and asks the model to rewrite the interest prompt from them (`prompts/refine.txt`). |
+| `src/autoquit.py` | — | Daemon thread that stops the server ~`AUTO_SHUTDOWN_SECONDS` after the last browser tab closes; also backs the sidebar **⏻ Quit** button. |
 | `src/main.py` | — | CLI orchestrator (coder track). |
 | `src/app.py` | — | Streamlit UI (non-coder track). |
 
@@ -157,6 +167,11 @@ Model, sources, and timing live in `src/config.py`:
 - **`MAX_APPROVED`** / **`MAX_CHECKED`** — stop a run early so a live demo stays
   short (defaults 3 / 15; set to `None` to disable). Overridable per run from the
   CLI flags above and from the app's **Run settings**.
+- **`DISCOVERY_RATIO`** — epsilon-greedy exploration: fraction of articles kept
+  at random regardless of the interest match (default 0.0). Slider in the app,
+  `--discovery-ratio` on the CLI.
+- **`AUTO_SHUTDOWN_SECONDS`** — stop the local server this long after the browser
+  tab closes (default 30; 0 = never).
 - **`TTS_ENGINE`** (`kokoro` / `piper`), **`KOKORO_VOICE_A` / `_B`** (or
   `PIPER_VOICE_A` / `_B`), **`PODCAST_HOST_A` / `_B`**, **`PODCAST_SPEED`** — the
   audio output. Switching `TTS_ENGINE` and re-running `setup` (or
@@ -225,8 +240,15 @@ The Ollama install and the multi-GB model download are skipped in CI
 
 - The app's interest prompt + source-list edits persist between runs in
   `my_settings.json` (gitignored) once you click **💾 Save my setup** — applying
-  the assistant's suggestions saves automatically. **↩️ Back to the example**
-  clears it. `config.INTEREST_PROMPT` / `config.SOURCES` are the fallback.
+  the assistant's suggestions or a **📝 Review & refine** both save automatically.
+  **↩️ Back to the example** clears it. `config.INTEREST_PROMPT` / `config.SOURCES`
+  are the fallback.
+- The no-window launcher + auto-shutdown are best-effort. Mac: the generated
+  `.app` is unquarantined so it opens clean, but the *first* `run_app.command`
+  still needs the one-time right-click→Open and may ask permission to close its
+  Terminal window. Windows: `Content Curator.vbs` from a ZIP shows a one-time
+  "Open File - Security Warning". Auto-shutdown uses a private Streamlit API
+  (guarded — if it breaks, use the **⏻ Quit** button).
 - Image extraction is a pragmatic document-order DOM heuristic (filter by file
   extension, skip `.svg` icons and thumbnails), tested against a handful of real
   sites — it may need tuning for sites not yet tested.

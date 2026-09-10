@@ -16,7 +16,11 @@ Python/Ollama install — click Yes.
   Mac without Homebrew: the window opens the Python and Ollama download pages
   instead. Install those two, then double-click run_app.command again.
 
-After the first run it just opens the app in your browser.
+After the first run, use the launcher it drops next to these files:
+  Mac      ->  Content Curator.app
+  Windows  ->  Content Curator.vbs
+That opens the app in your browser with NO black window. It stops itself shortly
+after you close the browser tab (or click "Quit the app" in the sidebar).
 
 Want the slow model download done before the workshop? Double-click setup.command
 (Mac) / setup.bat (Windows) ahead of time — same thing, minus opening the app.
@@ -24,11 +28,12 @@ Want the slow model download done before the workshop? Double-click setup.comman
 --------------------------------------------------------------------------
 What's in this folder
 --------------------------------------------------------------------------
-  run_app.command / run_app.bat   the button you press
+  run_app.command / run_app.bat   first run + installer
+  Content Curator.app / .vbs      the no-window launcher (Mac .app is made on first run)
   setup.command   / setup.bat     optional: do the install ahead of time
   prompts/                        the agent's instructions, as plain-text files
                                   (edit prompts/interest.txt to change what it keeps)
   src/                            the Python code (for the coder track)
   docs/                           workshop plan + a plain-language setup guide
-  samples/                        an example finished EPUB
-  output/                         your generated EPUBs land here (created on first run)
+  samples/                        example EPUB, podcast, and a checkpoint
+  output/                         your generated files land here (created on first run)
