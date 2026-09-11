@@ -215,11 +215,18 @@
 
   /* ---------- reasons (not a sequence — no numbers) ---------- */
   .reasons { display: grid; gap: 0; }
-  .reason { display: grid; grid-template-columns: 12rem 1fr; gap: 1.6rem; padding: 1.35rem 0; border-top: 1px solid var(--line); align-items: baseline; }
+  .reason {
+    display: grid; grid-template-columns: 12rem 1fr; gap: 1.6rem; align-items: baseline;
+    padding: 1.35rem 1.1rem; margin: 0 -1.1rem; border-top: 1px solid var(--line);
+    border-radius: 7px;
+    transition: background-color .18s ease, border-top-color .18s ease;
+  }
   .reason:last-child { border-bottom: 1px solid var(--line); }
+  .reason:hover { background: var(--local-tint); border-top-color: var(--local); }
   .reason h3 { margin: 0; font: 700 1.15rem/1.2 var(--font-display); color: var(--local); display: flex; align-items: center; gap: .6rem; }
-  .reason h3::before { content: ""; width: .55rem; height: .55rem; background: var(--local); }
-  .reason p { margin: 0; color: var(--ink-soft); font-size: 1.05rem; }
+  .reason h3::before { content: ""; flex: none; width: .55rem; height: .55rem; background: var(--local); }
+  .reason p { margin: 0; color: var(--ink-soft); font-size: 1.05rem; transition: color .18s ease; }
+  .reason:hover p { color: var(--ink); }
 
   /* ---------- do / don't ---------- */
   .tag {
@@ -289,6 +296,8 @@
   .loop .word { fill: var(--local); font: 700 19px/1 var(--font-display); letter-spacing: .04em; text-anchor: middle; }
   .loop .flow { stroke: var(--ink-soft); stroke-width: 2; fill: none; }
   .loop .rl { fill: var(--ink-faint); font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-anchor: middle; text-transform: uppercase; }
+  .loop .glow { fill: var(--local); opacity: 0; }
+  .loop .dot  { fill: var(--local); opacity: 0; }
   .loop-legend { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.3rem; }
   .loop-legend div { border-top: 2px solid var(--local); padding-top: .7rem; }
   .loop-legend b { display: block; font: 700 .8rem/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--local); margin-bottom: .3rem; }
@@ -323,6 +332,7 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .progress { transition: none; }
+    .loop .dot, .loop .glow { display: none; }
   }
 </style>
 
@@ -409,13 +419,31 @@
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>The loop</h2>
       <div class="loopwrap">
-        <svg class="loop" viewBox="0 0 900 300" role="img" aria-label="A four-step cycle: Perceive, Extract, Decide, Act, then repeat.">
+        <svg class="loop" viewBox="0 0 900 300" role="img" aria-label="A four-step cycle: Perceive, Extract, Decide, Act, then repeat. A point of light travels the loop, illuminating each step as it arrives.">
           <defs>
             <marker id="ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
               <path d="M0 0 L10 5 L0 10 Z" fill="var(--ink-soft)"></path>
             </marker>
+            <path id="dotpath" fill="none" d="M111,140 L204,91 L248,91 L434,91 L478,91 L664,91 L708,91 L801,138 L801,232 A14,14 0 0 1 787,246 L125,246 A14,14 0 0 1 111,232 L111,140"></path>
           </defs>
           <g>
+            <rect class="glow" x="12"  y="40" width="198" height="102" rx="16">
+              <animate attributeName="opacity" dur="9s" begin="0s" repeatCount="indefinite"
+                       keyTimes="0;0.08;0.92;1" values="0.6;0;0;0.6"></animate>
+            </rect>
+            <rect class="glow" x="242" y="40" width="198" height="102" rx="16">
+              <animate attributeName="opacity" dur="9s" begin="0s" repeatCount="indefinite"
+                       keyTimes="0;0.0729;0.0929;0.1729;1" values="0;0;0.6;0;0"></animate>
+            </rect>
+            <rect class="glow" x="472" y="40" width="198" height="102" rx="16">
+              <animate attributeName="opacity" dur="9s" begin="0s" repeatCount="indefinite"
+                       keyTimes="0;0.2161;0.2361;0.3161;1" values="0;0;0.6;0;0"></animate>
+            </rect>
+            <rect class="glow" x="702" y="40" width="198" height="102" rx="16">
+              <animate attributeName="opacity" dur="9s" begin="0s" repeatCount="indefinite"
+                       keyTimes="0;0.3594;0.3794;0.4594;1" values="0;0;0.6;0;0"></animate>
+            </rect>
+
             <rect class="box" x="18"  y="46" width="186" height="90" rx="10"></rect>
             <rect class="box" x="248" y="46" width="186" height="90" rx="10"></rect>
             <rect class="box" x="478" y="46" width="186" height="90" rx="10"></rect>
@@ -429,6 +457,15 @@
             <path class="flow" d="M670 91 H700"  marker-end="url(#ah)"></path>
             <path class="flow" d="M801 138 V232 a14 14 0 0 1 -14 14 H125 a14 14 0 0 1 -14 -14 V140" marker-end="url(#ah)"></path>
             <text class="rl" x="456" y="270">repeat</text>
+
+            <circle class="dot" r="6">
+              <animateMotion dur="9s" begin="0s" repeatCount="indefinite" calcMode="paced">
+                <mpath href="#dotpath"></mpath>
+              </animateMotion>
+              <animate attributeName="opacity" dur="9s" begin="0s" repeatCount="indefinite" calcMode="discrete"
+                       keyTimes="0;0.0655;0.0929;0.2087;0.2361;0.3520;0.3794;0.4443"
+                       values="0;1;0;1;0;1;0;1"></animate>
+            </circle>
           </g>
         </svg>
       </div>
