@@ -3,7 +3,7 @@
 <meta name="description" content="Opening deck for a hands-on workshop on local, offline AI agents: the loop, why local, and what breaks.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
 
 <style>
   :root {
@@ -25,8 +25,8 @@
     --flag:          #BB4C25;   /* the hard way · don'ts · warnings  */
     --flag-tint:     #F3E3DA;
 
-    --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
-    --font-body:    "Hanken Grotesk", system-ui, -apple-system, Segoe UI, sans-serif;
+    --font-display: "Space Grotesk", "Trebuchet MS", system-ui, sans-serif;
+    --font-body:    "Inter", system-ui, -apple-system, Segoe UI, sans-serif;
     --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
     --edge: min(6vw, 5.5rem);
@@ -147,11 +147,11 @@
   .eyebrow.is-flag::before { background: var(--flag); }
 
   h1 {
-    font: 800 clamp(2.9rem, 7.2vw, 5.6rem)/1.02 var(--font-display);
+    font: 700 clamp(2.9rem, 7.2vw, 5.6rem)/1.02 var(--font-display);
     letter-spacing: -.02em; margin: 0; text-wrap: balance;
   }
   h2 {
-    font: 800 clamp(2rem, 4.6vw, 3.4rem)/1.06 var(--font-display);
+    font: 700 clamp(2rem, 4.6vw, 3.4rem)/1.06 var(--font-display);
     letter-spacing: -.015em; margin: 0 0 1.5rem; text-wrap: balance;
   }
   .statement {
@@ -170,7 +170,8 @@
   .c-flag  { color: var(--flag); }
 
   /* ---------- title slide ---------- */
-  #s1 { justify-content: center; }
+  #s1 { justify-content: center; overflow: hidden; }
+  #s1 .inner, #s1 .scrollcue { position: relative; z-index: 1; }
   #s1 .sub {
     font: 500 clamp(1.05rem, 2vw, 1.5rem)/1.4 var(--font-body);
     color: var(--ink-soft); margin: 1.6rem 0 0; max-width: 24ch;
@@ -189,6 +190,10 @@
     text-transform: uppercase; color: var(--ink-faint);
   }
 
+  /* ambient network behind the title — nodes drift and link up when close,
+     a handful tinted --local to read as "agents talking, on-device" */
+  .hero-net { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; }
+
   /* ---------- agenda ---------- */
   .track { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
   .track .row { background: var(--surface); padding: 1.4rem 1.5rem; display: grid; grid-template-columns: 9.5rem 1fr; gap: 1.4rem; align-items: baseline; }
@@ -203,17 +208,18 @@
     letter-spacing: -.01em; text-wrap: balance; max-width: 22ch;
   }
 
-  /* ---------- vertical timetable: a line at 2/5 from the left, a dot per
-     row, time to its left, the activity to its right ---------- */
-  .timetable { position: relative; margin-top: 1.7rem; }
+  /* ---------- vertical timetable: time under the title's left edge, the
+     line + dot sitting right after the time column, activity to their
+     right ---------- */
+  .timetable { --tt-col: 14ch; position: relative; margin-top: 1.7rem; }
   .timetable::before {
-    content: ""; position: absolute; left: 40%; top: .3rem; bottom: .3rem; width: 2px;
+    content: ""; position: absolute; left: var(--tt-col); top: .3rem; bottom: .3rem; width: 2px;
     background: var(--line); transform: translateX(-1px);
   }
-  .tt-row { position: relative; display: grid; grid-template-columns: 40% 1fr; align-items: start; margin-bottom: 1.05rem; }
+  .tt-row { position: relative; display: grid; grid-template-columns: var(--tt-col) 1fr; align-items: start; margin-bottom: 1.05rem; }
   .tt-row:last-child { margin-bottom: 0; }
   .tt-dot {
-    position: absolute; left: 40%; top: .28rem; width: .6rem; height: .6rem; border-radius: 50%;
+    position: absolute; left: var(--tt-col); top: .28rem; width: .6rem; height: .6rem; border-radius: 50%;
     background: var(--local); border: 2px solid var(--ground); transform: translate(-50%, 0); z-index: 1;
   }
   .tt-time { text-align: left; font: 700 .82rem/1.4 var(--font-mono); color: var(--ink-soft); white-space: nowrap; }
@@ -482,6 +488,7 @@
     .bubble--dots { display: none !important; }
     .typed, .a-line { clip-path: none !important; }
     .reveal { transition: none; }
+    .hero-net { opacity: .4; }
   }
 </style>
 
@@ -496,6 +503,7 @@
 
   <!-- 1 ============================================================= -->
   <section class="slide" id="s1" aria-label="Slide 1: Agents at Home">
+    <canvas class="hero-net" aria-hidden="true"></canvas>
     <div class="inner">
       <h1>Agents at&nbsp;Home</h1>
       <p class="sub">Building local, offline AI assistants for real tasks</p>
@@ -1325,5 +1333,132 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
       });
     }, { threshold: 0.5 });
     io.observe(s4);
+  })();
+</script>
+
+<script>
+  // Slide 1's ambient network: a field of drifting dots that link up when
+  // close, a few tinted --local to read as "on-device agents talking to
+  // each other." Only animates while slide 1 is the active slide (paused
+  // the rest of the time); reduced motion gets one static frame instead
+  // of a running loop.
+  (function () {
+    var s1 = document.getElementById('s1');
+    var canvas = s1 && s1.querySelector('.hero-net');
+    if (!s1 || !canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var col = { local: '#2C6E4B', line: '#D5D3C9', ink: '#585B62' };
+    function readColors() {
+      var cs = getComputedStyle(document.documentElement);
+      col.local = cs.getPropertyValue('--local').trim() || col.local;
+      col.line  = cs.getPropertyValue('--line').trim()  || col.line;
+      col.ink   = cs.getPropertyValue('--ink-soft').trim() || col.ink;
+    }
+    readColors();
+    var scheme = matchMedia('(prefers-color-scheme: dark)');
+    if (scheme.addEventListener) scheme.addEventListener('change', readColors);
+
+    var W = 0, H = 0, nodes = [];
+    var LINK_DIST = 150;
+
+    function seed() {
+      var n = Math.max(22, Math.min(64, Math.round((W * H) / 26000)));
+      nodes = [];
+      for (var i = 0; i < n; i++) {
+        nodes.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.16,
+          vy: (Math.random() - 0.5) * 0.16,
+          r: Math.random() * 1.3 + 0.9,
+          local: Math.random() < 0.22
+        });
+      }
+    }
+
+    function resize() {
+      var rect = s1.getBoundingClientRect();
+      W = Math.max(1, rect.width);
+      H = Math.max(1, rect.height);
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seed();
+    }
+
+    var raf = null;
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var i, j, a, b, dx, dy, d;
+      for (i = 0; i < nodes.length; i++) {
+        a = nodes[i];
+        if (!reduceMotion) {
+          a.x += a.vx; a.y += a.vy;
+          if (a.x < -20) a.x = W + 20; else if (a.x > W + 20) a.x = -20;
+          if (a.y < -20) a.y = H + 20; else if (a.y > H + 20) a.y = -20;
+        }
+      }
+      for (i = 0; i < nodes.length; i++) {
+        a = nodes[i];
+        for (j = i + 1; j < nodes.length; j++) {
+          b = nodes[j];
+          dx = a.x - b.x; dy = a.y - b.y;
+          d = Math.sqrt(dx * dx + dy * dy);
+          if (d < LINK_DIST) {
+            ctx.globalAlpha = (1 - d / LINK_DIST) * ((a.local || b.local) ? 0.55 : 0.3);
+            ctx.strokeStyle = (a.local || b.local) ? col.local : col.line;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+      ctx.globalAlpha = 1;
+      for (i = 0; i < nodes.length; i++) {
+        a = nodes[i];
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+        ctx.fillStyle = a.local ? col.local : col.ink;
+        ctx.globalAlpha = a.local ? 0.85 : 0.4;
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function frame() {
+      draw();
+      if (!reduceMotion) raf = requestAnimationFrame(frame);
+    }
+
+    function start() {
+      resize();
+      if (reduceMotion) { draw(); return; }
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(frame);
+    }
+    function stop() {
+      if (raf) cancelAnimationFrame(raf);
+      raf = null;
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.target !== s1) return;
+        if (e.isIntersecting) start(); else stop();
+      });
+    }, { threshold: 0.2 });
+    io.observe(s1);
+
+    window.addEventListener('resize', function () {
+      if (raf || reduceMotion) resize();
+    });
   })();
 </script>
