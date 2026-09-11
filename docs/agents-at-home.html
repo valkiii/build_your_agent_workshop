@@ -351,6 +351,37 @@
   .demo li em { color: var(--ink); }
   .timebox { margin-top: 1.3rem; font: 500 .8rem/1 var(--font-mono); letter-spacing: .06em; color: var(--flag); background: var(--flag-tint); display: inline-block; padding: .5rem .7rem; border-radius: 4px; }
 
+  /* ---------- live Ollama widget ---------- */
+  .ollamabox { border: 1px solid var(--ink-soft); border-radius: 8px; background: var(--surface); padding: 1.5rem 1.6rem; margin-top: 1.6rem; }
+  .obar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.1rem; }
+  .ostatus { display: inline-flex; align-items: center; gap: .55rem; font: 500 .82rem/1 var(--font-mono); color: var(--ink-soft); }
+  .odot { width: .5rem; height: .5rem; border-radius: 50%; background: var(--ink-faint); flex: none; }
+  .ostatus--ok .odot { background: var(--local); }
+  .ostatus--err .odot, .ostatus--warn .odot { background: var(--flag); }
+  .ostatus--checking .odot { background: var(--ink-faint); animation: oPulse 1s ease-in-out infinite; }
+  @keyframes oPulse { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+  .ollamabox button {
+    font: 700 .78rem/1 var(--font-mono); letter-spacing: .05em; color: var(--local);
+    background: var(--local-tint); border: 1px solid transparent; border-radius: 5px;
+    padding: .55rem .85rem; cursor: pointer;
+  }
+  .ollamabox button:hover:not(:disabled) { border-color: var(--local); }
+  .ollamabox button:disabled { opacity: .5; cursor: default; }
+  .ofields { display: grid; grid-template-columns: 1fr 12rem; gap: .7rem; margin-bottom: 1rem; }
+  .obase, .omodel, .oprompt {
+    font: 500 .86rem/1.4 var(--font-mono); color: var(--ink);
+    background: var(--raise); border: 1px solid var(--line); border-radius: 5px; padding: .6rem .75rem;
+  }
+  .oprompt { width: 100%; resize: vertical; font-family: var(--font-body); font-size: .98rem; line-height: 1.5; margin-bottom: 1rem; }
+  .orow { display: flex; align-items: center; gap: 1.1rem; margin-bottom: 1rem; }
+  .otimebox { font: 500 .78rem/1 var(--font-mono); color: var(--ink-faint); }
+  .ooutput {
+    margin: 0; min-height: 6rem; max-height: 13rem; overflow-y: auto;
+    white-space: pre-wrap; word-break: break-word; color: var(--ink);
+    background: var(--raise); border: 1px solid var(--line); border-radius: 6px; padding: 1rem 1.1rem;
+    font: 400 .92rem/1.55 var(--font-mono);
+  }
+
   /* ---------- mapped loop ---------- */
   .map { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
   .map .hd, .map .r { display: grid; grid-template-columns: 15rem 1fr; }
@@ -394,7 +425,7 @@
   @media (max-width: 760px) {
     :root { --edge: 1.5rem; }
     .slide { padding: 5.5rem var(--edge) 5rem; }
-    .compare, .loop-legend, .halves { grid-template-columns: 1fr; }
+    .compare, .loop-legend, .halves, .ofields { grid-template-columns: 1fr; }
     .kicker-line { margin-top: .6rem; }
     .track .row, .reason, .map .hd, .map .r, .ba .step, .map .r .s { grid-template-columns: 1fr; }
     .ba .step { gap: .3rem; }
@@ -415,7 +446,7 @@
 </style>
 
 <div class="progress" id="progress" aria-hidden="true"></div>
-<div class="counter" aria-hidden="true"><b id="cur">01</b> / 16</div>
+<div class="counter" aria-hidden="true"><b id="cur">01</b> / 17</div>
 <div class="wordmark" aria-hidden="true">Agents at Home</div>
 <div class="chrome">
   <button id="notesBtn" type="button" aria-pressed="false">Speaker notes <kbd>S</kbd></button>
@@ -433,9 +464,9 @@
     <div class="scrollcue" aria-hidden="true">Scroll to begin ↓</div>
     <aside class="note">
       <b>Run of show</b>
-      Block A (what is an agent), slides 3–7 — ~10 min · Block B (why local), 8–9 — ~5 min ·
-      Block C (do's &amp; don'ts), 10–15 — ~10–15 min · open + close, 1–2 &amp; 16 — ~5 min.
-      Total ~30–35 min, then hands-on. Press <kbd>S</kbd> anytime to hide these notes.
+      Block A (what is an agent), slides 3–8 (incl. the live Ollama slide, 7) — ~12 min · Block B (why local), 9–10 — ~5 min ·
+      Block C (do's &amp; don'ts), 11–16 — ~10–15 min · open + close, 1–2 &amp; 17 — ~5 min.
+      Total ~32–37 min, then hands-on. Press <kbd>S</kbd> anytime to hide these notes.
     </aside>
   </section>
 
@@ -608,8 +639,46 @@
     </aside>
   </section>
 
+  <!-- 6b (live widget) ================================================ -->
+  <section class="slide" id="s6live" aria-label="Slide 7: Try it live">
+    <div class="inner">
+      <p class="eyebrow">Block A · Live</p>
+      <h2>Talk to your model, right here <span class="c-local">→</span></h2>
+      <p class="lead">If Ollama is running on this laptop, this talks to it directly — nothing leaves the room.</p>
+      <div class="ollamabox">
+        <div class="obar">
+          <span class="ostatus" id="oStatus"><i class="odot"></i>not connected</span>
+          <button type="button" id="oCheck">Check connection</button>
+        </div>
+        <div class="ofields">
+          <input id="oBase" class="obase" value="http://localhost:11434" spellcheck="false" aria-label="Ollama server URL">
+          <select id="oModel" class="omodel" aria-label="Model"><option value="gemma4:e2b">gemma4:e2b</option></select>
+        </div>
+        <textarea id="oPrompt" class="oprompt" rows="4" spellcheck="false" placeholder="Paste an article, or ask it anything…">Summarize this in three sentences: [paste an article here]</textarea>
+        <div class="orow">
+          <button type="button" id="oSend">▶️ Send</button>
+          <span class="otimebox" id="oTiming"></span>
+        </div>
+        <pre class="ooutput" id="oOutput">Output streams here once you hit Send.</pre>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      Needs Ollama running on THIS machine — and best served from a local
+      server, e.g. <code>python3 -m http.server 8000</code> in this docs/
+      folder, then open <code>http://localhost:8000/agents-at-home.html</code>.
+      Verified: Ollama allows localhost origins by default, no extra config.
+      Double-clicking the file instead (file://) gets a 403 — fix with
+      <code>OLLAMA_ORIGINS=* ollama serve</code>. The hosted claude.ai link
+      can never reach it (blocked twice over — Ollama's CORS and the
+      artifact sandbox itself) — that's expected, not a bug. Click
+      "Check connection" once before the room is watching; if it's red,
+      fall back to the terminal from the previous slide and keep going.
+    </aside>
+  </section>
+
   <!-- 7 ============================================================= -->
-  <section class="slide" id="s7" aria-label="Slide 7: Today's build mapped onto the loop">
+  <section class="slide" id="s7" aria-label="Slide 8: Today's build mapped onto the loop">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>Today's build, on the same loop</h2>
@@ -624,7 +693,7 @@
   </section>
 
   <!-- 8 ============================================================= -->
-  <section class="slide" id="s8" aria-label="Slide 8: Why local — three reasons">
+  <section class="slide" id="s8" aria-label="Slide 9: Why local — three reasons">
     <div class="inner">
       <p class="eyebrow">Block B · Why local?</p>
       <h2>Three reasons</h2>
@@ -646,7 +715,7 @@
   </section>
 
   <!-- 9 ============================================================= -->
-  <section class="slide" id="s9" aria-label="Slide 9: The honest trade-off">
+  <section class="slide" id="s9" aria-label="Slide 10: The honest trade-off">
     <div class="inner">
       <p class="eyebrow">Block B · Why local?</p>
       <p class="statement long">Small local models are weaker than the <span class="c-else">giant cloud ones</span>.</p>
@@ -665,7 +734,7 @@
   </section>
 
   <!-- 10 ============================================================ -->
-  <section class="slide" id="s10" aria-label="Slide 10: What we learned building this">
+  <section class="slide" id="s10" aria-label="Slide 11: What we learned building this">
     <div class="inner">
       <p class="eyebrow is-flag">Block C · Do's &amp; don'ts</p>
       <p class="statement">What we learned building this <span class="c-flag">— the hard way</span>.</p>
@@ -674,7 +743,7 @@
   </section>
 
   <!-- 11 ============================================================ -->
-  <section class="slide" id="s11" aria-label="Slide 11: Don't reach for the LLM first">
+  <section class="slide" id="s11" aria-label="Slide 12: Don't reach for the LLM first">
     <div class="inner">
       <span class="tag dont">Don't</span>
       <h2>Reach for the model first</h2>
@@ -701,7 +770,7 @@
   </section>
 
   <!-- 12 ============================================================ -->
-  <section class="slide" id="s12" aria-label="Slide 12: Don't trust an agent blindly on consequential actions">
+  <section class="slide" id="s12" aria-label="Slide 13: Don't trust an agent blindly on consequential actions">
     <div class="inner">
       <span class="tag dont">Don't</span>
       <h2>Trust an agent blindly on consequential actions</h2>
@@ -715,7 +784,7 @@
   </section>
 
   <!-- 13 ============================================================ -->
-  <section class="slide" id="s13" aria-label="Slide 13: Do — small models need explicit structure">
+  <section class="slide" id="s13" aria-label="Slide 14: Do — small models need explicit structure">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Give small models explicit structure</h2>
@@ -735,7 +804,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 14 ============================================================ -->
-  <section class="slide" id="s14" aria-label="Slide 14: Do — design for memory">
+  <section class="slide" id="s14" aria-label="Slide 15: Do — design for memory">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Design for memory, not just one run</h2>
@@ -751,7 +820,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 15 ============================================================ -->
-  <section class="slide" id="s15" aria-label="Slide 15: Do — expect the real internet to be messy">
+  <section class="slide" id="s15" aria-label="Slide 16: Do — expect the real internet to be messy">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Expect the real internet to be messy</h2>
@@ -778,7 +847,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 16 ============================================================ -->
-  <section class="slide" id="s16" aria-label="Slide 16: Transition to hands-on">
+  <section class="slide" id="s16" aria-label="Slide 17: Transition to hands-on">
     <div class="inner">
       <p class="eyebrow">Hands-on</p>
       <p class="statement">Now you're going to be the agent — <span class="c-local">literally</span>.</p>
@@ -835,12 +904,125 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
 
     window.addEventListener('keydown', function (e) {
       var t = e.target.tagName;
-      if (t === 'INPUT' || t === 'TEXTAREA') return;
+      if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || t === 'BUTTON') return;
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(idx + 1); }
       else if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); go(idx - 1); }
       else if (e.key === 'Home') { e.preventDefault(); go(0); }
       else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
       else if (e.key === 's' || e.key === 'S') { toggleNotes(); }
+    });
+  })();
+</script>
+
+<script>
+  // Live Ollama widget (slide 7). Talks straight to a local Ollama server via
+  // fetch — nothing goes through Claude or any third party. Needs Ollama
+  // running on this machine. Ollama allows http://localhost:* origins by
+  // default (verified), so serving this page locally — e.g.
+  // `python3 -m http.server` in docs/ — just works with no extra config.
+  // Opened as a file:// page instead, Ollama 403s it; fix with
+  // `OLLAMA_ORIGINS=* ollama serve`. The hosted claude.ai link can never
+  // reach localhost (blocked by both Ollama's CORS and the artifact
+  // sandbox) — it'll show "not reachable" there, which is expected.
+  (function () {
+    var statusEl = document.getElementById('oStatus');
+    var checkBtn = document.getElementById('oCheck');
+    var baseEl   = document.getElementById('oBase');
+    var modelSel = document.getElementById('oModel');
+    var promptEl = document.getElementById('oPrompt');
+    var sendBtn  = document.getElementById('oSend');
+    var outputEl = document.getElementById('oOutput');
+    var timingEl = document.getElementById('oTiming');
+    if (!sendBtn) return; // widget not on this build
+
+    function setStatus(state, msg) {
+      statusEl.className = 'ostatus ostatus--' + state;
+      statusEl.innerHTML = '<i class="odot"></i>' + msg;
+    }
+
+    function base() {
+      return (baseEl.value || 'http://localhost:11434').replace(/\/+$/, '');
+    }
+
+    checkBtn.addEventListener('click', function () {
+      setStatus('checking', 'checking…');
+      fetch(base() + '/api/tags')
+        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function (data) {
+          var models = (data.models || []).map(function (m) { return m.name; });
+          if (!models.length) { setStatus('warn', 'connected, but no models pulled yet'); return; }
+          modelSel.innerHTML = '';
+          models.forEach(function (name) {
+            var opt = document.createElement('option');
+            opt.value = name; opt.textContent = name;
+            modelSel.appendChild(opt);
+          });
+          var preferred = models.filter(function (n) { return n.indexOf('gemma') === 0; })[0];
+          modelSel.value = preferred || models[0];
+          setStatus('ok', 'connected — ' + models.length + ' model' + (models.length === 1 ? '' : 's'));
+        })
+        .catch(function (err) {
+          setStatus('err', 'not reachable — ' + err.message);
+        });
+    });
+
+    sendBtn.addEventListener('click', function () {
+      var prompt = promptEl.value.trim();
+      if (!prompt) { promptEl.focus(); return; }
+      var model = modelSel.value || 'gemma4:e2b';
+      outputEl.textContent = '';
+      timingEl.textContent = '';
+      sendBtn.disabled = true;
+      setStatus('checking', 'thinking…');
+      var t0 = (window.performance || Date).now();
+
+      fetch(base() + '/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: model, messages: [{ role: 'user', content: prompt }], stream: true })
+      })
+        .then(function (res) {
+          if (!res.ok || !res.body) throw new Error('HTTP ' + res.status);
+          setStatus('ok', 'streaming…');
+          var reader = res.body.getReader();
+          var decoder = new TextDecoder();
+          var buf = '';
+
+          function pump() {
+            return reader.read().then(function (step) {
+              if (step.done) {
+                sendBtn.disabled = false;
+                setStatus('ok', 'connected');
+                timingEl.textContent = (((window.performance || Date).now() - t0) / 1000).toFixed(1) + 's';
+                return;
+              }
+              buf += decoder.decode(step.value, { stream: true });
+              var lines = buf.split('\n');
+              buf = lines.pop();
+              lines.forEach(function (line) {
+                line = line.trim();
+                if (!line) return;
+                try {
+                  var obj = JSON.parse(line);
+                  if (obj.message && obj.message.content) outputEl.textContent += obj.message.content;
+                } catch (e) { /* partial line, ignore */ }
+              });
+              outputEl.scrollTop = outputEl.scrollHeight;
+              return pump();
+            });
+          }
+          return pump();
+        })
+        .catch(function (err) {
+          sendBtn.disabled = false;
+          setStatus('err', 'request failed — ' + err.message);
+          outputEl.textContent =
+            'Could not reach Ollama at ' + base() + '.\n\n' +
+            'Checklist:\n' +
+            '  - Is Ollama running? (ollama serve)\n' +
+            '  - CORS: run it as  OLLAMA_ORIGINS=* ollama serve\n' +
+            '  - Viewing this file locally, not the hosted claude.ai link?';
+        });
     });
   })();
 </script>
