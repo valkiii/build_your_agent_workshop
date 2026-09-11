@@ -193,11 +193,12 @@
   .track .k { font: 700 .78rem/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--local); }
   .track .v { color: var(--ink); }
   .track .v small { display: block; color: var(--ink-soft); margin-top: .3rem; font-size: .95rem; }
+  .halves { display: grid; grid-template-columns: 1.3fr 1fr; gap: 2.6rem; align-items: center; }
   .kicker-line {
-    margin-top: 2.2rem; padding-left: 1.1rem;
+    padding-left: 1.1rem;
     border-left: 3px solid var(--local);
     font: 700 clamp(1.25rem, 2.3vw, 1.8rem)/1.35 var(--font-display);
-    letter-spacing: -.01em; text-wrap: balance; max-width: 24ch;
+    letter-spacing: -.01em; text-wrap: balance; max-width: 22ch;
   }
 
   /* ---------- two-column compare ---------- */
@@ -222,9 +223,10 @@
     transition: background-color .18s ease, border-top-color .18s ease;
   }
   .reason:last-child { border-bottom: 1px solid var(--line); }
-  .reason:hover { background: var(--local-tint); border-top-color: var(--local); }
+  .reason:hover { background: color-mix(in oklab, var(--local) 16%, var(--ground)); border-top-color: var(--local); }
+  .reason:hover h3::before { transform: scale(1.4); }
   .reason h3 { margin: 0; font: 700 1.15rem/1.2 var(--font-display); color: var(--local); display: flex; align-items: center; gap: .6rem; }
-  .reason h3::before { content: ""; flex: none; width: .55rem; height: .55rem; background: var(--local); }
+  .reason h3::before { content: ""; flex: none; width: .55rem; height: .55rem; background: var(--local); transition: transform .18s ease; }
   .reason p { margin: 0; color: var(--ink-soft); font-size: 1.05rem; transition: color .18s ease; }
   .reason:hover p { color: var(--ink); }
 
@@ -323,7 +325,8 @@
   @media (max-width: 760px) {
     :root { --edge: 1.5rem; }
     .slide { padding: 5.5rem var(--edge) 5rem; }
-    .compare, .loop-legend { grid-template-columns: 1fr; }
+    .compare, .loop-legend, .halves { grid-template-columns: 1fr; }
+    .kicker-line { margin-top: .6rem; }
     .track .row, .reason, .map .hd, .map .r, .ba .step, .map .r .s { grid-template-columns: 1fr; }
     .ba .step { gap: .3rem; }
     .map .r .s { border-left: none; border-top: 3px solid var(--local); }
@@ -366,19 +369,21 @@
     <div class="inner">
       <p class="eyebrow">Today</p>
       <h2>Two halves</h2>
-      <div class="track">
-        <div class="row">
-          <span class="k">Talk</span>
-          <span class="v">What an agent actually is, why local, and what to watch out for.
-            <small>~30 minutes. Slides, one live demo, no keyboards yet.</small></span>
+      <div class="halves">
+        <div class="track">
+          <div class="row">
+            <span class="k">Talk</span>
+            <span class="v">What an agent actually is, why local, and what to watch out for.
+              <small>~30 minutes. Slides, one live demo, no keyboards yet.</small></span>
+          </div>
+          <div class="row">
+            <span class="k">Hands-on</span>
+            <span class="v">Build a real one together — a Content Curator that reads, judges, and compiles articles into an e-book.
+              <small>~2 hours. Coders in the Python; everyone else tunes the agent's judgment in plain English.</small></span>
+          </div>
         </div>
-        <div class="row">
-          <span class="k">Hands-on</span>
-          <span class="v">Build a real one together — a Content Curator that reads, judges, and compiles articles into an e-book.
-            <small>~2 hours. Coders in the Python; everyone else tunes the agent's judgment in plain English.</small></span>
-        </div>
+        <p class="kicker-line">Everything today runs on your own laptop. No cloud, no API keys, nothing leaves your machine.</p>
       </div>
-      <p class="kicker-line">Everything today runs on your own laptop. No cloud, no API keys, nothing leaves your machine.</p>
     </div>
     <aside class="note">
       <b>Speaker note</b>
