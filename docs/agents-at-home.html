@@ -944,6 +944,27 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
       return (baseEl.value || 'http://localhost:11434').replace(/\/+$/, '');
     }
 
+    // A blocked fetch() always throws a generic "Failed to fetch" — the browser
+    // deliberately hides *why* (CORS vs. mixed content vs. connection refused)
+    // from JS. location.protocol is visible, though, and covers the two most
+    // likely causes here, so use it to point at the actual fix.
+    function likelyReason() {
+      var proto = window.location.protocol;
+      if (proto === 'file:') {
+        return 'This deck is open as a local file (file://) — Ollama blocks that by ' +
+          'default. Easiest fix: serve this folder instead of double-clicking it, e.g. ' +
+          '"python3 -m http.server" in docs/, then open http://localhost:8000/agents-at-home.html. ' +
+          'Or keep double-clicking and run Ollama as: OLLAMA_ORIGINS=* ollama serve';
+      }
+      if (proto === 'https:') {
+        return 'This deck is loaded over https (likely the shared claude.ai link) — a secure ' +
+          'page can’t call plain http://localhost (mixed content), and the claude.ai link is ' +
+          'sandboxed against it either way. Open the deck from a local http:// server instead.';
+      }
+      return 'Ollama may not be running, be on a different port, or a firewall is blocking it. ' +
+        'Confirm "ollama serve" is running and the URL above matches.';
+    }
+
     checkBtn.addEventListener('click', function () {
       setStatus('checking', 'checking…');
       fetch(base() + '/api/tags')
@@ -963,6 +984,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
         })
         .catch(function (err) {
           setStatus('err', 'not reachable — ' + err.message);
+          outputEl.textContent = 'Could not reach Ollama at ' + base() + '.\n\n' + likelyReason();
         });
     });
 
@@ -1016,12 +1038,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
         .catch(function (err) {
           sendBtn.disabled = false;
           setStatus('err', 'request failed — ' + err.message);
-          outputEl.textContent =
-            'Could not reach Ollama at ' + base() + '.\n\n' +
-            'Checklist:\n' +
-            '  - Is Ollama running? (ollama serve)\n' +
-            '  - CORS: run it as  OLLAMA_ORIGINS=* ollama serve\n' +
-            '  - Viewing this file locally, not the hosted claude.ai link?';
+          outputEl.textContent = 'Could not reach Ollama at ' + base() + '.\n\n' + likelyReason();
         });
     });
   })();
