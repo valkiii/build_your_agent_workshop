@@ -131,6 +131,7 @@
   }
   .inner { width: 100%; max-width: 66rem; margin: 0 auto; }
   .wide .inner { max-width: 76rem; }
+  #s2b .inner { margin: 0; }  /* left-justified, not centered — so the timeline's 40% is 40% of the real left edge */
 
   .eyebrow {
     font: 500 .74rem/1.5 var(--font-mono);
@@ -268,7 +269,7 @@
   #s4.play .typed--a      { animation: s4reveal 1.8s linear 3.1s forwards; }
 
   /* the agent side: robot -> (arrow) -> cloud -> (arrow) -> document, left to right */
-  .apipe { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+  .apipe { display: flex; align-items: center; justify-content: space-between; gap: .5rem; width: 100%; flex-wrap: wrap; }
   .astep { display: flex; flex-direction: column; align-items: center; gap: .35rem; min-width: 3.4rem; opacity: 0; }
   .aicon { font-size: 2.1rem; line-height: 1; }
   .alabel { font: 500 .68rem/1.3 var(--font-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); text-align: center; white-space: nowrap; }
@@ -547,47 +548,47 @@
       <h2>The full 3 hours 20</h2>
       <div class="timetable">
         <div class="tt-row">
-          <div class="tt-time">0:00 – 0:35</div>
+          <div class="tt-time">9:00 – 9:35</div>
           <div class="tt-dot"></div>
           <div class="tt-activity">Presentation — what an agent is (the perceive → extract → decide → act loop), why local, and the Do's/Don'ts pulled from real things that broke while building this.</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">0:35 – 0:50</div>
+          <div class="tt-time">9:35 – 9:50</div>
           <div class="tt-dot"></div>
           <div class="tt-activity">&ldquo;Be the agent&rdquo; physical relay — whole room, paper roles, no laptops yet.</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">0:50 – 1:15</div>
+          <div class="tt-time">9:50 – 10:15</div>
           <div class="tt-dot"></div>
           <div class="tt-activity">Guided build, tracks split — non-coders watch the Streamlit app + Ollama chat walkthrough; coders walk the actual Python files.</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">1:15 – 1:30</div>
+          <div class="tt-time">10:15 – 10:30</div>
           <div class="tt-dot"></div>
           <div class="tt-activity">&ldquo;You vs. the model&rdquo; exercise — whole room compares their own approve/reject calls to the model&rsquo;s.</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">1:30 – 1:45</div>
+          <div class="tt-time">10:30 – 10:45</div>
           <div class="tt-dot"></div>
           <div class="tt-activity">Break.</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">1:45 – 2:15</div>
+          <div class="tt-time">10:45 – 11:15</div>
           <div class="tt-dot"></div>
           <div class="tt-activity">Own build — non-coders tune the interest prompt in rounds; coders pick a stretch extension.</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">2:15 – 2:45</div>
+          <div class="tt-time">11:15 – 11:45</div>
           <div class="tt-dot"></div>
           <div class="tt-activity">Run end-to-end + &ldquo;break it and see what happens&rdquo; (mistune the prompt, watch decisions flip).</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">2:45 – 3:05</div>
+          <div class="tt-time">11:45 – 12:05</div>
           <div class="tt-dot"></div>
           <div class="tt-activity">Read the result on Calibre/e-reader/phone, regroup, compare what each track built.</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">3:05 – 3:20</div>
+          <div class="tt-time">12:05 – 12:20</div>
           <div class="tt-dot"></div>
           <div class="tt-activity">Discussion + wrap-up, tying back to the Do&rsquo;s/Don&rsquo;ts slide with real examples from the room.</div>
         </div>
@@ -1088,7 +1089,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
       <b>Speaker note</b>
       Zero setup, zero debugging risk — the point is to make perceive → extract → decide → act a
       lived experience before anyone touches a laptop. Works identically for coders and non-coders;
-      keep tables mixed so it's a good shared moment before the tracks split at 0:50 (see the timetable,
+      keep tables mixed so it's a good shared moment before the tracks split at 9:50 (see the timetable,
       slide 3).
     </aside>
   </section>
