@@ -1,0 +1,707 @@
+<title>Agents at Home</title>
+<meta name="description" content="Opening deck for a hands-on workshop on local, offline AI agents: the loop, why local, and what breaks.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+  :root {
+    color-scheme: light dark;
+
+    --ground:        #ECEBE4;
+    --surface:       #F7F6F1;
+    --raise:         #FFFFFF;
+    --grid:          #DEDCD2;
+    --ink:           #23252B;
+    --ink-soft:      #585B62;
+    --ink-faint:     #8B8D93;
+    --line:          #D5D3C9;
+
+    --local:         #2C6E4B;   /* on-device · agent · "does things" */
+    --local-tint:    #E4EDE6;
+    --elsewhere:     #3A5788;   /* cloud · chatbot · "just answers" */
+    --elsewhere-tint:#E3E7F1;
+    --flag:          #BB4C25;   /* the hard way · don'ts · warnings  */
+    --flag-tint:     #F3E3DA;
+
+    --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+    --font-body:    "Hanken Grotesk", system-ui, -apple-system, Segoe UI, sans-serif;
+    --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --edge: min(6vw, 5.5rem);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:        #121317;
+      --surface:       #1A1C21;
+      --raise:         #24272D;
+      --grid:          #22242A;
+      --ink:           #E8E6DE;
+      --ink-soft:      #A6A39A;
+      --ink-faint:     #75767C;
+      --line:          #31333A;
+      --local:         #5EBA8B;
+      --local-tint:    #182920;
+      --elsewhere:     #88A8DC;
+      --elsewhere-tint:#1A2230;
+      --flag:          #E28C5E;
+      --flag-tint:     #2C1E16;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:        #121317;
+    --surface:       #1A1C21;
+    --raise:         #24272D;
+    --grid:          #22242A;
+    --ink:           #E8E6DE;
+    --ink-soft:      #A6A39A;
+    --ink-faint:     #75767C;
+    --line:          #31333A;
+    --local:         #5EBA8B;
+    --local-tint:    #182920;
+    --elsewhere:     #88A8DC;
+    --elsewhere-tint:#1A2230;
+    --flag:          #E28C5E;
+    --flag-tint:     #2C1E16;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
+
+  body {
+    margin: 0;
+    font: 400 1.0625rem/1.62 var(--font-body);
+    color: var(--ink);
+    background:
+      radial-gradient(var(--grid) 1px, transparent 1.5px) -13px -13px / 26px 26px,
+      var(--ground);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--local); color: var(--raise); }
+
+  /* ---------- fixed chrome ---------- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0;
+    background: var(--local); z-index: 40;
+    transition: width .15s linear;
+  }
+  .counter {
+    position: fixed; top: 1.15rem; left: var(--edge); z-index: 30;
+    font: 500 .78rem/1 var(--font-mono); letter-spacing: .06em;
+    color: var(--ink-faint);
+  }
+  .counter b { color: var(--ink); font-weight: 700; }
+  .wordmark {
+    position: fixed; bottom: 1.15rem; left: var(--edge); z-index: 30;
+    font: 500 .68rem/1 var(--font-mono); letter-spacing: .22em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+  .chrome {
+    position: fixed; bottom: 1rem; right: var(--edge); z-index: 30;
+    display: flex; gap: .6rem; align-items: center;
+  }
+  .chrome button {
+    font: 500 .72rem/1 var(--font-mono); letter-spacing: .08em;
+    color: var(--ink-soft); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 4px;
+    padding: .5rem .7rem; cursor: pointer;
+  }
+  .chrome button:hover { color: var(--ink); border-color: var(--ink-faint); }
+  kbd {
+    font: 700 .68rem/1 var(--font-mono);
+    border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 3px; padding: .15em .4em; color: var(--ink-soft);
+    background: var(--raise);
+  }
+  :focus-visible { outline: 2px solid var(--local); outline-offset: 3px; border-radius: 2px; }
+
+  /* ---------- slide frame ---------- */
+  .slide {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    scroll-snap-align: start;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 7rem var(--edge) 6rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--line) 55%, transparent);
+  }
+  .inner { width: 100%; max-width: 66rem; margin: 0 auto; }
+  .wide .inner { max-width: 76rem; }
+
+  .eyebrow {
+    font: 500 .74rem/1.5 var(--font-mono);
+    letter-spacing: .17em; text-transform: uppercase;
+    color: var(--ink-faint);
+    display: flex; align-items: center; gap: .7rem;
+    margin: 0 0 1.6rem;
+  }
+  .eyebrow::before {
+    content: ""; flex: none; width: 1.6rem; height: 1px; background: var(--ink-faint);
+  }
+  .eyebrow.is-flag { color: var(--flag); }
+  .eyebrow.is-flag::before { background: var(--flag); }
+
+  h1 {
+    font: 800 clamp(2.9rem, 7.2vw, 5.6rem)/1.02 var(--font-display);
+    letter-spacing: -.02em; margin: 0; text-wrap: balance;
+  }
+  h2 {
+    font: 800 clamp(2rem, 4.6vw, 3.4rem)/1.06 var(--font-display);
+    letter-spacing: -.015em; margin: 0 0 1.5rem; text-wrap: balance;
+  }
+  .statement {
+    font: 700 clamp(1.8rem, 3.7vw, 2.9rem)/1.18 var(--font-display);
+    letter-spacing: -.01em; margin: 0; text-wrap: balance;
+    max-width: 22ch;
+  }
+  .statement.long { max-width: 30ch; }
+  .lead {
+    font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+    color: var(--ink-soft); max-width: 34em; margin: 1.4rem 0 0;
+  }
+  p { max-width: 36em; }
+  .c-local { color: var(--local); }
+  .c-else  { color: var(--elsewhere); }
+  .c-flag  { color: var(--flag); }
+
+  /* ---------- title slide ---------- */
+  #s1 { justify-content: center; }
+  #s1 .sub {
+    font: 500 clamp(1.05rem, 2vw, 1.5rem)/1.4 var(--font-body);
+    color: var(--ink-soft); margin: 1.6rem 0 0; max-width: 24ch;
+  }
+  .byline {
+    margin-top: 3.2rem; font: 500 .9rem/1.7 var(--font-mono);
+    letter-spacing: .04em; color: var(--ink-soft);
+  }
+  .byline .fill {
+    border-bottom: 1px dashed var(--ink-faint); padding-bottom: 1px;
+    color: var(--ink-faint);
+  }
+  .scrollcue {
+    position: absolute; bottom: 2.6rem; left: var(--edge);
+    font: 500 .74rem/1 var(--font-mono); letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+
+  /* ---------- agenda ---------- */
+  .track { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .track .row { background: var(--surface); padding: 1.4rem 1.5rem; display: grid; grid-template-columns: 9.5rem 1fr; gap: 1.4rem; align-items: baseline; }
+  .track .k { font: 700 .78rem/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--local); }
+  .track .v { color: var(--ink); }
+  .track .v small { display: block; color: var(--ink-soft); margin-top: .3rem; font-size: .95rem; }
+  .kicker-line {
+    margin-top: 2.2rem; padding-left: 1.1rem;
+    border-left: 3px solid var(--local);
+    font: 700 clamp(1.25rem, 2.3vw, 1.8rem)/1.35 var(--font-display);
+    letter-spacing: -.01em; text-wrap: balance; max-width: 24ch;
+  }
+
+  /* ---------- two-column compare ---------- */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; }
+  .col { padding-top: 1.1rem; border-top: 3px solid var(--line); }
+  .col.is-else  { border-top-color: var(--elsewhere); }
+  .col.is-local { border-top-color: var(--local); }
+  .col .tagword {
+    font: 700 .8rem/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase;
+    margin: 0 0 .9rem;
+  }
+  .col.is-else  .tagword { color: var(--elsewhere); }
+  .col.is-local .tagword { color: var(--local); }
+  .col p { font-size: 1.1rem; margin: 0; color: var(--ink); }
+
+  /* ---------- reasons (not a sequence — no numbers) ---------- */
+  .reasons { display: grid; gap: 0; }
+  .reason { display: grid; grid-template-columns: 12rem 1fr; gap: 1.6rem; padding: 1.35rem 0; border-top: 1px solid var(--line); align-items: baseline; }
+  .reason:last-child { border-bottom: 1px solid var(--line); }
+  .reason h3 { margin: 0; font: 700 1.15rem/1.2 var(--font-display); color: var(--local); display: flex; align-items: center; gap: .6rem; }
+  .reason h3::before { content: ""; width: .55rem; height: .55rem; background: var(--local); }
+  .reason p { margin: 0; color: var(--ink-soft); font-size: 1.05rem; }
+
+  /* ---------- do / don't ---------- */
+  .tag {
+    display: inline-block; font: 700 .72rem/1 var(--font-mono);
+    letter-spacing: .16em; text-transform: uppercase;
+    padding: .4rem .6rem; border-radius: 3px; margin-bottom: 1.3rem;
+  }
+  .tag.dont { color: var(--flag); background: var(--flag-tint); }
+  .tag.do   { color: var(--local); background: var(--local-tint); }
+
+  .ba { display: grid; gap: 1rem; margin: 1.6rem 0 0; }
+  .ba .step { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1.2rem; align-items: baseline; }
+  .ba .lbl { font: 700 .74rem/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+  .ba .before .lbl { color: var(--flag); }
+  .ba .after  .lbl { color: var(--local); }
+  .ba .txt { color: var(--ink); font-size: 1.08rem; }
+  .ba code { font: 500 .92em/1 var(--font-mono); background: var(--raise); border: 1px solid var(--line); border-radius: 3px; padding: .1em .35em; }
+
+  .lesson {
+    margin-top: 2rem; padding: 1.2rem 1.4rem;
+    background: var(--surface); border-left: 3px solid var(--local);
+    border-radius: 0 5px 5px 0;
+  }
+  .lesson.warn { border-left-color: var(--flag); }
+  .lesson .k { font: 700 .72rem/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint); }
+  .lesson p { margin: .5rem 0 0; font-size: 1.08rem; color: var(--ink); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.4rem; }
+  .chips span { font: 500 .85rem/1 var(--font-mono); color: var(--local); background: var(--local-tint); padding: .5rem .7rem; border-radius: 4px; }
+
+  /* ---------- code ---------- */
+  pre {
+    margin: 1.4rem 0 0; padding: 1.1rem 1.2rem; overflow-x: auto;
+    background: var(--raise); border: 1px solid var(--line); border-radius: 6px;
+    font: 400 .92rem/1.65 var(--font-mono); color: var(--ink);
+  }
+  pre .cmt { color: var(--ink-faint); }
+  pre .fence { color: var(--flag); }
+  pre .str { color: var(--local); }
+
+  /* ---------- demo card ---------- */
+  .demo {
+    border: 1px solid var(--ink-soft); border-radius: 8px;
+    background: var(--surface); padding: 1.6rem 1.7rem;
+  }
+  .demo .bar { display: flex; align-items: center; gap: .5rem; margin-bottom: 1.2rem; font: 500 .74rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+  .demo .bar::before { content: ""; width: .6rem; height: .6rem; border-radius: 50%; background: var(--flag); }
+  .demo ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: .95rem; }
+  .demo li { display: grid; grid-template-columns: 1.75rem 1fr; gap: .85rem; align-items: baseline; font-size: 1.06rem; }
+  .demo li > b { font: 700 .82rem/1.7 var(--font-mono); color: var(--local); }
+  .demo li code { font: 500 .9em/1 var(--font-mono); white-space: nowrap; background: var(--raise); border: 1px solid var(--line); border-radius: 3px; padding: .12em .4em; }
+  .demo li em { color: var(--ink); }
+  .timebox { margin-top: 1.3rem; font: 500 .8rem/1 var(--font-mono); letter-spacing: .06em; color: var(--flag); background: var(--flag-tint); display: inline-block; padding: .5rem .7rem; border-radius: 4px; }
+
+  /* ---------- mapped loop ---------- */
+  .map { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .map .hd, .map .r { display: grid; grid-template-columns: 15rem 1fr; }
+  .map .hd > *, .map .r > * { background: var(--surface); padding: 1.05rem 1.4rem; }
+  .map .hd > * { font: 700 .74rem/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); }
+  .map .r .s { font: 700 1.05rem/1.3 var(--font-display); color: var(--local); border-left: 3px solid var(--local); }
+  .map .r .a { color: var(--ink); font-size: 1.05rem; }
+
+  /* ---------- loop diagram ---------- */
+  .loopwrap { margin: 0 0 1.8rem; }
+  .loop { width: 100%; height: auto; overflow: visible; }
+  .loop .box { fill: var(--local-tint); stroke: var(--local); stroke-width: 1.5; }
+  .loop .word { fill: var(--local); font: 700 19px/1 var(--font-display); letter-spacing: .04em; text-anchor: middle; }
+  .loop .flow { stroke: var(--ink-soft); stroke-width: 2; fill: none; }
+  .loop .rl { fill: var(--ink-faint); font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-anchor: middle; text-transform: uppercase; }
+  .loop-legend { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.3rem; }
+  .loop-legend div { border-top: 2px solid var(--local); padding-top: .7rem; }
+  .loop-legend b { display: block; font: 700 .8rem/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--local); margin-bottom: .3rem; }
+  .loop-legend p { margin: 0; font-size: .98rem; color: var(--ink-soft); }
+
+  /* ---------- roles ---------- */
+  .roles { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.6rem; }
+  .roles span { font: 700 .82rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--local); border: 1px solid var(--local); border-radius: 4px; padding: .55rem .8rem; }
+
+  /* ---------- speaker notes ---------- */
+  .note { display: none; }
+  body.notes .note {
+    display: block; margin-top: 2.4rem; padding: 1.1rem 1.3rem;
+    background: var(--flag-tint); border-left: 3px solid var(--flag);
+    border-radius: 0 5px 5px 0;
+    font: 400 .96rem/1.6 var(--font-body); color: var(--ink);
+    max-width: 44em;
+  }
+  .note b { font: 700 .7rem/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--flag); display: block; margin-bottom: .5rem; }
+  .note code { font: 500 .9em/1 var(--font-mono); color: var(--ink); }
+  .note kbd { vertical-align: baseline; }
+
+  @media (max-width: 760px) {
+    :root { --edge: 1.5rem; }
+    .slide { padding: 5.5rem var(--edge) 5rem; }
+    .compare, .loop-legend { grid-template-columns: 1fr; }
+    .track .row, .reason, .map .hd, .map .r, .ba .step, .map .r .s { grid-template-columns: 1fr; }
+    .ba .step { gap: .3rem; }
+    .map .r .s { border-left: none; border-top: 3px solid var(--local); }
+    .wordmark { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .progress { transition: none; }
+  }
+</style>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="counter" aria-hidden="true"><b id="cur">01</b> / 16</div>
+<div class="wordmark" aria-hidden="true">Agents at Home</div>
+<div class="chrome">
+  <button id="notesBtn" type="button" aria-pressed="false">Speaker notes <kbd>S</kbd></button>
+</div>
+
+<main id="deck">
+
+  <!-- 1 ============================================================= -->
+  <section class="slide" id="s1" aria-label="Slide 1: Agents at Home">
+    <div class="inner">
+      <h1>Agents at&nbsp;Home</h1>
+      <p class="sub">Building local, offline AI assistants for real tasks</p>
+      <p class="byline"><span class="fill">Your name</span> &nbsp;·&nbsp; <span class="fill">workshop date</span></p>
+    </div>
+    <div class="scrollcue" aria-hidden="true">Scroll to begin ↓</div>
+    <aside class="note">
+      <b>Run of show</b>
+      Block A (what is an agent), slides 3–7 — ~10 min · Block B (why local), 8–9 — ~5 min ·
+      Block C (do's &amp; don'ts), 10–15 — ~10–15 min · open + close, 1–2 &amp; 16 — ~5 min.
+      Total ~30–35 min, then hands-on. Press <kbd>S</kbd> anytime to hide these notes.
+    </aside>
+  </section>
+
+  <!-- 2 ============================================================= -->
+  <section class="slide" id="s2" aria-label="Slide 2: Today">
+    <div class="inner">
+      <p class="eyebrow">Today</p>
+      <h2>Two halves</h2>
+      <div class="track">
+        <div class="row">
+          <span class="k">Talk</span>
+          <span class="v">What an agent actually is, why local, and what to watch out for.
+            <small>~30 minutes. Slides, one live demo, no keyboards yet.</small></span>
+        </div>
+        <div class="row">
+          <span class="k">Hands-on</span>
+          <span class="v">Build a real one together — a Content Curator that reads, judges, and compiles articles into an e-book.
+            <small>~2 hours. Coders in the Python; everyone else tunes the agent's judgment in plain English.</small></span>
+        </div>
+      </div>
+      <p class="kicker-line">Everything today runs on your own laptop. No cloud, no API keys, nothing leaves your machine.</p>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      Say the "nothing leaves your machine" line out loud, slowly. It's a genuine hook for a technical
+      room, and it sets up the "why local" block later — you'll call back to it on slide 8.
+    </aside>
+  </section>
+
+  <!-- 3 ============================================================= -->
+  <section class="slide" id="s3" aria-label="Slide 3: The hook">
+    <div class="inner">
+      <p class="eyebrow">Block A · What is an agent?</p>
+      <p class="statement long">You've all used a chatbot. Today we build something that <span class="c-local">does&nbsp;things</span>, not just answers.</p>
+    </div>
+  </section>
+
+  <!-- 4 ============================================================= -->
+  <section class="slide" id="s4" aria-label="Slide 4: Chatbot vs Agent">
+    <div class="inner">
+      <p class="eyebrow">Block A · What is an agent?</p>
+      <h2>Chatbot vs. agent</h2>
+      <div class="compare">
+        <div class="col is-else">
+          <p class="tagword">Chatbot</p>
+          <p>You ask, it answers, the conversation ends. Nothing happens unless you type again.</p>
+        </div>
+        <div class="col is-local">
+          <p class="tagword">Agent</p>
+          <p>It perceives something, decides what matters, and takes an action — often in a loop, often without you in every step.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 ============================================================= -->
+  <section class="slide wide" id="s5" aria-label="Slide 5: The loop">
+    <div class="inner">
+      <p class="eyebrow">Block A · What is an agent?</p>
+      <h2>The loop</h2>
+      <div class="loopwrap">
+        <svg class="loop" viewBox="0 0 900 300" role="img" aria-label="A four-step cycle: Perceive, Extract, Decide, Act, then repeat.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 Z" fill="var(--ink-soft)"></path>
+            </marker>
+          </defs>
+          <g>
+            <rect class="box" x="18"  y="46" width="186" height="90" rx="10"></rect>
+            <rect class="box" x="248" y="46" width="186" height="90" rx="10"></rect>
+            <rect class="box" x="478" y="46" width="186" height="90" rx="10"></rect>
+            <rect class="box" x="708" y="46" width="186" height="90" rx="10"></rect>
+            <text class="word" x="111" y="97">PERCEIVE</text>
+            <text class="word" x="341" y="97">EXTRACT</text>
+            <text class="word" x="571" y="97">DECIDE</text>
+            <text class="word" x="801" y="97">ACT</text>
+            <path class="flow" d="M210 91 H240"  marker-end="url(#ah)"></path>
+            <path class="flow" d="M440 91 H470"  marker-end="url(#ah)"></path>
+            <path class="flow" d="M670 91 H700"  marker-end="url(#ah)"></path>
+            <path class="flow" d="M801 138 V232 a14 14 0 0 1 -14 14 H125 a14 14 0 0 1 -14 -14 V140" marker-end="url(#ah)"></path>
+            <text class="rl" x="456" y="270">repeat</text>
+          </g>
+        </svg>
+      </div>
+      <div class="loop-legend">
+        <div><b>Perceive</b><p>Notice something — a new article, a price, an email.</p></div>
+        <div><b>Extract</b><p>Pull out what matters from the noise.</p></div>
+        <div><b>Decide</b><p>Judge it against a goal.</p></div>
+        <div><b>Act</b><p>Do something real — send, write, save, notify.</p></div>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      Keep this slide up while you narrate the next one. You'll point back at these four words
+      repeatedly for the rest of the session — it's the spine of the whole workshop.
+    </aside>
+  </section>
+
+  <!-- 6 ============================================================= -->
+  <section class="slide" id="s6" aria-label="Slide 6: Live demo">
+    <div class="inner">
+      <p class="eyebrow">Block A · Live</p>
+      <h2>Switch to the terminal <span class="c-local">→</span></h2>
+      <div class="demo">
+        <div class="bar">Live · plain Ollama chat</div>
+        <ol>
+          <li><b>1</b><span>Run <code>ollama run gemma4:e2b</code> and paste in one scraped article.</span></li>
+          <li><b>2</b><span>Ask: <em>&ldquo;Summarize this in three sentences.&rdquo;</em></span></li>
+          <li><b>3</b><span>Say: <strong>&ldquo;This is the model. An agent is this model, wired into that loop, with tools to act.&rdquo;</strong></span></li>
+        </ol>
+        <span class="timebox">≤ 2 min — a taste, not a tutorial</span>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      Cold-start risk: the model can be slow to load on the first call of the day. Test a cold start
+      the morning of, and pre-warm it (one throwaway <code>ollama run</code>) before
+      the room is watching. If it still stalls, talk over it — don't wait in silence.
+    </aside>
+  </section>
+
+  <!-- 7 ============================================================= -->
+  <section class="slide" id="s7" aria-label="Slide 7: Today's build mapped onto the loop">
+    <div class="inner">
+      <p class="eyebrow">Block A · What is an agent?</p>
+      <h2>Today's build, on the same loop</h2>
+      <div class="map">
+        <div class="hd"><span>The loop</span><span>The Content Curator</span></div>
+        <div class="r"><span class="s">Perceive</span><span class="a">Reads an RSS feed for new articles.</span></div>
+        <div class="r"><span class="s">Extract</span><span class="a">Summarizes each article with the local model.</span></div>
+        <div class="r"><span class="s">Decide</span><span class="a">Judges the summary against an interest you wrote in plain English.</span></div>
+        <div class="r"><span class="s">Act</span><span class="a">Compiles the approved ones into an e-book — tags, a quiz, a link back to the source.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 ============================================================= -->
+  <section class="slide" id="s8" aria-label="Slide 8: Why local — three reasons">
+    <div class="inner">
+      <p class="eyebrow">Block B · Why local?</p>
+      <h2>Three reasons</h2>
+      <div class="reasons">
+        <div class="reason">
+          <h3>Privacy</h3>
+          <p>Nothing you read or write leaves your laptop. No third party sees your interests, your sources, or your drafts.</p>
+        </div>
+        <div class="reason">
+          <h3>Cost</h3>
+          <p>Free after setup. No per-token bill, no quota, no surprise invoice for a batch job that ran long.</p>
+        </div>
+        <div class="reason">
+          <h3>Offline</h3>
+          <p>Works on a plane. Works when the venue wifi doesn't. The model is a file on disk, not a service you call.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 ============================================================= -->
+  <section class="slide" id="s9" aria-label="Slide 9: The honest trade-off">
+    <div class="inner">
+      <p class="eyebrow">Block B · Why local?</p>
+      <p class="statement long">Small local models are weaker than the <span class="c-else">giant cloud ones</span>.</p>
+      <p class="lead">That's not a footnote — it's useful. The constraint forces habits that sloppy prompting against a huge model lets you skip:</p>
+      <div class="chips">
+        <span>clear prompts</span>
+        <span>structured output</span>
+        <span>knowing when <em>not</em> to use the model</span>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      This slide is the bridge into Block C. Say the trade-off out loud as the transition:
+      "Because the model is small, we had to be disciplined — and here's what we learned the hard way."
+    </aside>
+  </section>
+
+  <!-- 10 ============================================================ -->
+  <section class="slide" id="s10" aria-label="Slide 10: What we learned building this">
+    <div class="inner">
+      <p class="eyebrow is-flag">Block C · Do's &amp; don'ts</p>
+      <p class="statement">What we learned building this <span class="c-flag">— the hard way</span>.</p>
+      <p class="lead">Five lessons, all from things that actually broke while making the Content Curator.</p>
+    </div>
+  </section>
+
+  <!-- 11 ============================================================ -->
+  <section class="slide" id="s11" aria-label="Slide 11: Don't reach for the LLM first">
+    <div class="inner">
+      <span class="tag dont">Don't</span>
+      <h2>Reach for the model first</h2>
+      <div class="ba">
+        <div class="step before">
+          <span class="lbl">Before</span>
+          <span class="txt">Scrape the blog's homepage, hand the model every link, ask it which ones are real articles.</span>
+        </div>
+        <div class="step after">
+          <span class="lbl">After</span>
+          <span class="txt">Check for an <code>RSS feed</code> first — structured, dated, reliable, free. No model call at all.</span>
+        </div>
+      </div>
+      <div class="lesson">
+        <span class="k">Lesson</span>
+        <p>Check for structured data before reaching for judgment. Use the model for what actually needs judgment — not for what a parser already does.</p>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      Keep this concrete — it lands because it's a real before/after, not a hypothetical.
+      The homepage scrape genuinely returned nav links and category pages mixed in with articles.
+    </aside>
+  </section>
+
+  <!-- 12 ============================================================ -->
+  <section class="slide" id="s12" aria-label="Slide 12: Don't trust an agent blindly on consequential actions">
+    <div class="inner">
+      <span class="tag dont">Don't</span>
+      <h2>Trust an agent blindly on consequential actions</h2>
+      <p class="lead">A general principle, even outside today's build:</p>
+      <p class="statement long" style="font-size:clamp(1.5rem,2.8vw,2.2rem);max-width:28ch;margin-top:1.2rem">If an action costs money, deletes something, or can't be undone — a human confirms first.</p>
+      <div class="lesson warn">
+        <span class="k">Lesson</span>
+        <p>Cheap to add. Easy to skip. Important not to.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 ============================================================ -->
+  <section class="slide" id="s13" aria-label="Slide 13: Do — small models need explicit structure">
+    <div class="inner">
+      <span class="tag do">Do</span>
+      <h2>Give small models explicit structure</h2>
+      <p class="lead"><code style="font:500 .95em/1 var(--font-mono);background:var(--raise);border:1px solid var(--line);border-radius:3px;padding:.1em .4em">Return ONLY valid JSON</code> — and still parse defensively, because it sometimes wraps the JSON in a markdown fence anyway.</p>
+<pre><span class="cmt"># what the model actually returned</span>
+<span class="fence">```json</span>
+{"approved": true, "reason": <span class="str">"deep technical write-up"</span>}
+<span class="fence">```</span>
+
+<span class="cmt"># the fix — strip the fence, then json.loads()</span>
+content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span class="str">"```"</span>).strip()</pre>
+      <div class="lesson">
+        <span class="k">Lesson</span>
+        <p>Small local models aren't unreliable — they're literal. Prompting them well means being unambiguous.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 ============================================================ -->
+  <section class="slide" id="s14" aria-label="Slide 14: Do — design for memory">
+    <div class="inner">
+      <span class="tag do">Do</span>
+      <h2>Design for memory, not just one run</h2>
+      <p class="lead">The agent keeps a small file of every URL it has already checked:</p>
+<pre><span class="cmt"># state.json</span>
+{ "seen_urls": [ <span class="str">"…/transfer-learning-for-genomic-prediction"</span>, <span class="str">"…/a-connectomics-milestone"</span> ] }</pre>
+      <p style="margin-top:1.2rem">Rejected articles get marked seen too — so it doesn't re-summarize the same one it already turned down, every single run, forever.</p>
+      <div class="lesson">
+        <span class="k">Lesson</span>
+        <p>What counts as "done" is a real design decision, not an afterthought.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 ============================================================ -->
+  <section class="slide" id="s15" aria-label="Slide 15: Do — expect the real internet to be messy">
+    <div class="inner">
+      <span class="tag do">Do</span>
+      <h2>Expect the real internet to be messy</h2>
+      <div class="ba">
+        <div class="step before">
+          <span class="lbl">Broke</span>
+          <span class="txt">Scraped a blog <em>index</em> page instead of one article — got eight headlines glued together instead of one story.</span>
+        </div>
+        <div class="step before">
+          <span class="lbl">Broke</span>
+          <span class="txt">Images at relative paths — <code>/images/photo.png</code> — silently failed to download until resolved against the page's real URL.</span>
+        </div>
+      </div>
+      <div class="lesson warn">
+        <span class="k">Lesson</span>
+        <p>Defensive coding isn't paranoia. It's what working against real, uncontrolled websites actually requires.</p>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      ~30–45 seconds per story, told as war stories, not bullet points. Keep them specific —
+      "eight headlines glued together" and "/images/photo.png" are what make them land. Don't genericize.
+    </aside>
+  </section>
+
+  <!-- 16 ============================================================ -->
+  <section class="slide" id="s16" aria-label="Slide 16: Transition to hands-on">
+    <div class="inner">
+      <p class="eyebrow">Hands-on</p>
+      <p class="statement">Now you're going to be the agent — <span class="c-local">literally</span>.</p>
+      <div class="roles">
+        <span>Scout</span><span>Summarizer</span><span>Judge</span><span>Publisher</span>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      One line, then walk straight into forming groups of four. No further content — the relay
+      exercise is the content now.
+    </aside>
+  </section>
+
+</main>
+
+<script>
+  (function () {
+    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+    var curEl = document.getElementById('cur');
+    var bar = document.getElementById('progress');
+    var notesBtn = document.getElementById('notesBtn');
+    var motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var idx = 0;
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          idx = slides.indexOf(e.target);
+          curEl.textContent = String(idx + 1).padStart(2, '0');
+        }
+      });
+    }, { threshold: 0.55 });
+    slides.forEach(function (s) { io.observe(s); });
+
+    function progress() {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + '%';
+    }
+    window.addEventListener('scroll', progress, { passive: true });
+    window.addEventListener('resize', progress);
+    progress();
+
+    function go(n) {
+      n = Math.max(0, Math.min(slides.length - 1, n));
+      slides[n].scrollIntoView({ behavior: motionOK ? 'smooth' : 'auto', block: 'start' });
+    }
+
+    function toggleNotes() {
+      var on = document.body.classList.toggle('notes');
+      notesBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    notesBtn.addEventListener('click', toggleNotes);
+
+    window.addEventListener('keydown', function (e) {
+      var t = e.target.tagName;
+      if (t === 'INPUT' || t === 'TEXTAREA') return;
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(idx + 1); }
+      else if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); go(idx - 1); }
+      else if (e.key === 'Home') { e.preventDefault(); go(0); }
+      else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+      else if (e.key === 's' || e.key === 'S') { toggleNotes(); }
+    });
+  })();
+</script>
