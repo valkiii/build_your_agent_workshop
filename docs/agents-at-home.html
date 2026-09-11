@@ -380,6 +380,29 @@
   .map .r .a { color: var(--ink); font-size: 1.05rem; }
   .map .r:hover > * { background: color-mix(in oklab, var(--local) 14%, var(--surface)); }
 
+  /* ---------- use cases (builds — see .reveal below) ---------- */
+  .usecases { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1.8rem; }
+  .usecase { border-radius: 8px; padding: 1.3rem 1.5rem; border-top: 3px solid var(--line); }
+  .usecase--good { border-top-color: var(--local); background: var(--local-tint); }
+  .usecase--bad  { border-top-color: var(--flag);  background: var(--flag-tint); }
+  .usetag  { margin: 0 0 .4rem; font: 700 .82rem/1.3 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+  .usecase--good .usetag { color: var(--local); }
+  .usecase--bad  .usetag { color: var(--flag); }
+  .usewhy  { margin: 0 0 .9rem; color: var(--ink); font-size: 1.02rem; }
+  .uselist { margin: 0; padding: 0; list-style: none; display: grid; gap: .55rem; }
+  .uselist li { position: relative; padding-left: 1.15rem; color: var(--ink); font-size: .98rem; line-height: 1.45; }
+  .uselist li::before { content: "–"; position: absolute; left: 0; color: var(--ink-faint); }
+
+  /* ---------- build reveal (progressive, ↓ / click — see the nav script) ---------- */
+  .reveal { position: relative; transition: opacity .3s ease, filter .3s ease; }
+  .reveal:not(.shown) { opacity: .3; filter: grayscale(1); cursor: pointer; }
+  .reveal:not(.shown)::after {
+    content: attr(data-hint); position: absolute; inset: 0; border-radius: inherit;
+    display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 1rem;
+    font: 700 .72rem/1.4 var(--font-mono); letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink); background: color-mix(in oklab, var(--ground) 72%, transparent);
+  }
+
   /* ---------- loop diagram ---------- */
   .loopwrap { margin: 0 0 1.8rem; }
   .loop { width: 100%; height: auto; overflow: visible; }
@@ -431,11 +454,12 @@
     .bubble--user, .bubble--bot, .astep--node, .astep--cloud, .astep--doc, .aarrow { opacity: 1 !important; transform: none !important; }
     .bubble--dots { display: none !important; }
     .typed, .a-line { clip-path: none !important; }
+    .reveal { transition: none; }
   }
 </style>
 
 <div class="progress" id="progress" aria-hidden="true"></div>
-<div class="counter" aria-hidden="true"><b id="cur">01</b> / 17</div>
+<div class="counter" aria-hidden="true"><b id="cur">01</b> / 18</div>
 <div class="wordmark" aria-hidden="true">Agents at Home</div>
 <div class="chrome">
   <button id="notesBtn" type="button" aria-pressed="false">Speaker notes <kbd>S</kbd></button>
@@ -453,9 +477,10 @@
     <div class="scrollcue" aria-hidden="true">Scroll to begin ↓</div>
     <aside class="note">
       <b>Run of show</b>
-      Block A (what is an agent), slides 3–8 (incl. the live Ollama slide, 7) — ~12 min · Block B (why local), 9–10 — ~5 min ·
-      Block C (do's &amp; don'ts), 11–16 — ~10–15 min · open + close, 1–2 &amp; 17 — ~5 min.
-      Total ~32–37 min, then hands-on. Press <kbd>S</kbd> anytime to hide these notes.
+      Block A (what is an agent), slides 3–9 (incl. the live Ollama slide, 7, and the use-cases
+      build, 9) — ~14 min · Block B (why local), 10–11 — ~5 min ·
+      Block C (do's &amp; don'ts), 12–17 — ~10–15 min · open + close, 1–2 &amp; 18 — ~5 min.
+      Total ~34–39 min, then hands-on. Press <kbd>S</kbd> anytime to hide these notes.
     </aside>
   </section>
 
@@ -701,8 +726,47 @@
     </div>
   </section>
 
+  <!-- 7b (use cases, builds) =========================================== -->
+  <section class="slide" id="s7b" aria-label="Slide 9: Is this actually an agent problem?">
+    <div class="inner">
+      <p class="eyebrow">Block A · What is an agent?</p>
+      <h2>Is this actually an agent problem?</h2>
+      <p class="lead">Perceive → extract → decide → act is worth the complexity only when
+        "decide" needs real judgment. A quick gut check <span class="c-local">↓</span></p>
+      <div class="usecases">
+        <div class="usecase usecase--good reveal" data-hint="↓  press down, or click, to reveal">
+          <p class="usetag">✓ Good fit for an agent</p>
+          <p class="usewhy">The output depends on judgment a script can't cheaply encode.</p>
+          <ul class="uselist">
+            <li>Read a stack of PDFs and pull out the ones that actually match a research question</li>
+            <li>Triage support tickets by what the person actually means, not a keyword match</li>
+            <li>Draft a first-pass reply that references the right internal doc</li>
+            <li>Turn a messy meeting transcript into real action items</li>
+          </ul>
+        </div>
+        <div class="usecase usecase--bad reveal" data-hint="↓  press down, or click, to reveal">
+          <p class="usetag">✗ Not an agent problem</p>
+          <p class="usewhy">The rule already exists — writing it down is the whole job.</p>
+          <ul class="uselist">
+            <li>Track a price on a page and alert if it drops below a number — a scheduled script + if/else</li>
+            <li>Rename ten thousand files to a fixed pattern</li>
+            <li>Poll an API every five minutes and log the response</li>
+            <li>Check that a CSV's columns match a fixed schema</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      Both blocks start dimmed — press ↓ (or click one) to reveal the green one, ↓ again for the
+      red one; ↑ un-reveals them in reverse before it starts moving you back through the deck.
+      The price-tracker line is a real, deliberately boring example — the temptation to reach for
+      an LLM even when a five-line script would do is exactly what slide 13 is about.
+    </aside>
+  </section>
+
   <!-- 8 ============================================================= -->
-  <section class="slide" id="s8" aria-label="Slide 9: Why local — three reasons">
+  <section class="slide" id="s8" aria-label="Slide 10: Why local — three reasons">
     <div class="inner">
       <p class="eyebrow">Block B · Why local?</p>
       <h2>Three reasons</h2>
@@ -724,7 +788,7 @@
   </section>
 
   <!-- 9 ============================================================= -->
-  <section class="slide" id="s9" aria-label="Slide 10: The honest trade-off">
+  <section class="slide" id="s9" aria-label="Slide 11: The honest trade-off">
     <div class="inner">
       <p class="eyebrow">Block B · Why local?</p>
       <p class="statement long">Small local models are weaker than the <span class="c-else">giant cloud ones</span>.</p>
@@ -743,7 +807,7 @@
   </section>
 
   <!-- 10 ============================================================ -->
-  <section class="slide" id="s10" aria-label="Slide 11: What we learned building this">
+  <section class="slide" id="s10" aria-label="Slide 12: What we learned building this">
     <div class="inner">
       <p class="eyebrow is-flag">Block C · Do's &amp; don'ts</p>
       <p class="statement">What we learned building this <span class="c-flag">— the hard way</span>.</p>
@@ -752,7 +816,7 @@
   </section>
 
   <!-- 11 ============================================================ -->
-  <section class="slide" id="s11" aria-label="Slide 12: Don't reach for the LLM first">
+  <section class="slide" id="s11" aria-label="Slide 13: Don't reach for the LLM first">
     <div class="inner">
       <span class="tag dont">Don't</span>
       <h2>Reach for the model first</h2>
@@ -779,7 +843,7 @@
   </section>
 
   <!-- 12 ============================================================ -->
-  <section class="slide" id="s12" aria-label="Slide 13: Don't trust an agent blindly on consequential actions">
+  <section class="slide" id="s12" aria-label="Slide 14: Don't trust an agent blindly on consequential actions">
     <div class="inner">
       <span class="tag dont">Don't</span>
       <h2>Trust an agent blindly on consequential actions</h2>
@@ -793,7 +857,7 @@
   </section>
 
   <!-- 13 ============================================================ -->
-  <section class="slide" id="s13" aria-label="Slide 14: Do — small models need explicit structure">
+  <section class="slide" id="s13" aria-label="Slide 15: Do — small models need explicit structure">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Give small models explicit structure</h2>
@@ -813,7 +877,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 14 ============================================================ -->
-  <section class="slide" id="s14" aria-label="Slide 15: Do — design for memory">
+  <section class="slide" id="s14" aria-label="Slide 16: Do — design for memory">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Design for memory, not just one run</h2>
@@ -829,7 +893,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 15 ============================================================ -->
-  <section class="slide" id="s15" aria-label="Slide 16: Do — expect the real internet to be messy">
+  <section class="slide" id="s15" aria-label="Slide 17: Do — expect the real internet to be messy">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Expect the real internet to be messy</h2>
@@ -856,7 +920,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 16 ============================================================ -->
-  <section class="slide" id="s16" aria-label="Slide 17: Transition to hands-on">
+  <section class="slide" id="s16" aria-label="Slide 18: Transition to hands-on">
     <div class="inner">
       <p class="eyebrow">Hands-on</p>
       <p class="statement">Now you're going to be the agent — <span class="c-local">literally</span>.</p>
@@ -911,12 +975,41 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
     }
     notesBtn.addEventListener('click', toggleNotes);
 
+    // Slides can hold progressively-revealed content (class="reveal"): ↓ shows
+    // the next one instead of leaving the slide; only once none are left does
+    // ↓ actually navigate. ↑ un-reveals them in reverse first, same idea.
+    function revealables() {
+      return Array.prototype.slice.call(slides[idx].querySelectorAll('.reveal'));
+    }
+    function revealNext() {
+      var next = revealables().filter(function (el) { return !el.classList.contains('shown'); })[0];
+      if (!next) return false;
+      next.classList.add('shown');
+      return true;
+    }
+    function hideLast() {
+      var shown = revealables().filter(function (el) { return el.classList.contains('shown'); });
+      var last = shown[shown.length - 1];
+      if (!last) return false;
+      last.classList.remove('shown');
+      return true;
+    }
+    document.querySelectorAll('.reveal').forEach(function (el) {
+      el.addEventListener('click', function () {
+        if (!el.classList.contains('shown')) revealNext();
+      });
+    });
+
     window.addEventListener('keydown', function (e) {
       var t = e.target.tagName;
       if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || t === 'BUTTON') return;
-      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(idx + 1); }
-      else if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); go(idx - 1); }
-      else if (e.key === 'Home') { e.preventDefault(); go(0); }
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        if (!revealNext()) go(idx + 1);
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        if (!hideLast()) go(idx - 1);
+      } else if (e.key === 'Home') { e.preventDefault(); go(0); }
       else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
       else if (e.key === 's' || e.key === 'S') { toggleNotes(); }
     });
