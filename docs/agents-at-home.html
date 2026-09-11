@@ -209,6 +209,23 @@
     letter-spacing: -.01em; text-wrap: balance; max-width: 22ch;
   }
 
+  /* ---------- task / workflow / agent ---------- */
+  #s4b { overflow: hidden; }
+  .s4b-bg {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; z-index: -1; opacity: .4; pointer-events: none;
+  }
+  /* table at 1/3, the "what we built" case at 2/3 */
+  .twagrid { display: grid; grid-template-columns: 1fr 2fr; gap: 2.6rem; align-items: start; margin-top: 1.8rem; }
+  .twaside p { margin: 1.2rem 0 0; }
+  .twaside .kicker-line { margin-top: 0; }
+  .callout {
+    margin-top: 1.3rem; padding: 1.1rem 1.4rem;
+    border-radius: 8px; background: var(--local-tint); border-left: 3px solid var(--local);
+    font-size: 1rem; line-height: 1.58; color: var(--ink);
+  }
+  .callout b { color: var(--local); }
+
   /* ---------- vertical timetable: time under the title's left edge, the
      line + dot sitting right after the time column, activity to their
      right ---------- */
@@ -467,7 +484,7 @@
   @media (max-width: 760px) {
     :root { --edge: 1.5rem; }
     .slide { padding: 5.5rem var(--edge) 5rem; }
-    .compare, .loop-legend, .halves, .ofields, .usecases, .modelsplit { grid-template-columns: 1fr; }
+    .compare, .loop-legend, .halves, .ofields, .usecases, .modelsplit, .twagrid { grid-template-columns: 1fr; }
     .kicker-line { margin-top: .6rem; }
     .track .row, .reason, .map .hd, .map .r, .ba .step, .map .r .s { grid-template-columns: 1fr; }
     .ba .step { gap: .3rem; }
@@ -490,12 +507,13 @@
     .typed, .a-line { clip-path: none !important; }
     .reveal { transition: none; }
     .bg-net { opacity: .4; }
+    .s4b-bg { display: none; }
   }
 </style>
 
 <canvas class="bg-net" aria-hidden="true"></canvas>
 <div class="progress" id="progress" aria-hidden="true"></div>
-<div class="counter" aria-hidden="true"><b id="cur">01</b> / 21</div>
+<div class="counter" aria-hidden="true"><b id="cur">01</b> / 22</div>
 <div class="wordmark" aria-hidden="true">Agents at Home</div>
 <div class="chrome">
   <button id="notesBtn" type="button" aria-pressed="false">Speaker notes <kbd>S</kbd></button>
@@ -514,10 +532,11 @@
     <aside class="note">
       <b>Run of show</b>
       Open (title, agenda, timetable), slides 1–3 — ~3 min · Block A (what is an agent, incl. the
-      live Ollama slide 8, the model explainer 9, and the use-cases build 11), 4–11 — ~16 min ·
-      Block B (why local), 12–13 — ~5 min · Block C (do's &amp; don'ts), 14–19 — ~10–15 min ·
-      close (transition + relay instructions), 20–21 — ~2 min.
-      Total ~38–43 min, then the 3:20 hands-on block (full breakdown on slide 3).
+      task/workflow/agent distinction on slide 6, the live Ollama slide 9, the model explainer 10,
+      and the use-cases build 12), 4–12 — ~17 min ·
+      Block B (why local), 13–14 — ~5 min · Block C (do's &amp; don'ts), 15–20 — ~10–15 min ·
+      close (transition + relay instructions), 21–22 — ~2 min.
+      Total ~39–44 min, then the 3:20 hands-on block (full breakdown on slide 3).
       Press <kbd>S</kbd> anytime to hide these notes.
     </aside>
   </section>
@@ -546,7 +565,7 @@
     <aside class="note">
       <b>Speaker note</b>
       Say the "nothing leaves your machine" line out loud, slowly. It's a genuine hook for a technical
-      room, and it sets up the "why local" block later — you'll call back to it on slide 12.
+      room, and it sets up the "why local" block later — you'll call back to it on slide 13.
     </aside>
   </section>
 
@@ -673,8 +692,51 @@
     </div>
   </section>
 
+  <!-- 4b ============================================================ -->
+  <section class="slide wide" id="s4b" aria-label="Slide 6: Task, workflow, or agent?">
+    <!-- relative path resolves when the deck runs from docs/ (local double-click / a
+         local server); the /_blob/ path resolves on the hosted Artifact link, which
+         only ships this one HTML file. onerror only fires once both have failed. -->
+    <video class="s4b-bg" autoplay muted loop playsinline preload="auto" aria-hidden="true" onerror="this.remove()">
+      <source src="moving_1.mp4" type="video/mp4">
+      <source src="/_blob/ef4cb7c8a76e4a3f2b6dd5bf9171612e" type="video/mp4">
+    </video>
+    <div class="inner">
+      <p class="eyebrow">Block A · What is an agent?</p>
+      <h2>Task, workflow, or agent?</h2>
+      <p class="lead">Anthropic draws a sharper line than the industry usually does:</p>
+      <div class="twagrid">
+        <div class="track">
+          <div class="row">
+            <span class="k">Task</span>
+            <span class="v">One model call. Summarize this. Classify that.</span>
+          </div>
+          <div class="row">
+            <span class="k">Workflow</span>
+            <span class="v">Several model calls, chained through a control flow you wrote in code. The model fills in judgment at fixed points; you decided the order.</span>
+          </div>
+          <div class="row">
+            <span class="k">Agent</span>
+            <span class="v">The model decides its own next steps at runtime — which tool to call, whether to retry, when to stop.</span>
+          </div>
+        </div>
+        <div class="twaside">
+          <p class="kicker-line">What we built today is a <span class="c-local">workflow</span>, not an agent.</p>
+          <p>Our code hardcodes: discover → scrape → summarize → decide → publish, every run, same order. The model only fills in two judgment slots — "what's this about" and "does it match" — everything else, including writing the EPUB, is plain deterministic code.</p>
+          <div class="callout">
+            <b>That's not a flaw — it's the right call.</b> Anthropic's own guidance recommends workflows over agents for well-defined tasks like this one: more predictable, cheaper, and errors don't compound the way they can when a model freely decides its own next steps. Full agentic autonomy is the harder, more expensive option — saved for genuinely open-ended problems.
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      Good moment for a closing provocation: "What would make this a real agent? Letting the model decide which sources to check, or whether to retry a failed scrape differently, based on its own judgment at runtime — rather than your fixed code."
+    </aside>
+  </section>
+
   <!-- 5 ============================================================= -->
-  <section class="slide wide" id="s5" aria-label="Slide 6: The loop">
+  <section class="slide wide" id="s5" aria-label="Slide 7: The loop">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>The loop</h2>
@@ -745,7 +807,7 @@
   </section>
 
   <!-- 6 ============================================================= -->
-  <section class="slide" id="s6" aria-label="Slide 7: Live demo">
+  <section class="slide" id="s6" aria-label="Slide 8: Live demo">
     <div class="inner">
       <p class="eyebrow">Block A · Live</p>
       <h2>Switch to the terminal <span class="c-local">→</span></h2>
@@ -768,7 +830,7 @@
   </section>
 
   <!-- 6b (live widget) ================================================ -->
-  <section class="slide" id="s6live" aria-label="Slide 8: Try it live">
+  <section class="slide" id="s6live" aria-label="Slide 9: Try it live">
     <div class="inner">
       <p class="eyebrow">Block A · Live</p>
       <h2>Talk to your model, right here <span class="c-local">→</span></h2>
@@ -806,7 +868,7 @@
   </section>
 
   <!-- 6c (model explainer) ============================================= -->
-  <section class="slide wide" id="s6b" aria-label="Slide 9: Meet gemma4:e2b">
+  <section class="slide wide" id="s6b" aria-label="Slide 10: Meet gemma4:e2b">
     <div class="inner">
       <p class="eyebrow">Block A · The model</p>
       <h2>What you actually just talked to</h2>
@@ -850,7 +912,7 @@
   </section>
 
   <!-- 7 ============================================================= -->
-  <section class="slide" id="s7" aria-label="Slide 10: Today's build mapped onto the loop">
+  <section class="slide" id="s7" aria-label="Slide 11: Today's build mapped onto the loop">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>Today's build, on the same loop</h2>
@@ -865,7 +927,7 @@
   </section>
 
   <!-- 7b (use cases, builds) =========================================== -->
-  <section class="slide" id="s7b" aria-label="Slide 11: Is this actually an agent problem?">
+  <section class="slide" id="s7b" aria-label="Slide 12: Is this actually an agent problem?">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>Is this actually an agent problem?</h2>
@@ -899,12 +961,12 @@
       Both blocks start off-screen — press ↓ (or click one) to slide up the green one, ↓ again for
       the red one; ↑ un-reveals them in reverse before it starts moving you back through the deck.
       The price-tracker line is a real, deliberately boring example — the temptation to reach for
-      an LLM even when a five-line script would do is exactly what slide 15 is about.
+      an LLM even when a five-line script would do is exactly what slide 16 is about.
     </aside>
   </section>
 
   <!-- 8 ============================================================= -->
-  <section class="slide" id="s8" aria-label="Slide 12: Why local — three reasons">
+  <section class="slide" id="s8" aria-label="Slide 13: Why local — three reasons">
     <div class="inner">
       <p class="eyebrow">Block B · Why local?</p>
       <h2>Three reasons</h2>
@@ -926,7 +988,7 @@
   </section>
 
   <!-- 9 ============================================================= -->
-  <section class="slide" id="s9" aria-label="Slide 13: The honest trade-off">
+  <section class="slide" id="s9" aria-label="Slide 14: The honest trade-off">
     <div class="inner">
       <p class="eyebrow">Block B · Why local?</p>
       <p class="statement long">Small local models are weaker than the <span class="c-else">giant cloud ones</span>.</p>
@@ -945,7 +1007,7 @@
   </section>
 
   <!-- 10 ============================================================ -->
-  <section class="slide" id="s10" aria-label="Slide 14: What we learned building this">
+  <section class="slide" id="s10" aria-label="Slide 15: What we learned building this">
     <div class="inner">
       <p class="eyebrow is-flag">Block C · Do's &amp; don'ts</p>
       <p class="statement">What we learned building this <span class="c-flag">— the hard way</span>.</p>
@@ -954,7 +1016,7 @@
   </section>
 
   <!-- 11 ============================================================ -->
-  <section class="slide" id="s11" aria-label="Slide 15: Don't reach for the LLM first">
+  <section class="slide" id="s11" aria-label="Slide 16: Don't reach for the LLM first">
     <div class="inner">
       <span class="tag dont">Don't</span>
       <h2>Reach for the model first</h2>
@@ -981,7 +1043,7 @@
   </section>
 
   <!-- 12 ============================================================ -->
-  <section class="slide" id="s12" aria-label="Slide 16: Don't trust an agent blindly on consequential actions">
+  <section class="slide" id="s12" aria-label="Slide 17: Don't trust an agent blindly on consequential actions">
     <div class="inner">
       <span class="tag dont">Don't</span>
       <h2>Trust an agent blindly on consequential actions</h2>
@@ -995,7 +1057,7 @@
   </section>
 
   <!-- 13 ============================================================ -->
-  <section class="slide" id="s13" aria-label="Slide 17: Do — small models need explicit structure">
+  <section class="slide" id="s13" aria-label="Slide 18: Do — small models need explicit structure">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Give small models explicit structure</h2>
@@ -1015,7 +1077,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 14 ============================================================ -->
-  <section class="slide" id="s14" aria-label="Slide 18: Do — design for memory">
+  <section class="slide" id="s14" aria-label="Slide 19: Do — design for memory">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Design for memory, not just one run</h2>
@@ -1031,7 +1093,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 15 ============================================================ -->
-  <section class="slide" id="s15" aria-label="Slide 19: Do — expect the real internet to be messy">
+  <section class="slide" id="s15" aria-label="Slide 20: Do — expect the real internet to be messy">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Expect the real internet to be messy</h2>
@@ -1058,7 +1120,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 16 ============================================================ -->
-  <section class="slide" id="s16" aria-label="Slide 20: Transition to hands-on">
+  <section class="slide" id="s16" aria-label="Slide 21: Transition to hands-on">
     <div class="inner">
       <p class="eyebrow">Hands-on</p>
       <p class="statement">Now you're going to be the agent — <span class="c-local">literally</span>.</p>
@@ -1074,7 +1136,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 16b (relay instructions) ========================================= -->
-  <section class="slide" id="s16b" aria-label="Slide 21: The relay, step by step">
+  <section class="slide" id="s16b" aria-label="Slide 22: The relay, step by step">
     <div class="inner">
       <p class="eyebrow">Hands-on · Getting started</p>
       <h2>The relay, step by step</h2>
@@ -1186,7 +1248,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
 </script>
 
 <script>
-  // Live Ollama widget (slide 8). Talks straight to a local Ollama server via
+  // Live Ollama widget (slide 9). Talks straight to a local Ollama server via
   // fetch — nothing goes through Claude or any third party. Needs Ollama
   // running on this machine. Ollama allows http://localhost:* origins by
   // default (verified), so serving this page locally — e.g.
