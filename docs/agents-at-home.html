@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>Agents at Home</title>
+<title>Build your agent</title>
 <meta name="description" content="Opening deck for a hands-on workshop on local, offline AI agents: the loop, why local, and what breaks.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -170,7 +170,7 @@
   .c-flag  { color: var(--flag); }
 
   /* ---------- title slide ---------- */
-  #s1 { justify-content: center; }
+  #s1 { justify-content: center; overflow: hidden; }
   #s1 .sub {
     font: 500 clamp(1.05rem, 2vw, 1.5rem)/1.4 var(--font-body);
     color: var(--ink-soft); margin: 1.6rem 0 0; max-width: 24ch;
@@ -211,7 +211,11 @@
 
   /* ---------- task / workflow / agent ---------- */
   #s4b { overflow: hidden; }
-  .s4b-bg {
+
+  /* shared background-video treatment — slide 1 and slide 6 each drop a
+     <video class="bgvideo"> in as their first child; same alpha .4, cover,
+     sits behind the slide's own in-flow content via negative z-index */
+  .bgvideo {
     position: absolute; inset: 0; width: 100%; height: 100%;
     object-fit: cover; z-index: -1; opacity: .4; pointer-events: none;
   }
@@ -507,14 +511,14 @@
     .typed, .a-line { clip-path: none !important; }
     .reveal { transition: none; }
     .bg-net { opacity: .4; }
-    .s4b-bg { display: none; }
+    .bgvideo { display: none; }
   }
 </style>
 
 <canvas class="bg-net" aria-hidden="true"></canvas>
 <div class="progress" id="progress" aria-hidden="true"></div>
 <div class="counter" aria-hidden="true"><b id="cur">01</b> / 22</div>
-<div class="wordmark" aria-hidden="true">Agents at Home</div>
+<div class="wordmark" aria-hidden="true">Build your agent</div>
 <div class="chrome">
   <button id="notesBtn" type="button" aria-pressed="false">Speaker notes <kbd>S</kbd></button>
 </div>
@@ -522,11 +526,18 @@
 <main id="deck">
 
   <!-- 1 ============================================================= -->
-  <section class="slide" id="s1" aria-label="Slide 1: Agents at Home">
+  <section class="slide" id="s1" aria-label="Slide 1: Build your Agent">
+    <!-- relative path resolves when the deck runs from docs/ (local double-click / a
+         local server); the /_blob/ path resolves on the hosted Artifact link, which
+         only ships this one HTML file. onerror only fires once both have failed. -->
+    <video class="bgvideo" autoplay muted loop playsinline preload="auto" aria-hidden="true" onerror="this.remove()">
+      <source src="build-an-agent.mp4" type="video/mp4">
+      <source src="/_blob/ba5e5b53c10af4a7cc79d4c37182df43" type="video/mp4">
+    </video>
     <div class="inner">
-      <h1>Agents at&nbsp;Home</h1>
+      <h1>Build your&nbsp;Agent</h1>
       <p class="sub">Building local, offline AI assistants for real tasks</p>
-      <p class="byline"><span class="fill">Your name</span> &nbsp;·&nbsp; <span class="fill">workshop date</span></p>
+      <p class="byline"><span class="fill">Valerio Ciotti</span> &nbsp;·&nbsp; <span class="fill">22 September 2026</span></p>
     </div>
     <div class="scrollcue" aria-hidden="true">Scroll to begin ↓</div>
     <aside class="note">
@@ -545,7 +556,7 @@
   <section class="slide" id="s2" aria-label="Slide 2: Today">
     <div class="inner">
       <p class="eyebrow">Today</p>
-      <h2>Two halves</h2>
+      <h2>Today's Menu</h2>
       <div class="halves">
         <div class="track">
           <div class="row">
@@ -555,8 +566,8 @@
           </div>
           <div class="row">
             <span class="k">Hands-on</span>
-            <span class="v">Build a real one together — a Content Curator that reads, judges, and compiles articles into an e-book.
-              <small>~2 hours. Coders in the Python; everyone else tunes the agent's judgment in plain English.</small></span>
+            <span class="v">Build a real one together: a Content Curator that reads, judges, and compiles articles into an e-book.
+              <small>~2 hours. Change agent's behaviour, test, iterate, have fun.</small></span>
           </div>
         </div>
         <p class="kicker-line">Everything today runs on your own laptop. No cloud, no API keys, nothing leaves your machine.</p>
@@ -573,27 +584,22 @@
   <section class="slide wide" id="s2b" aria-label="Slide 3: Workshop timetable">
     <div class="inner">
       <p class="eyebrow">Today</p>
-      <h2>The full 3 hours 20</h2>
+      <h2>The full 3 hours</h2>
       <div class="timetable">
         <div class="tt-row">
-          <div class="tt-time">9:00 – 9:35</div>
+          <div class="tt-time">9:00 – 9:45</div>
           <div class="tt-dot"></div>
-          <div class="tt-activity">Presentation — what an agent is (the perceive → extract → decide → act loop), why local, and the Do's/Don'ts pulled from real things that broke while building this.</div>
+          <div class="tt-activity">Presentation — what an agent is, what can and cannot do, how to run one on your machine.</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">9:35 – 9:50</div>
+          <div class="tt-time">9:45 – 10:00</div>
           <div class="tt-dot"></div>
-          <div class="tt-activity">&ldquo;Be the agent&rdquo; physical relay — whole room, paper roles, no laptops yet.</div>
+          <div class="tt-activity">What are we going to build today? A showcase of the agent</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">9:50 – 10:15</div>
+          <div class="tt-time">10:00 – 10:30</div>
           <div class="tt-dot"></div>
-          <div class="tt-activity">Guided build, tracks split — non-coders watch the Streamlit app + Ollama chat walkthrough; coders walk the actual Python files.</div>
-        </div>
-        <div class="tt-row">
-          <div class="tt-time">10:15 – 10:30</div>
-          <div class="tt-dot"></div>
-          <div class="tt-activity">&ldquo;You vs. the model&rdquo; exercise — whole room compares their own approve/reject calls to the model&rsquo;s.</div>
+          <div class="tt-activity">&ldquo;Be the agent&rdquo; activity. Understand what the agent does and how it makes decisions.</div>
         </div>
         <div class="tt-row">
           <div class="tt-time">10:30 – 10:45</div>
@@ -601,24 +607,19 @@
           <div class="tt-activity">Break.</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">10:45 – 11:15</div>
-          <div class="tt-dot"></div>
-          <div class="tt-activity">Own build — non-coders tune the interest prompt in rounds; coders pick a stretch extension.</div>
-        </div>
-        <div class="tt-row">
-          <div class="tt-time">11:15 – 11:45</div>
+          <div class="tt-time">10:45 – 11:30</div>
           <div class="tt-dot"></div>
           <div class="tt-activity">Run end-to-end + &ldquo;break it and see what happens&rdquo; (mistune the prompt, watch decisions flip).</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">11:45 – 12:05</div>
+          <div class="tt-time">11:30 – 11:45</div>
           <div class="tt-dot"></div>
           <div class="tt-activity">Read the result on Calibre/e-reader/phone, regroup, compare what each track built.</div>
         </div>
         <div class="tt-row">
-          <div class="tt-time">12:05 – 12:20</div>
+          <div class="tt-time">11:45 – 12:00</div>
           <div class="tt-dot"></div>
-          <div class="tt-activity">Discussion + wrap-up, tying back to the Do&rsquo;s/Don&rsquo;ts slide with real examples from the room.</div>
+          <div class="tt-activity">Discussion + wrap-up + showcase your work.</div>
         </div>
       </div>
     </div>
@@ -697,7 +698,7 @@
     <!-- relative path resolves when the deck runs from docs/ (local double-click / a
          local server); the /_blob/ path resolves on the hosted Artifact link, which
          only ships this one HTML file. onerror only fires once both have failed. -->
-    <video class="s4b-bg" autoplay muted loop playsinline preload="auto" aria-hidden="true" onerror="this.remove()">
+    <video class="bgvideo" autoplay muted loop playsinline preload="auto" aria-hidden="true" onerror="this.remove()">
       <source src="moving_1.mp4" type="video/mp4">
       <source src="/_blob/ef4cb7c8a76e4a3f2b6dd5bf9171612e" type="video/mp4">
     </video>
