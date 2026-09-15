@@ -1,0 +1,396 @@
+<title>You vs. Gemma Exercise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+  :root {
+    color-scheme: light dark;
+    --ground:     #ECEBE4;
+    --surface:    #F5F4EF;
+    --raise:      #E3E1D8;
+    --ink:        #1C1E22;
+    --ink-soft:   #585B62;
+    --ink-faint:  #8A8A82;
+    --line:       #D5D3C9;
+    --local:      #2C6E4B;
+    --local-tint: #E4EDE6;
+    --elsewhere:  #2E5FA3;
+    --elsewhere-tint: #E1E9F3;
+    --flag:       #BB4C25;
+    --flag-tint:  #F6E7DF;
+
+    --font-display: "Space Grotesk", "Trebuchet MS", system-ui, sans-serif;
+    --font-body:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:     #121317; --surface: #1A1C21; --raise: #23252B;
+      --ink: #E8E6DF; --ink-soft: #A6A39A; --ink-faint: #7C7A72;
+      --line: #31333A; --local: #5EBA8B; --local-tint: #182920;
+      --elsewhere: #7FA8DE; --elsewhere-tint: #1B2432;
+      --flag: #E28C5E; --flag-tint: #2C1E16;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:     #121317; --surface: #1A1C21; --raise: #23252B;
+    --ink: #E8E6DF; --ink-soft: #A6A39A; --ink-faint: #7C7A72;
+    --line: #31333A; --local: #5EBA8B; --local-tint: #182920;
+    --elsewhere: #7FA8DE; --elsewhere-tint: #1B2432;
+    --flag: #E28C5E; --flag-tint: #2C1E16;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font: 400 1rem/1.62 var(--font-body); -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 58rem; margin: 0 auto; padding: 3.5rem 1.5rem 6rem; }
+
+  .eyebrow {
+    font: 500 .72rem/1 var(--font-mono); letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ink-faint); display: flex; align-items: center; gap: .7rem; margin: 0 0 1.2rem;
+  }
+  .eyebrow::before { content: ""; width: 1.6rem; height: 1px; background: var(--ink-faint); }
+  h1 {
+    font: 700 clamp(2.1rem, 5vw, 3.1rem)/1.05 var(--font-display);
+    letter-spacing: -.02em; margin: 0 0 1rem; text-wrap: balance;
+  }
+  .standfirst { font-size: 1.1rem; color: var(--ink-soft); max-width: 42em; margin: 0; }
+  h2 {
+    font: 700 clamp(1.4rem, 2.6vw, 1.85rem)/1.2 var(--font-display);
+    letter-spacing: -.015em; margin: 0 0 .5rem; text-wrap: balance;
+  }
+  h3 { font: 600 1.05rem/1.35 var(--font-body); margin: 0 0 .5rem; }
+  section { margin-top: 4rem; }
+  .sectionlead { color: var(--ink-soft); max-width: 42em; margin: 0 0 1.8rem; }
+  p { max-width: 42em; }
+
+  /* ---------- timing strip ---------- */
+  .timing { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 1.8rem; }
+  .timing .step { flex: 1 1 11rem; background: var(--surface); padding: 1.1rem 1.2rem; }
+  .timing .min { font: 700 1.3rem/1 var(--font-display); color: var(--local); font-variant-numeric: tabular-nums; }
+  .timing .lbl { display: block; margin-top: .5rem; font-size: .88rem; color: var(--ink); font-weight: 600; }
+  .timing .sub { display: block; margin-top: .25rem; font-size: .82rem; color: var(--ink-soft); }
+
+  .maps {
+    margin-top: 1.2rem; font-size: .88rem; color: var(--ink-faint);
+    font-family: var(--font-mono); display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+  }
+  .maps code { color: var(--ink-soft); background: var(--raise); padding: .15em .4em; border-radius: 3px; }
+
+  /* ---------- copyable blocks ---------- */
+  .block { margin-top: 1.5rem; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); overflow: hidden; }
+  .blockbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem 1.1rem; border-bottom: 1px solid var(--line); background: var(--raise); }
+  .blockbar .what { font: 500 .74rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+  .copybtn {
+    font: 500 .74rem/1 var(--font-mono); letter-spacing: .04em; color: var(--local);
+    background: var(--local-tint); border: 1px solid transparent; border-radius: 5px;
+    padding: .5rem .8rem; cursor: pointer; transition: border-color .15s ease;
+  }
+  .copybtn:hover { border-color: var(--local); }
+  .copybtn:focus-visible { outline: 2px solid var(--local); outline-offset: 2px; }
+  .blockbody { padding: 1.5rem 1.8rem; font: 400 1.02rem/1.65 var(--font-body); color: var(--ink); }
+  .blockbody p { margin: 0 0 .9rem; max-width: none; }
+  .blockbody p:last-child { margin-bottom: 0; }
+  .blockbody .reject { color: var(--flag); font-weight: 600; }
+
+  /* ---------- article cards ---------- */
+  .articles { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 9px; overflow: hidden; margin-top: 1.8rem; }
+  .art { background: var(--surface); padding: 1.4rem 1.6rem; display: grid; grid-template-columns: 2.4rem 1fr; gap: 1.1rem; align-items: start; }
+  .art .letter {
+    width: 2.4rem; height: 2.4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font: 700 1rem/1 var(--font-display); color: var(--surface); background: var(--ink-faint);
+  }
+  .art .title { font: 700 1.08rem/1.32 var(--font-display); margin: 0 0 .3rem; letter-spacing: -.005em; }
+  .art .title a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--line); }
+  .art .title a:hover { border-color: var(--ink-soft); }
+  .art .src { font: 500 .74rem/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 .6rem; }
+  .art .pitch { margin: 0; color: var(--ink); font-size: .98rem; }
+  .art .url { margin: .6rem 0 0; font: 400 .82rem/1.4 var(--font-mono); color: var(--ink-faint); word-break: break-all; }
+
+  /* ---------- verdict chips (facilitator key) ---------- */
+  .key { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 9px; overflow: hidden; margin-top: 1.6rem; }
+  .krow { background: var(--surface); padding: 1.3rem 1.6rem; display: grid; grid-template-columns: 2.4rem 9rem 1fr; gap: 1.1rem; align-items: start; }
+  .krow .letter { width: 2.4rem; height: 2.4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font: 700 1rem/1 var(--font-display); color: var(--surface); background: var(--ink-faint); }
+  .verdict-chip {
+    font: 700 .72rem/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase;
+    padding: .45rem .6rem; border-radius: 5px; text-align: center; height: fit-content;
+  }
+  .verdict-chip.approve { color: var(--local); background: var(--local-tint); }
+  .verdict-chip.reject { color: var(--flag); background: var(--flag-tint); }
+  .krow .why { margin: 0; font-size: .95rem; color: var(--ink-soft); }
+  .krow .why b { color: var(--ink); font-weight: 600; }
+  .krow .modelsays { margin: .6rem 0 0; padding: .7rem .9rem; background: var(--elsewhere-tint); border-radius: 6px; font-size: .88rem; color: var(--ink); }
+  .krow .modelsays b { color: var(--elsewhere); font: 700 .68rem/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: .35rem; }
+
+  /* ---------- run of show numbered steps ---------- */
+  .steps { counter-reset: step; margin-top: 1.8rem; display: grid; gap: 1.4rem; }
+  .step-item { display: grid; grid-template-columns: 2.6rem 1fr; gap: 1.2rem; }
+  .step-item .n {
+    counter-increment: step; width: 2.6rem; height: 2.6rem; border-radius: 50%;
+    background: var(--local-tint); color: var(--local); display: flex; align-items: center; justify-content: center;
+    font: 700 1.1rem/1 var(--font-display);
+  }
+  .step-item .n::before { content: counter(step); }
+  .step-item h3 { margin-bottom: .35rem; }
+  .step-item p { margin: 0; color: var(--ink-soft); font-size: .97rem; }
+  .step-item .meta { margin-top: .5rem; font: 500 .78rem/1 var(--font-mono); color: var(--ink-faint); }
+
+  .gap { border-top: 2px solid var(--flag); padding-top: .9rem; }
+  .gaps { display: grid; gap: 1.5rem; margin-top: 1.6rem; }
+  @media (min-width: 720px) { .gaps { grid-template-columns: repeat(2, 1fr); } }
+  .gap h3 { margin-bottom: .4rem; }
+  .gap p { margin: 0; font-size: .95rem; color: var(--ink-soft); }
+  .gap code { font: 400 .88em var(--font-mono); background: var(--raise); padding: .1em .35em; border-radius: 3px; color: var(--ink); }
+
+  .foot { margin-top: 4.5rem; padding-top: 1.4rem; border-top: 1px solid var(--line); font-size: .88rem; color: var(--ink-faint); }
+
+  @media (max-width: 680px) {
+    .timing .step { flex: 1 1 100%; }
+    .art, .krow { grid-template-columns: 2.4rem 1fr; }
+    .krow .verdict-chip { justify-self: start; }
+    .blockbody { padding: 1.3rem 1.2rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .copybtn { transition: none; } }
+</style>
+
+<div class="wrap">
+
+  <p class="eyebrow">Facilitator prep · hands-on exercise</p>
+  <h1>You vs. Gemma</h1>
+  <p class="standfirst">Groups of five judge four real articles against one interest prompt by hand, then run the exact same prompt through Gemma and see where they agree and where they don't. Tested end-to-end against the live pipeline — the results below are real model output, not a guess.</p>
+
+  <!-- ============ TIMING ============ -->
+  <section>
+    <h2>How it fits the morning</h2>
+    <p class="sectionlead">Four steps, ~40 minutes, and it slots into time the timetable already has set aside — no change to the 9:00–12:20 schedule needed.</p>
+
+    <div class="timing">
+      <div class="step"><span class="min">15</span><span class="lbl">Read &amp; decide, alone</span><span class="sub">Everyone judges all 4 articles against the prompt, silently, no discussion yet</span></div>
+      <div class="step"><span class="min">10</span><span class="lbl">Groups of 5 discuss</span><span class="sub">Compare calls, argue the disagreements, agree on a group verdict per article</span></div>
+      <div class="step"><span class="min">10</span><span class="lbl">Run it through Gemma</span><span class="sub">Same prompt, same 4 articles, in the app or the live Ollama slide</span></div>
+      <div class="step"><span class="min">5</span><span class="lbl">Compare &amp; discuss</span><span class="sub">Where did the room agree with the model? Where didn't it?</span></div>
+    </div>
+
+    <p class="maps">Maps onto <code>9:50–10:30</code> on the timetable — the existing "guided build" + "you vs. the model" slots. See the note at the bottom before you print anything.</p>
+  </section>
+
+  <!-- ============ THE PROMPT ============ -->
+  <section>
+    <h2>The interest prompt</h2>
+    <p class="sectionlead">Deliberately in the same two-paragraph shape as the app's real <code>prompts/interest.txt</code> — "what I want" then "what to reject" — so it drops straight into the Streamlit box or the file with no rewriting. Focus/attention as the topic is a small joke worth saying out loud: a distraction-free curator, judging articles about distraction.</p>
+
+    <div class="block">
+      <div class="blockbar">
+        <span class="what">Hand this out, or paste into the app</span>
+        <button class="copybtn" type="button" data-copy="prompt-body">Copy prompt</button>
+      </div>
+      <div class="blockbody" id="prompt-body">
+        <p>I want practical, evidence-backed articles about focus, attention, and deep work — things a busy person could actually try this week. Prefer real research or genuine lived experience behind the claims, concrete techniques over vague advice.</p>
+        <p>Reject generic productivity-app marketing and listicles, opinion pieces with no real evidence or experience behind them, and anything not actually about focus or attention.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THE ARTICLES ============ -->
+  <section>
+    <h2>The four articles</h2>
+    <p class="sectionlead">Not four random links — a deliberate spread, picked so the room won't be unanimous in thirty seconds. One should be an easy approve, one an easy reject, and one built for disagreement. The fourth turned out to be the most useful of the lot for a reason I didn't plan — see the answer key below.</p>
+
+    <div class="articles">
+      <div class="art">
+        <span class="letter">A</span>
+        <div>
+          <p class="src">University of California · news</p>
+          <p class="title"><a href="https://www.universityofcalifornia.edu/news/cant-pay-attention-youre-not-alone" target="_blank" rel="noopener">Can't pay attention? You're not alone</a></p>
+          <p class="pitch">A UC Irvine informatics professor on twenty years of research into why your attention span keeps shrinking, and specific techniques to fight it.</p>
+          <p class="url">universityofcalifornia.edu/news/cant-pay-attention-youre-not-alone</p>
+        </div>
+      </div>
+      <div class="art">
+        <span class="letter">B</span>
+        <div>
+          <p class="src">calnewport.com · personal blog</p>
+          <p class="title"><a href="https://calnewport.com/on-the-value-of-hard-focus/" target="_blank" rel="noopener">On the Value of Hard Focus</a></p>
+          <p class="pitch">Cal Newport on training sustained concentration like a muscle — practical, specific, and built almost entirely on his own experience rather than citations.</p>
+          <p class="url">calnewport.com/on-the-value-of-hard-focus</p>
+        </div>
+      </div>
+      <div class="art">
+        <span class="letter">C</span>
+        <div>
+          <p class="src">reclaim.ai · company blog</p>
+          <p class="title"><a href="https://reclaim.ai/blog/focus-apps" target="_blank" rel="noopener">What Are the Best Focus Apps? 13 Picks for 2026</a></p>
+          <p class="pitch">A ranked list of focus apps — including Reclaim's own product, which the piece openly says it is.</p>
+          <p class="url">reclaim.ai/blog/focus-apps</p>
+        </div>
+      </div>
+      <div class="art">
+        <span class="letter">D</span>
+        <div>
+          <p class="src">The Conversation · academic press</p>
+          <p class="title"><a href="https://theconversation.com/aristotle-aelian-and-the-giant-octopus-the-earliest-citizen-science-goes-back-more-than-2-000-years-236709" target="_blank" rel="noopener">Aristotle, Aelian and the giant octopus</a></p>
+          <p class="pitch">A genuinely well-written piece on how ancient Greek naturalists sourced eyewitness reports about octopuses. Nothing to do with attention.</p>
+          <p class="url">theconversation.com/aristotle-aelian-and-the-giant-octopus…</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="blockbar">
+        <span class="what">All four links, plain text</span>
+        <button class="copybtn" type="button" data-copy="urls-body">Copy links</button>
+      </div>
+      <div class="blockbody" id="urls-body">
+        <p>A — https://www.universityofcalifornia.edu/news/cant-pay-attention-youre-not-alone</p>
+        <p>B — https://calnewport.com/on-the-value-of-hard-focus/</p>
+        <p>C — https://reclaim.ai/blog/focus-apps</p>
+        <p>D — https://theconversation.com/aristotle-aelian-and-the-giant-octopus-the-earliest-citizen-science-goes-back-more-than-2-000-years-236709</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FACILITATOR KEY ============ -->
+  <section>
+    <h2>Facilitator answer key</h2>
+    <p class="sectionlead">Not a right-answer sheet to hand out — the point of B is that reasonable people disagree. Use this to steer the discussion, and to know in advance which one is going to run long.</p>
+
+    <div class="key" id="answer-key">
+      <div class="krow">
+        <span class="letter">A</span>
+        <span class="verdict-chip approve">Approve</span>
+        <div>
+          <p class="why"><b>Should be the easy one.</b> Named researcher, twenty years of cited methodology, specific mechanisms (the "hooks," "meta-awareness"), nothing being sold. If a group rejects this one, the discussion is about the prompt being read too strictly.</p>
+          <p class="modelsays"><b>Gemma actually said</b>approve — "The article presents empirical research on the impact of technology on attention spans." Tags: Attention Span, Technology Use, Focus Research.</p>
+        </div>
+      </div>
+      <div class="krow">
+        <span class="letter">B</span>
+        <span class="verdict-chip approve">Coin flip — the real discussion</span>
+        <div>
+          <p class="why"><b>Built to be argued about.</b> It's practical and clearly comes from real experience, which the prompt asks for — but it cites almost nothing, leaning on one unsourced "research has shown" line. Whether that clears "evidence-backed" is exactly the judgment call the whole workshop is about.</p>
+          <p class="modelsays"><b>Gemma actually said</b>approve — "The article directly addresses developing sustained focus through a trainable process." It read "trainable, specific, experience-backed" as satisfying the prompt and didn't push back on the missing citations. Ask the room: did every group agree?</p>
+        </div>
+      </div>
+      <div class="krow">
+        <span class="letter">C</span>
+        <span class="verdict-chip reject">It broke the model — and that's the lesson</span>
+        <div>
+          <p class="why"><b>This is the one to watch live, not predict.</b> The article is itself a numbered list of 13 apps. The summarizer was told "write a 2–3 sentence summary" and instead mirrored the input's own shape — it wrote a mini numbered list back. Handed that, the curator didn't produce one verdict; it produced <em>four separate ones</em>, one per app, each in its own JSON code fence — and approved every single one, including Reclaim's own product, reasoning it "focuses on using AI to manage scheduling to defend focus time." The one thing the prompt named by name to reject is exactly what got approved, by accident, because the format broke first.</p>
+          <p class="modelsays"><b>Gemma actually said</b>(malformed — four JSON blobs instead of one) "This addresses focus and attention management with a reference to scientific research" (on Freedom) … "This focuses on using AI to manage scheduling to defend focus time" (on Reclaim, the publisher's own product).</p>
+        </div>
+      </div>
+      <div class="krow">
+        <span class="letter">D</span>
+        <span class="verdict-chip reject">Reject</span>
+        <div>
+          <p class="why"><b>The trap is that it's good.</b> Well-sourced, well-written, genuinely interesting — and has nothing to do with focus or attention. It tests whether people (and the model) can tell "well-made" apart from "on-topic."</p>
+          <p class="modelsays"><b>Gemma actually said</b>reject — "The article discusses the history of citizen science rather than focus, attention, or deep work." Clean, correct, no ambiguity.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="blockbar">
+        <span class="what">Why C matters more than a clean four-for-four would have</span>
+      </div>
+      <div class="blockbody">
+        <p>I initially picked C to be the easy reject — a listicle, self-disclosed as the publisher's own product, exactly the category the prompt names. Running it live surfaced something better: because the source article is itself a numbered list, the small model's <em>summary</em> mirrored that structure instead of following the "2–3 sentences" instruction, and the <em>curator step</em> then mirrored the broken summary instead of forcing one clean JSON verdict — approving the publisher's own product along the way. That's not a mistake in the exercise. It's a live demonstration of exactly what the deck's "small models need explicit structure" slide is about, happening to an article the room is holding in their hands. I'd leave it in and narrate it rather than swap it for something that behaves.</p>
+        <p class="reject">Caveat: model output isn't fully deterministic — a re-run on the day could come out differently (cleaner, or differently broken). Worth a quick re-run yourself close to the date so you know what you're walking into.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RUN OF SHOW ============ -->
+  <section>
+    <h2>Running it</h2>
+    <div class="steps">
+      <div class="step-item">
+        <span class="n"></span>
+        <div>
+          <h3>Split into groups of five</h3>
+          <p>20 participants → 4 groups. Mix coders and non-coders in each group if you can — the disagreement is more interesting across that line, not less.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="n"></span>
+        <div>
+          <h3>Hand out the prompt and the four links, alone, 15 minutes</h3>
+          <p>Everyone reads the prompt once, then reads (or skims) all four articles and privately marks each one approve or reject. No talking yet — the private call is what makes the group discussion afterward worth having.</p>
+          <p class="meta">Printed cards or a shared doc both work — just not a live shared spreadsheet, which lets people see each other's answers before they've made their own.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="n"></span>
+        <div>
+          <h3>Groups compare and argue, 10 minutes</h3>
+          <p>Each group reconciles into one verdict per article. The instruction that matters: they have to state <em>why</em>, in terms of the prompt's own words — not "I liked it," but "it doesn't cite real research" or "it's not actually about focus."</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="n"></span>
+        <div>
+          <h3>Run the same prompt through Gemma, 10 minutes</h3>
+          <p>Non-coders: paste the prompt into the app's interest box, paste in the four URLs as sources, run it. Coders: same thing from <code>main.py</code>, or just re-use the live Ollama slide from the talk.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="n"></span>
+        <div>
+          <h3>Compare, 5 minutes, whole room</h3>
+          <p>Show of hands per article: who agreed with the model, who didn't. B is where this gets interesting — ask a group that approved it and a group that rejected it to both say why in one sentence.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THEN THE OWN BUILD ============ -->
+  <section>
+    <h2>Then: make it theirs</h2>
+    <p class="sectionlead">This is where the exercise hands off to the timetable's existing 10:45–11:15 "own build" slot — no new time needed, just content for time that's already there.</p>
+    <p>Once the room has seen where they agreed and disagreed with Gemma, the natural next move is theirs to make: rewrite the prompt so it would have caught what they wanted it to catch (tighten it if B should've been a reject, loosen it if it should've been an approve), then swap in a topic and a handful of articles or blogs they actually care about, and watch the same four-step judgment happen on something personal instead of a prompt I picked for them.</p>
+  </section>
+
+  <!-- ============ GAPS ============ -->
+  <section>
+    <h2>Two things worth deciding before this goes out</h2>
+    <div class="gaps">
+      <div class="gap">
+        <h3>The timetable currently describes something else</h3>
+        <p>The <code>9:50–10:15</code> slot is written as "non-coders watch the Streamlit app + Ollama chat walkthrough; coders walk the actual Python files" — a demo, not this silent-read exercise. The <code>10:15–10:30</code> slot ("you vs. the model") already matches steps 4–5 above exactly. Want me to update the timetable slide's wording to describe this exercise directly, or keep it generic and let your speaker notes carry the specifics?</p>
+      </div>
+      <div class="gap">
+        <h3>Printed vs. on-screen for the read/decide step</h3>
+        <p>Printing the four articles means no laptops open yet — closer to the physical-relay spirit at 9:35. Reading on-screen is faster to prep (no printer needed) and lets people click through to the source. Either works; I'd lean printed, purely because it keeps step 2 laptop-free and step 4 becomes the moment laptops open for the first time in Block A.</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot">All four URLs scraped and ran cleanly through the real pipeline (<code>article_scraper.py</code> → <code>summarizer.py</code> → <code>curator.py</code>) against <code>gemma4:e2b</code> before this was written — see the "model says" lines in the answer key above.</p>
+
+</div>
+
+<script>
+  (function () {
+    var buttons = document.querySelectorAll('.copybtn');
+    Array.prototype.forEach.call(buttons, function (btn) {
+      btn.addEventListener('click', function () {
+        var target = document.getElementById(btn.getAttribute('data-copy'));
+        if (!target) return;
+        var text = target.innerText.replace(/\n{3,}/g, '\n\n').trim();
+        var done = function (msg) {
+          var original = btn.textContent;
+          btn.textContent = msg;
+          setTimeout(function () { btn.textContent = original; }, 1800);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { done('Copied'); }, function () { done('Select it manually'); });
+        } else {
+          done('Select it manually');
+        }
+      });
+    });
+  })();
+</script>

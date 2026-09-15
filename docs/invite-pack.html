@@ -1,0 +1,467 @@
+<title>Agents at Home Invite Pack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    color-scheme: light dark;
+    --ground:     #ECEBE4;
+    --surface:    #F5F4EF;
+    --raise:      #E3E1D8;
+    --ink:        #1C1E22;
+    --ink-soft:   #585B62;
+    --ink-faint:  #8A8A82;
+    --line:       #D5D3C9;
+    --local:      #2C6E4B;
+    --local-tint: #E4EDE6;
+    --flag:       #BB4C25;
+    --flag-tint:  #F6E7DF;
+
+    --font-display: "Space Grotesk", "Trebuchet MS", system-ui, sans-serif;
+    --font-body:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:     #121317;
+      --surface:    #1A1C21;
+      --raise:      #23252B;
+      --ink:        #E8E6DF;
+      --ink-soft:   #A6A39A;
+      --ink-faint:  #7C7A72;
+      --line:       #31333A;
+      --local:      #5EBA8B;
+      --local-tint: #182920;
+      --flag:       #E28C5E;
+      --flag-tint:  #2C1E16;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:     #121317;
+    --surface:    #1A1C21;
+    --raise:      #23252B;
+    --ink:        #E8E6DF;
+    --ink-soft:   #A6A39A;
+    --ink-faint:  #7C7A72;
+    --line:       #31333A;
+    --local:      #5EBA8B;
+    --local-tint: #182920;
+    --flag:       #E28C5E;
+    --flag-tint:  #2C1E16;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 400 1rem/1.62 var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 58rem; margin: 0 auto; padding: 3.5rem 1.5rem 6rem; }
+
+  .eyebrow {
+    font: 500 .72rem/1 var(--font-mono);
+    letter-spacing: .18em; text-transform: uppercase; color: var(--ink-faint);
+    display: flex; align-items: center; gap: .7rem; margin: 0 0 1.2rem;
+  }
+  .eyebrow::before { content: ""; width: 1.6rem; height: 1px; background: var(--ink-faint); }
+
+  h1 {
+    font: 700 clamp(2.1rem, 5vw, 3.1rem)/1.05 var(--font-display);
+    letter-spacing: -.02em; margin: 0 0 1rem; text-wrap: balance;
+  }
+  .standfirst { font-size: 1.1rem; color: var(--ink-soft); max-width: 40em; margin: 0; }
+
+  h2 {
+    font: 700 clamp(1.4rem, 2.6vw, 1.85rem)/1.2 var(--font-display);
+    letter-spacing: -.015em; margin: 0 0 .5rem; text-wrap: balance;
+  }
+  h3 {
+    font: 600 1.02rem/1.35 var(--font-body);
+    margin: 0 0 .5rem; color: var(--ink);
+  }
+  section { margin-top: 4rem; }
+  .sectionlead { color: var(--ink-soft); max-width: 42em; margin: 0 0 1.8rem; }
+  p { max-width: 42em; }
+
+  /* ---------- the verdict ---------- */
+  .verdict {
+    border-left: 3px solid var(--local); background: var(--local-tint);
+    padding: 1.3rem 1.6rem; border-radius: 0 7px 7px 0; margin-bottom: 1.8rem;
+  }
+  .verdict p { margin: 0; font-size: 1.06rem; }
+  .verdict strong { color: var(--local); }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; margin-top: 1.8rem; }
+  .pane { border-top: 2px solid var(--line); padding-top: .9rem; }
+  .pane--before { border-top-color: var(--flag); }
+  .pane--sealed { border-top-color: var(--local); }
+  .pane .tag {
+    font: 500 .7rem/1 var(--font-mono); letter-spacing: .13em; text-transform: uppercase;
+    display: block; margin-bottom: .6rem;
+  }
+  .pane--before .tag { color: var(--flag); }
+  .pane--sealed .tag { color: var(--local); }
+  .pane ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .5rem; }
+  .pane li { position: relative; padding-left: 1.1rem; font-size: .96rem; color: var(--ink-soft); }
+  .pane li::before { content: "–"; position: absolute; left: 0; color: var(--ink-faint); }
+  .pane li b { color: var(--ink); font-weight: 600; }
+
+  .numbers { display: flex; flex-wrap: wrap; gap: 2.2rem; margin: 1.8rem 0 0; }
+  .num { }
+  .num b {
+    display: block; font: 700 1.6rem/1 var(--font-display); color: var(--local);
+    font-variant-numeric: tabular-nums; margin-bottom: .3rem;
+  }
+  .num span { font: 500 .76rem/1.4 var(--font-mono); letter-spacing: .06em; color: var(--ink-faint); }
+
+  /* ---------- copyable blocks ---------- */
+  .block { margin-top: 1.5rem; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); overflow: hidden; }
+  .blockbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: .7rem 1.1rem; border-bottom: 1px solid var(--line); background: var(--raise);
+  }
+  .blockbar .what { font: 500 .74rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+  .copybtn {
+    font: 500 .74rem/1 var(--font-mono); letter-spacing: .04em; color: var(--local);
+    background: var(--local-tint); border: 1px solid transparent; border-radius: 5px;
+    padding: .5rem .8rem; cursor: pointer; transition: border-color .15s ease;
+  }
+  .copybtn:hover { border-color: var(--local); }
+  .copybtn:focus-visible { outline: 2px solid var(--local); outline-offset: 2px; }
+  .blockbody { padding: 1.6rem 1.8rem; }
+  .blockbody > *:first-child { margin-top: 0; }
+  .blockbody > *:last-child { margin-bottom: 0; }
+
+  .subjline {
+    font-size: 1.02rem; padding-bottom: 1rem; margin-bottom: 1.4rem;
+    border-bottom: 1px dashed var(--line);
+  }
+  .subjline .lbl { font: 500 .72rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-right: .6rem; }
+
+  .email p { margin: 0 0 1.05rem; }
+  .email ul, .email ol { margin: 0 0 1.05rem; padding-left: 1.3rem; }
+  .email li { margin-bottom: .4rem; }
+  .email strong { font-weight: 600; }
+  .email .ehead { font-weight: 600; margin-bottom: .5rem; margin-top: 1.6rem; }
+  .email .warn {
+    background: var(--flag-tint); border-left: 3px solid var(--flag);
+    padding: 1.1rem 1.3rem; border-radius: 0 6px 6px 0; margin: 1.5rem 0;
+  }
+  .email .warn p:last-child, .email .warn ol { margin-bottom: 0; }
+  .email .warn .ehead { color: var(--flag); margin-top: 0; }
+
+  .ph {
+    background: var(--flag-tint); color: var(--flag); font-weight: 600;
+    padding: .06em .3em; border-radius: 3px; font-size: .95em;
+    white-space: nowrap;
+  }
+
+  /* ---------- form ---------- */
+  .formtitle { font: 700 1.25rem/1.3 var(--font-display); margin: 0 0 .5rem; }
+  .formdesc { color: var(--ink-soft); margin: 0 0 1.8rem; font-size: .98rem; }
+  .q { padding: 1.15rem 0; border-top: 1px solid var(--line); }
+  .q:first-of-type { border-top: none; padding-top: 0; }
+  .qmeta { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; margin-bottom: .5rem; }
+  .qnum { font: 500 .74rem/1 var(--font-mono); color: var(--ink-faint); }
+  .qtype {
+    font: 500 .68rem/1 var(--font-mono); letter-spacing: .09em; text-transform: uppercase;
+    color: var(--ink-soft); background: var(--raise); border-radius: 3px; padding: .3rem .5rem;
+  }
+  .qreq {
+    font: 500 .68rem/1 var(--font-mono); letter-spacing: .09em; text-transform: uppercase;
+    color: var(--flag); background: var(--flag-tint); border-radius: 3px; padding: .3rem .5rem;
+  }
+  .qtext { font-weight: 600; margin: 0 0 .5rem; font-size: 1.02rem; }
+  .qhelp { margin: 0 0 .6rem; font-size: .92rem; color: var(--ink-soft); font-style: italic; }
+  .opts { margin: 0; padding: 0; list-style: none; display: grid; gap: .35rem; }
+  .opts li { position: relative; padding-left: 1.4rem; font-size: .95rem; color: var(--ink-soft); }
+  .opts li::before {
+    content: ""; position: absolute; left: 0; top: .42em;
+    width: .7rem; height: .7rem; border: 1.5px solid var(--ink-faint); border-radius: 50%;
+  }
+  .why {
+    margin-top: .7rem; font-size: .88rem; color: var(--local);
+    background: var(--local-tint); border-radius: 5px; padding: .5rem .7rem;
+    display: inline-block;
+  }
+  .why b { font-weight: 600; }
+
+  /* ---------- gaps ---------- */
+  .gap { border-top: 2px solid var(--flag); padding-top: .9rem; }
+  .gaps { display: grid; gap: 1.5rem; margin-top: 1.6rem; }
+  @media (min-width: 720px) { .gaps { grid-template-columns: repeat(2, 1fr); } }
+  .gap h3 { margin-bottom: .4rem; }
+  .gap p { margin: 0; font-size: .95rem; color: var(--ink-soft); }
+  .gap code { font: 400 .88em var(--font-mono); background: var(--raise); padding: .1em .35em; border-radius: 3px; color: var(--ink); }
+
+  .foot { margin-top: 4.5rem; padding-top: 1.4rem; border-top: 1px solid var(--line); font-size: .88rem; color: var(--ink-faint); }
+
+  @media (max-width: 680px) {
+    .split { grid-template-columns: 1fr; }
+    .blockbody { padding: 1.3rem 1.2rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .copybtn { transition: none; } }
+</style>
+
+<div class="wrap">
+
+  <p class="eyebrow">Facilitator prep</p>
+  <h1>Agents at Home Invite Pack</h1>
+  <p class="standfirst">Three things: the call on whether people pre-download, the invite email to paste into the calendar entry, and the pre-workshop form to rebuild in Microsoft Forms. Everything in <span class="ph">[BRACKETS]</span> is yours to fill in.</p>
+
+  <!-- ============ 1. THE VERDICT ============ -->
+  <section>
+    <h2>Do they need to set up beforehand?</h2>
+    <p class="sectionlead">Short answer: yes, the download has to happen before the day — but your instinct about suspense is right, and you lose none of it.</p>
+
+    <div class="verdict">
+      <p><strong>The download and the payoff are separable, and the repo already separates them.</strong> <code>setup.command</code> / <code>setup.bat</code> installs everything and then deliberately stops — it never opens the app. Participants arrive with 9&nbsp;GB on disk and no idea what it does.</p>
+    </div>
+
+    <p>The reason it can't wait is arithmetic, not caution. The model alone is ~7.2&nbsp;GB, pulled from Ollama's registry, plus the Ollama installer, the Python dependencies and the ~340&nbsp;MB text-to-speech voice. Call it 9&nbsp;GB each. Twenty-five people starting that simultaneously on venue wifi is a couple of hundred gigabytes of contention — you would lose the first hour and some would still be stuck at 10:00.</p>
+
+    <div class="numbers">
+      <div class="num"><b>~9 GB</b><span>per laptop, one time</span></div>
+      <div class="num"><b>0</b><span>of the app they see</span></div>
+      <div class="num"><b>9:00</b><span>everyone starts together</span></div>
+    </div>
+
+    <div class="split">
+      <div class="pane pane--before">
+        <span class="tag">Before the day · mandatory</span>
+        <ul>
+          <li>Download the ZIP and unzip it</li>
+          <li>Double-click <b>setup.command</b> or <b>setup.bat</b> once</li>
+          <li>Walk away while it installs Python, Ollama, the dependencies and the model</li>
+          <li>It prints <b>"All done! Setup complete."</b> and quits</li>
+        </ul>
+      </div>
+      <div class="pane pane--sealed">
+        <span class="tag">Sealed until the day</span>
+        <ul>
+          <li>The app itself — <b>they never launch it</b></li>
+          <li>Any article being read, judged or rejected</li>
+          <li>The interest prompt and what tuning it does</li>
+          <li><b>The e-book at the end</b> — the actual reveal</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. THE EMAIL ============ -->
+  <section>
+    <h2>The invite email</h2>
+    <p class="sectionlead">Written to survive skimming: the one mandatory action is boxed and impossible to miss, and the "you don't need to code" reassurance comes before it, so non-coders don't bail at the sight of a setup step.</p>
+
+    <div class="block">
+      <div class="blockbar">
+        <span class="what">Paste into the calendar invite</span>
+        <button class="copybtn" type="button" data-copy="email-body">Copy email</button>
+      </div>
+      <div class="blockbody email" id="email-body">
+        <p class="subjline"><span class="lbl">Subject</span>Agents at Home, <span class="ph">[DATE]</span> — one thing to do before you arrive</p>
+
+        <p>Hi all,</p>
+
+        <p>On <span class="ph">[DATE]</span>, 9:00–12:20 at <span class="ph">[LOCATION]</span>, we're spending the morning building an AI agent that runs entirely on your own laptop. No cloud, no API keys, no accounts, nothing leaving your machine.</p>
+
+        <p>What we build is a Distraction-Free Content Curator. It goes out and reads blogs and news feeds, has a local AI model summarize each article and judge it against interests you've written in plain English, and compiles whatever survives into an e-book — with topic tags, a comprehension quiz, and a link back to the source. You'll leave with one you made, tuned to what you actually care about.</p>
+
+        <p><strong>You don't need to be able to code.</strong> About half the room won't. Two tracks run side by side: if you code, you'll be in the Python; if you don't, you'll be shaping the agent's judgment in plain English through a simple app. Same build, same result — we regroup at the end and compare what each track made.</p>
+
+        <div class="warn">
+          <p class="ehead">One thing to do before the day — please don't skip this</p>
+          <p>The AI model runs on your laptop, which means it has to get onto your laptop first: about 9&nbsp;GB all told. That's a coffee break on home wifi and a non-starter on shared wifi with everyone doing it at once — so it needs to happen before you arrive.</p>
+          <ol>
+            <li>Download the project: <span class="ph">[REPO LINK]</span> → green <strong>Code</strong> button → <strong>Download ZIP</strong> → unzip it</li>
+            <li>Double-click <strong>setup.command</strong> (Mac — the first time, right-click → Open) or <strong>setup.bat</strong> (Windows)</li>
+            <li>Leave it running and walk away. It installs everything, then stops.</li>
+          </ol>
+          <p>That's the whole job. It deliberately doesn't open the app — the first time you actually run the thing, you'll be doing it with the rest of us.</p>
+          <p>Please get it done by <span class="ph">[DATE − 2 DAYS]</span> so there's time to sort out anything that goes wrong.</p>
+        </div>
+
+        <p class="ehead">What to bring</p>
+        <ul>
+          <li>Your laptop and its charger</li>
+          <li>About 10 GB of free disk space</li>
+          <li>Permission to install software on it. If it's a locked-down work machine, say so in the form below and we'll sort something out beforehand.</li>
+        </ul>
+
+        <p class="ehead">And one short form</p>
+        <p><span class="ph">[FORM LINK]</span> — three minutes. It tells me how to pitch the level and keeps the two tracks balanced.</p>
+
+        <p>If the setup gives you trouble, email me before the day rather than on it: <span class="ph">[YOUR EMAIL]</span>.</p>
+
+        <p>See you on <span class="ph">[DATE]</span>,<br><span class="ph">[YOUR NAME]</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. THE FORM ============ -->
+  <section>
+    <h2>The pre-workshop form</h2>
+    <p class="sectionlead">Ten questions, six of them one-click. Each is here because an answer changes something you'd otherwise discover at 9:05 on the day — how to split the room, who can't install software, whose laptop has no setup script.</p>
+
+    <div class="block">
+      <div class="blockbar">
+        <span class="what">Rebuild in Microsoft Forms</span>
+        <button class="copybtn" type="button" data-copy="form-body">Copy form</button>
+      </div>
+      <div class="blockbody" id="form-body">
+        <p class="formtitle">Agents at Home — before we start</p>
+        <p class="formdesc">Three minutes. It helps me pitch the workshop at the right level, keep the two tracks balanced, and catch setup problems before the day rather than on it.</p>
+
+        <div class="q">
+          <div class="qmeta"><span class="qnum">01</span><span class="qtype">Text</span><span class="qreq">Required</span></div>
+          <p class="qtext">Your name</p>
+        </div>
+
+        <div class="q">
+          <div class="qmeta"><span class="qnum">02</span><span class="qtype">Choice</span><span class="qreq">Required</span></div>
+          <p class="qtext">Which track do you expect to join?</p>
+          <p class="qhelp">You can switch on the day — this is just so I know roughly how to split the room.</p>
+          <ul class="opts">
+            <li>Coder track — I'd like to work in the Python</li>
+            <li>Non-coder track — I'd rather shape the agent through the app</li>
+            <li>Not sure yet / happy either way</li>
+          </ul>
+          <p class="why"><b>Why:</b> the room splits into two tracks at 9:50. Wildly uneven groups is the one thing that's awkward to fix live.</p>
+        </div>
+
+        <div class="q">
+          <div class="qmeta"><span class="qnum">03</span><span class="qtype">Choice</span><span class="qreq">Required</span></div>
+          <p class="qtext">How would you describe your experience with Python?</p>
+          <ul class="opts">
+            <li>I write it regularly</li>
+            <li>I can read it and modify it</li>
+            <li>I've seen it but don't really write it</li>
+            <li>None at all</li>
+          </ul>
+        </div>
+
+        <div class="q">
+          <div class="qmeta"><span class="qnum">04</span><span class="qtype">Choice</span><span class="qreq">Required</span></div>
+          <p class="qtext">What laptop will you bring?</p>
+          <ul class="opts">
+            <li>Mac</li>
+            <li>Windows</li>
+            <li>Linux</li>
+          </ul>
+          <p class="why"><b>Why:</b> the one-click setup covers Mac and Windows only. A Linux answer means you owe that person manual steps — see the gaps below.</p>
+        </div>
+
+        <div class="q">
+          <div class="qmeta"><span class="qnum">05</span><span class="qtype">Choice</span><span class="qreq">Required</span></div>
+          <p class="qtext">Can you install software on that laptop?</p>
+          <p class="qhelp">The setup installs Python and Ollama, and downloads about 9 GB. If you can't install things, tell me now rather than on the day.</p>
+          <ul class="opts">
+            <li>Yes — it's my personal machine</li>
+            <li>Yes — work machine, but I have admin rights</li>
+            <li>No, or not sure — it's locked down</li>
+          </ul>
+          <p class="why"><b>Why:</b> the installer assumes a personal machine. A locked-down laptop can't run it at all, and pairing people up is only easy if you know in advance.</p>
+        </div>
+
+        <div class="q">
+          <div class="qmeta"><span class="qnum">06</span><span class="qtype">Choice</span><span class="qreq">Required</span></div>
+          <p class="qtext">Have you run the setup yet?</p>
+          <ul class="opts">
+            <li>Yes — it finished fine</li>
+            <li>Yes — but it errored (I'll describe it below)</li>
+            <li>Not yet, but I will before the day</li>
+            <li>I need help getting started</li>
+          </ul>
+        </div>
+
+        <div class="q">
+          <div class="qmeta"><span class="qnum">07</span><span class="qtype">Long answer</span></div>
+          <p class="qtext">If something went wrong, what happened?</p>
+          <p class="qhelp">Copy in any error message you saw, even if it looks like gibberish.</p>
+        </div>
+
+        <div class="q">
+          <div class="qmeta"><span class="qnum">08</span><span class="qtype">Choice</span><span class="qreq">Required</span></div>
+          <p class="qtext">How much have you used AI tools like ChatGPT, Claude or Copilot?</p>
+          <ul class="opts">
+            <li>Most days</li>
+            <li>Now and then</li>
+            <li>Tried it once or twice</li>
+            <li>Not really</li>
+          </ul>
+        </div>
+
+        <div class="q">
+          <div class="qmeta"><span class="qnum">09</span><span class="qtype">Long answer</span></div>
+          <p class="qtext">If you could hand a tireless assistant one recurring task in your week, what would it be?</p>
+          <p class="qhelp">No wrong answers — small and boring is perfect.</p>
+          <p class="why"><b>Why:</b> the best question on the form. Real answers from the room become the live examples on the "is this actually an agent problem?" slide — and one or two will be genuinely better than anything you'd invent.</p>
+        </div>
+
+        <div class="q">
+          <div class="qmeta"><span class="qnum">10</span><span class="qtype">Long answer</span></div>
+          <p class="qtext">Anything else I should know?</p>
+          <p class="qhelp">Accessibility needs, dietary requirements for the break, or a question you'd like answered on the day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. GAPS ============ -->
+  <section>
+    <h2>Four things to settle before this goes out</h2>
+    <p class="sectionlead">All four are quick, and all four are cheaper to fix now than on a Tuesday morning with people watching.</p>
+
+    <div class="gaps">
+      <div class="gap">
+        <h3>The repo has to be public</h3>
+        <p>The email tells people to hit <strong>Download ZIP</strong> on GitHub. Your remote is an SSH URL, so I couldn't verify visibility from here — open <code>github.com/valkiii/build_your_agent_workshop</code> in a private window before you send, or the whole instruction dead-ends.</p>
+      </div>
+      <div class="gap">
+        <h3>There's no Linux path</h3>
+        <p>The repo ships <code>.command</code> for Mac and <code>.bat</code> for Windows — nothing else. A Linux participant has no double-click route and no written fallback. Question 4 catches them; a short <code>setup.sh</code> or a manual crib sheet would close it properly.</p>
+      </div>
+      <div class="gap">
+        <h3>The samples folder spoils the ending</h3>
+        <p><code>samples/</code> ships a finished e-book, a sample podcast and a saved run — facilitator backup, but it's in the ZIP everyone downloads. If the reveal matters to you, pull it from the participant copy and keep it on your own machine.</p>
+      </div>
+      <div class="gap">
+        <h3>Some people won't do it</h3>
+        <p>Assume two or three arrive un-set-up whatever the email says. The graceful answer is to pair them with a neighbour for the morning — worth deciding now, because the alternative is improvising it at 9:05.</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot">Timings match the deck's timetable: 9:00 start, 12:20 finish, tracks split at 9:50.</p>
+
+</div>
+
+<script>
+  (function () {
+    var buttons = document.querySelectorAll('.copybtn');
+    Array.prototype.forEach.call(buttons, function (btn) {
+      btn.addEventListener('click', function () {
+        var target = document.getElementById(btn.getAttribute('data-copy'));
+        if (!target) return;
+        var text = target.innerText.replace(/\n{3,}/g, '\n\n').trim();
+        var done = function (msg) {
+          var original = btn.textContent;
+          btn.textContent = msg;
+          setTimeout(function () { btn.textContent = original; }, 1800);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            done('Copied');
+          }, function () {
+            done('Select it manually');
+          });
+        } else {
+          done('Select it manually');
+        }
+      });
+    });
+  })();
+</script>
