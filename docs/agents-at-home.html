@@ -170,23 +170,43 @@
   .c-flag  { color: var(--flag); }
 
   /* ---------- title slide ---------- */
-  #s1 { justify-content: center; overflow: hidden; }
+  /* text pinned to solid black here, in both themes — the background video
+     behind this slide makes the normal light/dark ink tokens hard to read,
+     especially --ink-soft/--ink-faint in dark mode against moving footage */
+  #s1 { justify-content: center; overflow: hidden; color: #000; }
   #s1 .sub {
     font: 500 clamp(1.05rem, 2vw, 1.5rem)/1.4 var(--font-body);
-    color: var(--ink-soft); margin: 1.6rem 0 0; max-width: 24ch;
+    color: #000; margin: 1.6rem 0 0; max-width: 24ch;
   }
   .byline {
     margin-top: 3.2rem; font: 500 .9rem/1.7 var(--font-mono);
-    letter-spacing: .04em; color: var(--ink-soft);
+    letter-spacing: .04em; color: #000;
   }
   .byline .fill {
-    border-bottom: 1px dashed var(--ink-faint); padding-bottom: 1px;
-    color: var(--ink-faint);
+    border-bottom: 1px dashed #000; padding-bottom: 1px;
+    color: #000;
   }
   .scrollcue {
     position: absolute; bottom: 2.6rem; left: var(--edge);
     font: 500 .74rem/1 var(--font-mono); letter-spacing: .14em;
-    text-transform: uppercase; color: var(--ink-faint);
+    text-transform: uppercase; color: #000;
+  }
+
+  /* ---------- presenters ---------- */
+  .intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.6rem; margin-top: 1.8rem; }
+  .intro-name {
+    font: 700 1.35rem/1.25 var(--font-display); letter-spacing: -.01em;
+    color: var(--ink); margin: 0;
+  }
+  .intro-photo {
+    width: 100%; aspect-ratio: 1 / 1; border-radius: 12px; overflow: hidden;
+    background: var(--raise); border: 1px solid var(--line); margin: 1.2rem 0;
+  }
+  .intro-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .intro-bio {
+    border: 1px dashed var(--ink-faint); border-radius: 8px;
+    padding: 1rem 1.2rem; font: 400 italic .95rem/1.55 var(--font-body);
+    color: var(--ink-faint);
   }
 
   /* ambient network, fixed behind every slide — nodes drift and link up
@@ -212,7 +232,7 @@
   /* ---------- task / workflow / agent ---------- */
   #s4b { overflow: hidden; }
 
-  /* shared background-video treatment — slide 1 and slide 6 each drop a
+  /* shared background-video treatment — slide 1 and slide 7 each drop a
      <video class="bgvideo"> in as their first child; same alpha .4, cover,
      sits behind the slide's own in-flow content via negative z-index */
   .bgvideo {
@@ -488,7 +508,7 @@
   @media (max-width: 760px) {
     :root { --edge: 1.5rem; }
     .slide { padding: 5.5rem var(--edge) 5rem; }
-    .compare, .loop-legend, .halves, .ofields, .usecases, .modelsplit, .twagrid { grid-template-columns: 1fr; }
+    .compare, .loop-legend, .halves, .ofields, .usecases, .modelsplit, .twagrid, .intro-grid { grid-template-columns: 1fr; }
     .kicker-line { margin-top: .6rem; }
     .track .row, .reason, .map .hd, .map .r, .ba .step, .map .r .s { grid-template-columns: 1fr; }
     .ba .step { gap: .3rem; }
@@ -517,7 +537,7 @@
 
 <canvas class="bg-net" aria-hidden="true"></canvas>
 <div class="progress" id="progress" aria-hidden="true"></div>
-<div class="counter" aria-hidden="true"><b id="cur">01</b> / 22</div>
+<div class="counter" aria-hidden="true"><b id="cur">01</b> / 23</div>
 <div class="wordmark" aria-hidden="true">Build your agent</div>
 <div class="chrome">
   <button id="notesBtn" type="button" aria-pressed="false">Speaker notes <kbd>S</kbd></button>
@@ -542,18 +562,38 @@
     <div class="scrollcue" aria-hidden="true">Scroll to begin ↓</div>
     <aside class="note">
       <b>Run of show</b>
-      Open (title, agenda, timetable), slides 1–3 — ~3 min · Block A (what is an agent, incl. the
-      task/workflow/agent distinction on slide 6, the live Ollama slide 9, the model explainer 10,
-      and the use-cases build 12), 4–12 — ~17 min ·
-      Block B (why local), 13–14 — ~5 min · Block C (do's &amp; don'ts), 15–20 — ~10–15 min ·
-      close (transition + relay instructions), 21–22 — ~2 min.
-      Total ~39–44 min, then the 3:20 hands-on block (full breakdown on slide 3).
+      Open (title, presenters, agenda, timetable), slides 1–4 — ~3 min · Block A (what is an
+      agent, incl. the task/workflow/agent distinction on slide 7, the live Ollama slide 10,
+      the model explainer 11, and the use-cases build 13), 5–13 — ~17 min ·
+      Block B (why local), 14–15 — ~5 min · Block C (do's &amp; don'ts), 16–21 — ~10–15 min ·
+      close (transition + relay instructions), 22–23 — ~2 min.
+      Total ~39–44 min, then the 3:20 hands-on block (full breakdown on slide 4).
       Press <kbd>S</kbd> anytime to hide these notes.
     </aside>
   </section>
 
+  <!-- 1b (presenters) ================================================== -->
+  <section class="slide" id="s1b" aria-label="Slide 2: Meet your presenters">
+    <div class="inner">
+      <p class="eyebrow">Today</p>
+      <h2>Who&rsquo;s talking</h2>
+      <div class="intro-grid">
+        <div>
+          <p class="intro-name">Valerio Ciotti</p>
+          <div class="intro-photo"><img src="Valerio.png" alt="Valerio Ciotti" style="object-position: 40% 20%;" onerror="this.onerror=null;this.src='/_blob/a5e498f18c3095ebaeae650ac1a446ca';"></div>
+          <p class="intro-bio">One or two sentences about Valerio — role, background, what you bring to today&rsquo;s session.</p>
+        </div>
+        <div>
+          <p class="intro-name">Veeraraghavan Veerasubramanian</p>
+          <div class="intro-photo"><img src="Veera.png" alt="Veeraraghavan Veerasubramanian" style="object-position: 45% 25%;" onerror="this.onerror=null;this.src='/_blob/967fc6f12a3192a696830e9e77e331b6';"></div>
+          <p class="intro-bio">One or two sentences about Veeraraghavan — role, background, what you bring to today&rsquo;s session.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- 2 ============================================================= -->
-  <section class="slide" id="s2" aria-label="Slide 2: Today">
+  <section class="slide" id="s2" aria-label="Slide 3: Today">
     <div class="inner">
       <p class="eyebrow">Today</p>
       <h2>Today's Menu</h2>
@@ -576,12 +616,12 @@
     <aside class="note">
       <b>Speaker note</b>
       Say the "nothing leaves your machine" line out loud, slowly. It's a genuine hook for a technical
-      room, and it sets up the "why local" block later — you'll call back to it on slide 13.
+      room, and it sets up the "why local" block later — you'll call back to it on slide 14.
     </aside>
   </section>
 
   <!-- 2b (timetable) ================================================== -->
-  <section class="slide wide" id="s2b" aria-label="Slide 3: Workshop timetable">
+  <section class="slide wide" id="s2b" aria-label="Slide 4: Workshop timetable">
     <div class="inner">
       <p class="eyebrow">Today</p>
       <h2>The full 3 hours</h2>
@@ -626,7 +666,7 @@
   </section>
 
   <!-- 3 ============================================================= -->
-  <section class="slide" id="s3" aria-label="Slide 4: The hook">
+  <section class="slide" id="s3" aria-label="Slide 5: The hook">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <p class="statement long">You've all used a chatbot. Today we build something that <span class="c-local">does&nbsp;things</span>, not just answers.</p>
@@ -634,7 +674,7 @@
   </section>
 
   <!-- 4 ============================================================= -->
-  <section class="slide" id="s4" aria-label="Slide 5: Chatbot vs Agent">
+  <section class="slide" id="s4" aria-label="Slide 6: Chatbot vs Agent">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>Chatbot vs. agent</h2>
@@ -694,7 +734,7 @@
   </section>
 
   <!-- 4b ============================================================ -->
-  <section class="slide wide" id="s4b" aria-label="Slide 6: Task, workflow, or agent?">
+  <section class="slide wide" id="s4b" aria-label="Slide 7: Task, workflow, or agent?">
     <!-- relative path resolves when the deck runs from docs/ (local double-click / a
          local server); the /_blob/ path resolves on the hosted Artifact link, which
          only ships this one HTML file. onerror only fires once both have failed. -->
@@ -737,7 +777,7 @@
   </section>
 
   <!-- 5 ============================================================= -->
-  <section class="slide wide" id="s5" aria-label="Slide 7: The loop">
+  <section class="slide wide" id="s5" aria-label="Slide 8: The loop">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>The loop</h2>
@@ -808,7 +848,7 @@
   </section>
 
   <!-- 6 ============================================================= -->
-  <section class="slide" id="s6" aria-label="Slide 8: Live demo">
+  <section class="slide" id="s6" aria-label="Slide 9: Live demo">
     <div class="inner">
       <p class="eyebrow">Block A · Live</p>
       <h2>Switch to the terminal <span class="c-local">→</span></h2>
@@ -831,7 +871,7 @@
   </section>
 
   <!-- 6b (live widget) ================================================ -->
-  <section class="slide" id="s6live" aria-label="Slide 9: Try it live">
+  <section class="slide" id="s6live" aria-label="Slide 10: Try it live">
     <div class="inner">
       <p class="eyebrow">Block A · Live</p>
       <h2>Talk to your model, right here <span class="c-local">→</span></h2>
@@ -869,7 +909,7 @@
   </section>
 
   <!-- 6c (model explainer) ============================================= -->
-  <section class="slide wide" id="s6b" aria-label="Slide 10: Meet gemma4:e2b">
+  <section class="slide wide" id="s6b" aria-label="Slide 11: Meet gemma4:e2b">
     <div class="inner">
       <p class="eyebrow">Block A · The model</p>
       <h2>What you actually just talked to</h2>
@@ -913,7 +953,7 @@
   </section>
 
   <!-- 7 ============================================================= -->
-  <section class="slide" id="s7" aria-label="Slide 11: Today's build mapped onto the loop">
+  <section class="slide" id="s7" aria-label="Slide 12: Today's build mapped onto the loop">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>Today's build, on the same loop</h2>
@@ -928,7 +968,7 @@
   </section>
 
   <!-- 7b (use cases, builds) =========================================== -->
-  <section class="slide" id="s7b" aria-label="Slide 12: Is this actually an agent problem?">
+  <section class="slide" id="s7b" aria-label="Slide 13: Is this actually an agent problem?">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>Is this actually an agent problem?</h2>
@@ -962,12 +1002,12 @@
       Both blocks start off-screen — press ↓ (or click one) to slide up the green one, ↓ again for
       the red one; ↑ un-reveals them in reverse before it starts moving you back through the deck.
       The price-tracker line is a real, deliberately boring example — the temptation to reach for
-      an LLM even when a five-line script would do is exactly what slide 16 is about.
+      an LLM even when a five-line script would do is exactly what slide 17 is about.
     </aside>
   </section>
 
   <!-- 8 ============================================================= -->
-  <section class="slide" id="s8" aria-label="Slide 13: Why local — three reasons">
+  <section class="slide" id="s8" aria-label="Slide 14: Why local — three reasons">
     <div class="inner">
       <p class="eyebrow">Block B · Why local?</p>
       <h2>Three reasons</h2>
@@ -989,7 +1029,7 @@
   </section>
 
   <!-- 9 ============================================================= -->
-  <section class="slide" id="s9" aria-label="Slide 14: The honest trade-off">
+  <section class="slide" id="s9" aria-label="Slide 15: The honest trade-off">
     <div class="inner">
       <p class="eyebrow">Block B · Why local?</p>
       <p class="statement long">Small local models are weaker than the <span class="c-else">giant cloud ones</span>.</p>
@@ -1008,7 +1048,7 @@
   </section>
 
   <!-- 10 ============================================================ -->
-  <section class="slide" id="s10" aria-label="Slide 15: What we learned building this">
+  <section class="slide" id="s10" aria-label="Slide 16: What we learned building this">
     <div class="inner">
       <p class="eyebrow is-flag">Block C · Do's &amp; don'ts</p>
       <p class="statement">What we learned building this <span class="c-flag">— the hard way</span>.</p>
@@ -1017,7 +1057,7 @@
   </section>
 
   <!-- 11 ============================================================ -->
-  <section class="slide" id="s11" aria-label="Slide 16: Don't reach for the LLM first">
+  <section class="slide" id="s11" aria-label="Slide 17: Don't reach for the LLM first">
     <div class="inner">
       <span class="tag dont">Don't</span>
       <h2>Reach for the model first</h2>
@@ -1044,7 +1084,7 @@
   </section>
 
   <!-- 12 ============================================================ -->
-  <section class="slide" id="s12" aria-label="Slide 17: Don't trust an agent blindly on consequential actions">
+  <section class="slide" id="s12" aria-label="Slide 18: Don't trust an agent blindly on consequential actions">
     <div class="inner">
       <span class="tag dont">Don't</span>
       <h2>Trust an agent blindly on consequential actions</h2>
@@ -1058,7 +1098,7 @@
   </section>
 
   <!-- 13 ============================================================ -->
-  <section class="slide" id="s13" aria-label="Slide 18: Do — small models need explicit structure">
+  <section class="slide" id="s13" aria-label="Slide 19: Do — small models need explicit structure">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Give small models explicit structure</h2>
@@ -1078,7 +1118,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 14 ============================================================ -->
-  <section class="slide" id="s14" aria-label="Slide 19: Do — design for memory">
+  <section class="slide" id="s14" aria-label="Slide 20: Do — design for memory">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Design for memory, not just one run</h2>
@@ -1094,7 +1134,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 15 ============================================================ -->
-  <section class="slide" id="s15" aria-label="Slide 20: Do — expect the real internet to be messy">
+  <section class="slide" id="s15" aria-label="Slide 21: Do — expect the real internet to be messy">
     <div class="inner">
       <span class="tag do">Do</span>
       <h2>Expect the real internet to be messy</h2>
@@ -1121,7 +1161,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 16 ============================================================ -->
-  <section class="slide" id="s16" aria-label="Slide 21: Transition to hands-on">
+  <section class="slide" id="s16" aria-label="Slide 22: Transition to hands-on">
     <div class="inner">
       <p class="eyebrow">Hands-on</p>
       <p class="statement">Now you're going to be the agent — <span class="c-local">literally</span>.</p>
@@ -1137,7 +1177,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 16b (relay instructions) ========================================= -->
-  <section class="slide" id="s16b" aria-label="Slide 22: The relay, step by step">
+  <section class="slide" id="s16b" aria-label="Slide 23: The relay, step by step">
     <div class="inner">
       <p class="eyebrow">Hands-on · Getting started</p>
       <h2>The relay, step by step</h2>
@@ -1163,7 +1203,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
       Zero setup, zero debugging risk — the point is to make perceive → extract → decide → act a
       lived experience before anyone touches a laptop. Works identically for coders and non-coders;
       keep tables mixed so it's a good shared moment before the tracks split at 9:50 (see the timetable,
-      slide 3).
+      slide 4).
     </aside>
   </section>
 
@@ -1249,7 +1289,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
 </script>
 
 <script>
-  // Live Ollama widget (slide 9). Talks straight to a local Ollama server via
+  // Live Ollama widget (slide 10). Talks straight to a local Ollama server via
   // fetch — nothing goes through Claude or any third party. Needs Ollama
   // running on this machine. Ollama allows http://localhost:* origins by
   // default (verified), so serving this page locally — e.g.
@@ -1379,8 +1419,9 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
 </script>
 
 <script>
-  // Slide 4's chat/agent demo plays once, the first time you land on the
-  // slide, then holds still (see the #s4.play rules in the CSS). Reduced
+  // The "Chatbot vs Agent" slide's (#s4, currently slide 6) chat/agent demo
+  // plays once, the first time you land on the slide, then holds still
+  // (see the #s4.play rules in the CSS). Reduced
   // motion shows the finished state immediately instead (own CSS override) —
   // skip this trigger entirely in that case.
   (function () {
