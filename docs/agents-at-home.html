@@ -517,7 +517,7 @@
   .promptbox p { margin: 0 0 .9rem; font-size: 1rem; color: var(--ink); max-width: none; }
   .promptbox p:last-child { margin-bottom: 0; }
 
-  .qrgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.3rem; margin-top: 1.8rem; }
+  .qrgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.1rem; margin-top: 1.8rem; }
   .qrcard { border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem; background: var(--surface); text-align: center; }
   /* fixed white tile regardless of theme — scan reliability beats palette-matching here */
   .qrslot {
@@ -1235,8 +1235,8 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   <section class="slide" id="sex1" aria-label="Slide 16: Your turn — the prompt">
     <div class="inner">
       <p class="eyebrow">Hands-on · You vs. Gemma</p>
-      <h2>Judge four articles, then check Gemma's homework</h2>
-      <p class="lead">Groups of five. Same prompt, same four articles — everyone judges by hand first, then
+      <h2>Judge five articles, then check Gemma's homework</h2>
+      <p class="lead">Groups of five. Same prompt, same five articles — everyone judges by hand first, then
         runs it through Gemma and sees where they agree.</p>
       <div class="promptbox">
         <span class="promptbox-k">Reader's interest</span>
@@ -1247,9 +1247,9 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
           experience behind them, and anything not actually about focus or attention.</p>
       </div>
       <div class="demo" style="margin-top:1.6rem">
-        <div class="bar">Whole room · ~40 minutes</div>
+        <div class="bar">Whole room · ~43 minutes</div>
         <ol>
-          <li><b>1</b><span>Alone, 15 min — read the prompt, then all four articles on the next slide. Mark each approve or reject, privately.</span></li>
+          <li><b>1</b><span>Alone, 18 min — read the prompt, then all five articles on the next slide. Mark each approve or reject, privately.</span></li>
           <li><b>2</b><span>Groups of five, 10 min — compare calls, argue the disagreements, agree on one verdict per article.</span></li>
           <li><b>3</b><span>Run the same prompt and articles through Gemma, 10 min.</span></li>
           <li><b>4</b><span>Whole room, 5 min — where did you agree with the model? Where didn't you?</span></li>
@@ -1259,10 +1259,18 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- ex2 (hands-on exercise: the articles) =============================== -->
-  <section class="slide wide" id="sex2" aria-label="Slide 17: Four articles">
+  <section class="slide wide" id="sex2" aria-label="Slide 17: Five articles">
     <div class="inner">
       <p class="eyebrow">Hands-on · You vs. Gemma</p>
-      <h2>Four articles — scan and read</h2>
+      <h2>Five articles — scan and read</h2>
+      <div class="promptbox">
+        <span class="promptbox-k">Reader's interest — same as last slide</span>
+        <p>I want practical, evidence-backed articles about focus, attention, and deep work — things a busy
+          person could actually try this week. Prefer real research or genuine lived experience behind the
+          claims, concrete techniques over vague advice.</p>
+        <p>Reject generic productivity-app marketing and listicles, opinion pieces with no real evidence or
+          experience behind them, and anything not actually about focus or attention.</p>
+      </div>
       <div class="qrgrid">
         <div class="qrcard">
           <span class="qrslot" data-url="https://www.universityofcalifornia.edu/news/cant-pay-attention-youre-not-alone" role="img" aria-label="QR code linking to the article"></span>
@@ -1275,14 +1283,19 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
           <p class="qrpitch">Cal Newport on training focus like a muscle.</p>
         </div>
         <div class="qrcard">
-          <span class="qrslot" data-url="https://reclaim.ai/blog/focus-apps" role="img" aria-label="QR code linking to the article"></span>
-          <p class="qrtitle">C · What Are the Best Focus Apps?</p>
-          <p class="qrpitch">A ranked app listicle — including the publisher's own product.</p>
+          <span class="qrslot" data-url="https://jennakutcherblog.com/productivityhacks/" role="img" aria-label="QR code linking to the article"></span>
+          <p class="qrtitle">C · Productivity Hacks That ACTUALLY Work for Me</p>
+          <p class="qrpitch">A lifestyle blogger's own routine, wrapped in affiliate links and course promotion.</p>
         </div>
         <div class="qrcard">
           <span class="qrslot" data-url="https://theconversation.com/aristotle-aelian-and-the-giant-octopus-the-earliest-citizen-science-goes-back-more-than-2-000-years-236709" role="img" aria-label="QR code linking to the article"></span>
           <p class="qrtitle">D · Aristotle, Aelian and the giant octopus</p>
           <p class="qrpitch">Well-written, well-sourced — and nothing to do with focus.</p>
+        </div>
+        <div class="qrcard">
+          <span class="qrslot" data-url="https://buffer.com/resources/what-the-research-on-habit-formation-reveals-about-willpower-and-overall-well-being/" role="img" aria-label="QR code linking to the article"></span>
+          <p class="qrtitle">E · Habit Formation and Willpower</p>
+          <p class="qrpitch">Real cited research — but is "willpower" the same topic as "focus and attention"?</p>
         </div>
       </div>
 
@@ -1290,9 +1303,10 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
         <summary>Facilitator only — what Gemma actually said</summary>
         <div class="factkey-body">
           <p><b>A — approve.</b> &ldquo;The article presents empirical research on the impact of technology on attention spans.&rdquo;</p>
-          <p><b>B — approve.</b> &ldquo;The article directly addresses developing sustained focus through a trainable process.&rdquo; The real coin-flip: did every group agree with it?</p>
-          <p><b>C — broke the model.</b> The article is itself a numbered list of 13 apps; the summarizer mirrored that shape instead of writing 2&ndash;3 sentences, and the curator then emitted four separate verdicts instead of one &mdash; approving every app, including the publisher's own (&ldquo;focuses on using AI to manage scheduling to defend focus time&rdquo;). A live example of &ldquo;small models need explicit structure.&rdquo;</p>
+          <p><b>B — approve.</b> &ldquo;The article directly addresses developing sustained focus through a trainable process.&rdquo; Borderline on evidence quality — did every group agree?</p>
+          <p><b>C — approve.</b> &ldquo;The article provides concrete, actionable systems for improving focus and productivity.&rdquo; Borderline on authenticity — the summarizer never sees the affiliate links and course pitch a human reader would. Would you have approved it after reading the whole page?</p>
           <p><b>D — reject.</b> &ldquo;The article discusses the history of citizen science rather than focus, attention, or deep work.&rdquo; Clean, correct, no ambiguity.</p>
+          <p><b>E — reject.</b> &ldquo;The article focuses on general habit formation rather than specific, evidence-backed techniques for focus or deep work.&rdquo; Borderline on topic fit — real research, well-argued, but is habit/willpower close enough to count? The one most likely to split the room.</p>
         </div>
       </details>
     </div>
@@ -1300,7 +1314,8 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
       <b>Speaker note</b>
       QR codes point straight at the source articles — no need to read URLs aloud. The facilitator
       dropdown above is collapsed by default so it stays off the projector; open it only during the
-      compare step. Full write-up, live-tested against the real pipeline: docs/hands-on-exercise.html.
+      compare step. Poll E last — it's the one built to split the room. Full write-up, live-tested
+      against the real pipeline: docs/hands-on-exercise.html.
     </aside>
   </section>
 
