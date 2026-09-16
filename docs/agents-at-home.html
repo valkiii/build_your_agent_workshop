@@ -615,9 +615,9 @@
       Open (title, presenters, agenda, timetable), slides 1–4 — ~3 min · Block A (what is an
       agent, incl. the metaphors on slide 6, the use-cases check on slide 7, the task/workflow/agent
       distinction on slide 9, the live Ollama slide 11, and the model explainer 12), 5–13 — ~17 min ·
-      Block B (why local), 14–15 — ~5 min · hands-on setup (the you-vs-Gemma exercise, then the
-      physical relay), 16–19 — ~3 min to introduce, then straight into the 3:20 hands-on block
-      (full breakdown on slide 4).
+      Block B (why local), 14–15 — ~5 min · hands-on setup (transition, the you-vs-Gemma exercise,
+      then the break-it-on-purpose instructions for the own build), 16–19 — ~3 min to introduce,
+      then straight into the 3:20 hands-on block (full breakdown on slide 4).
       Total talk ~28–30 min before hands-on begins.
       Press <kbd>S</kbd> anytime to hide these notes.
     </aside>
@@ -1231,8 +1231,25 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
   end Block C comment -->
 
+  <!-- 16 ============================================================ -->
+  <section class="slide" id="s16" aria-label="Slide 16: Transition to hands-on">
+    <div class="inner">
+      <p class="eyebrow">Hands-on</p>
+      <p class="statement">Now you're going to be the agent — <span class="c-local">literally</span>.</p>
+      <div class="roles">
+        <span>Scout</span><span>Summarizer</span><span>Judge</span><span>Publisher</span>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      One line, then move — this is the pivot from talk to hands-on. Explain the four roles
+      verbally when you hand out the physical relay (groups of four, one role each, one printed
+      article); the next few slides are for the you-vs-Gemma exercise that follows it.
+    </aside>
+  </section>
+
   <!-- ex1 (hands-on exercise: the prompt) ================================ -->
-  <section class="slide" id="sex1" aria-label="Slide 16: Your turn — the prompt">
+  <section class="slide" id="sex1" aria-label="Slide 17: Your turn — the prompt">
     <div class="inner">
       <p class="eyebrow">Hands-on · You vs. Gemma</p>
       <h2>Judge five articles, then check Gemma's homework</h2>
@@ -1259,7 +1276,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- ex2 (hands-on exercise: the articles) =============================== -->
-  <section class="slide wide" id="sex2" aria-label="Slide 17: Five articles">
+  <section class="slide wide" id="sex2" aria-label="Slide 18: Five articles">
     <div class="inner">
       <p class="eyebrow">Hands-on · You vs. Gemma</p>
       <h2>Five articles — scan and read</h2>
@@ -1275,27 +1292,22 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
         <div class="qrcard">
           <span class="qrslot" data-url="https://www.universityofcalifornia.edu/news/cant-pay-attention-youre-not-alone" role="img" aria-label="QR code linking to the article"></span>
           <p class="qrtitle">A · Can't pay attention? You're not alone</p>
-          <p class="qrpitch">UC Irvine research on shrinking attention spans.</p>
         </div>
         <div class="qrcard">
           <span class="qrslot" data-url="https://calnewport.com/on-the-value-of-hard-focus/" role="img" aria-label="QR code linking to the article"></span>
           <p class="qrtitle">B · On the Value of Hard Focus</p>
-          <p class="qrpitch">Cal Newport on training focus like a muscle.</p>
         </div>
         <div class="qrcard">
           <span class="qrslot" data-url="https://jennakutcherblog.com/productivityhacks/" role="img" aria-label="QR code linking to the article"></span>
           <p class="qrtitle">C · Productivity Hacks That ACTUALLY Work for Me</p>
-          <p class="qrpitch">A lifestyle blogger's own routine, wrapped in affiliate links and course promotion.</p>
         </div>
         <div class="qrcard">
           <span class="qrslot" data-url="https://theconversation.com/aristotle-aelian-and-the-giant-octopus-the-earliest-citizen-science-goes-back-more-than-2-000-years-236709" role="img" aria-label="QR code linking to the article"></span>
           <p class="qrtitle">D · Aristotle, Aelian and the giant octopus</p>
-          <p class="qrpitch">Well-written, well-sourced — and nothing to do with focus.</p>
         </div>
         <div class="qrcard">
           <span class="qrslot" data-url="https://buffer.com/resources/what-the-research-on-habit-formation-reveals-about-willpower-and-overall-well-being/" role="img" aria-label="QR code linking to the article"></span>
           <p class="qrtitle">E · Habit Formation and Willpower</p>
-          <p class="qrpitch">Real cited research — but is "willpower" the same topic as "focus and attention"?</p>
         </div>
       </div>
 
@@ -1319,50 +1331,33 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
     </aside>
   </section>
 
-  <!-- 16 ============================================================ -->
-  <section class="slide" id="s16" aria-label="Slide 18: Transition to hands-on">
-    <div class="inner">
-      <p class="eyebrow">Hands-on</p>
-      <p class="statement">Now you're going to be the agent — <span class="c-local">literally</span>.</p>
-      <div class="roles">
-        <span>Scout</span><span>Summarizer</span><span>Judge</span><span>Publisher</span>
-      </div>
-    </div>
-    <aside class="note">
-      <b>Speaker note</b>
-      One line, then straight to the next slide for the mechanics — don't explain the roles here,
-      let the four-column legend do it.
-    </aside>
-  </section>
 
-  <!-- 16b (relay instructions) ========================================= -->
-  <section class="slide" id="s16b" aria-label="Slide 19: The relay, step by step">
+  <!-- ex3 (own build: break it on purpose) ================================= -->
+  <section class="slide" id="sex3" aria-label="Slide 19: Now break it on purpose">
     <div class="inner">
-      <p class="eyebrow">Hands-on · Getting started</p>
-      <h2>The relay, step by step</h2>
+      <p class="eyebrow">Hands-on · Your own run</p>
+      <h2>Now break it on purpose</h2>
       <div class="demo">
-        <div class="bar">Whole room · 15 minutes</div>
+        <div class="bar">10:45 – 11:30 · Run end-to-end</div>
         <ol>
-          <li><b>1</b><span>Form groups of four.</span></li>
-          <li><b>2</b><span>Each person picks one role: <b>Scout</b>, <b>Summarizer</b>, <b>Judge</b>, or <b>Publisher</b>.</span></li>
-          <li><b>3</b><span>I'll hand each group one printed article.</span></li>
-          <li><b>4</b><span>Run it as a literal relay — Scout reads it and passes on the gist, Summarizer writes two sentences, Judge checks the summary against a written interest statement and approves or rejects it with a reason, Publisher writes the approved one onto the shared page.</span></li>
-          <li><b>5</b><span>One pass through is enough — we're not perfecting it, we're feeling the loop.</span></li>
+          <li><b>1</b><span>Run your own build, start to finish — your prompt (the one you just tuned, or your own from scratch), your sources, for real.</span></li>
+          <li><b>2</b><span>Then break it on purpose: loosen the prompt until junk gets through, or tighten it until nothing survives.</span></li>
+          <li><b>3</b><span>Watch which articles flip, and why — that's the model's judgment changing, not a bug.</span></li>
         </ol>
       </div>
-      <div class="loop-legend" style="margin-top:1.6rem">
-        <div><b>Scout → Perceive</b><p>Notices the article, gets the gist.</p></div>
-        <div><b>Summarizer → Extract</b><p>Pulls out what matters, in two sentences.</p></div>
-        <div><b>Judge → Decide</b><p>Approves or rejects it against the stated interest.</p></div>
-        <div><b>Publisher → Act</b><p>Writes the approved one onto the shared page.</p></div>
+      <div class="demo" style="margin-top:1.4rem">
+        <div class="bar">11:30 – 11:45 · Read &amp; compare</div>
+        <ol>
+          <li><b>4</b><span>Open the result — Calibre, an e-reader, or just your phone. See it in the format it was built for.</span></li>
+          <li><b>5</b><span>Regroup and compare what each track built: what did your prompt keep that a neighbor's rejected?</span></li>
+        </ol>
       </div>
     </div>
     <aside class="note">
       <b>Speaker note</b>
-      Zero setup, zero debugging risk — the point is to make perceive → extract → decide → act a
-      lived experience before anyone touches a laptop. Works identically for coders and non-coders;
-      keep tables mixed so it's a good shared moment before the tracks split at 9:50 (see the timetable,
-      slide 4).
+      The point of "break it on purpose" is to make the model's judgment visible and adjustable, not
+      mysterious — a looser or stricter prompt is a design choice you made, not a bug you introduced.
+      This is also the moment to let people who are stuck ask for help before the final discussion.
     </aside>
   </section>
 
