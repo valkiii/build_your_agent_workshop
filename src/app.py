@@ -107,10 +107,16 @@ interest_prompt = st.text_area(
 )
 
 st.subheader("Blog & feed sources")
+st.caption(
+    "RSS feed URL is optional but strongly recommended: with no feed, discovery falls back to "
+    "scanning the homepage for links, which only works on sites with a simple blog-style layout "
+    "and often finds nothing on major news sites — some of which (e.g. Bloomberg, Reuters) also "
+    "block automated requests outright, RSS or not."
+)
 
 for source in st.session_state.sources:
     sid = source["id"]
-    col1, col2, col3 = st.columns([2, 3, 1])
+    col1, col2, col3, col4 = st.columns([2, 3, 3, 1])
     with col1:
         source["name"] = st.text_input(
             "Name", value=source["name"], key=f"name_{sid}", label_visibility="collapsed"
@@ -121,6 +127,12 @@ for source in st.session_state.sources:
             key=f"url_{sid}", label_visibility="collapsed", placeholder="https://…",
         )
     with col3:
+        rss_value = st.text_input(
+            "RSS feed URL (optional)", value=source.get("rss") or "",
+            key=f"rss_{sid}", label_visibility="collapsed", placeholder="RSS feed URL (optional) — …/feed.xml",
+        )
+        source["rss"] = rss_value.strip() or None
+    with col4:
         if st.button("🗑️", key=f"del_{sid}"):
             st.session_state.sources = [s for s in st.session_state.sources if s["id"] != sid]
             st.rerun()
