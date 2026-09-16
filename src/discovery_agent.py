@@ -41,13 +41,18 @@ def looks_like_real_post(url):
 
 
 def fallback_homepage_scrape(source):
+    """Returns (results, status_note) — status_note is a short human-readable
+    string ("HTTP 200", "HTTP 403", "connection failed (Timeout)", ...) so the
+    caller can report exactly what happened, not just how many articles came
+    back. See discover_new_articles()'s per-source diagnostics."""
     try:
-        html = requests.get(
+        resp = requests.get(
             source["homepage"], headers={"User-Agent": "Mozilla/5.0"}, timeout=10
-        ).text
-    except requests.RequestException:
-        return []
-    soup = BeautifulSoup(html, "html.parser")
+        )
+    except requests.RequestException as e:
+        return [], f"connection failed ({type(e).__name__})"
+    status_note = f"HTTP {resp.status_code}"
+    soup = BeautifulSoup(resp.text, "html.parser")
     links = soup.select("a[href*='/blog/'], a[href*='/post/']")
     seen_urls, results = set(), []
     for a in links:
@@ -66,7 +71,7 @@ def fallback_homepage_scrape(source):
                 "published": None,
             }
         )
-    return results[:10]
+    return results[:10], status_note
 
 
 def discover_new_articles():
@@ -77,20 +82,50 @@ def discover_new_articles():
     cutoff = datetime.now() - timedelta(days=config.DAYS_LOOKBACK)
 
     new_articles = []
+    diagnostics = []  # one dict per source — see diagnostics.py for the report built from this
     for source in config.SOURCES:
-        entries = try_rss(source)
-        if entries is None:
-            print(f"  [{source['name']}] no working RSS feed, falling back to homepage scrape")
-            entries = fallback_homepage_scrape(source)
+        diag = {
+            "name": source.get("name") or "(unnamed source)",
+            "homepage": source.get("homepage", ""),
+            "rss": source.get("rss") or None,
+            "method": None,
+            "detail": None,
+            "error": None,
+            "raw_entries": 0,
+            "after_date_filter": 0,
+            "after_seen_filter": 0,
+        }
+        try:
+            entries = try_rss(source)
+            if entries is None:
+                diag["method"] = "homepage fallback"
+                diag["detail"] = (
+                    "no RSS feed configured for this source"
+                    if not source.get("rss")
+                    else "RSS feed configured but returned no entries"
+                )
+                print(f"  [{source['name']}] no working RSS feed, falling back to homepage scrape")
+                entries, status_note = fallback_homepage_scrape(source)
+                diag["detail"] += f"; homepage fetch: {status_note}"
+            else:
+                diag["method"] = "rss"
+        except Exception as e:
+            diag["method"] = "error"
+            diag["error"] = f"{type(e).__name__}: {e}"
+            entries = []
 
-        for e in entries:
-            if e["url"] in seen:
-                continue
-            if e["published"] and e["published"] < cutoff:
-                continue
-            new_articles.append(e)
+        diag["raw_entries"] = len(entries)
 
-    return new_articles, state
+        after_date = [e for e in entries if not (e["published"] and e["published"] < cutoff)]
+        diag["after_date_filter"] = len(after_date)
+
+        after_seen = [e for e in after_date if e["url"] not in seen]
+        diag["after_seen_filter"] = len(after_seen)
+
+        new_articles.extend(after_seen)
+        diagnostics.append(diag)
+
+    return new_articles, state, diagnostics
 
 
 def mark_as_seen(articles, state):

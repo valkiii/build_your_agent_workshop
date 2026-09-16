@@ -17,6 +17,7 @@ import random
 
 import checkpoint
 import config
+import diagnostics
 from discovery_agent import discover_new_articles, mark_as_seen
 from evaluation_agent import evaluate_article
 from publisher_agent import build_epub
@@ -73,7 +74,7 @@ def main():
         reset_seen()
         print("Forgot previously-seen URLs — every article is fair game again.\n")
 
-    candidates, state = discover_new_articles()
+    candidates, state, discovery_diag = discover_new_articles()
     print(f"Discovered {len(candidates)} new articles within lookback window.")
     if max_approved or max_checked:
         bits = []
@@ -84,7 +85,7 @@ def main():
         print(f"Demo limits: {', '.join(bits)}.")
     print()
 
-    approved, checked = [], 0
+    approved, all_results, checked = [], [], 0
     for c in candidates:
         if max_checked and checked >= max_checked:
             print(f"Reached the check limit ({max_checked}) — stopping.\n")
@@ -104,6 +105,7 @@ def main():
             result["discovery"] = True
             result["reason"] = "random discovery pick (explore)"
             result["tags"] = result.get("tags") or ["Discovery"]
+        all_results.append(result)
         print(f"  -> Summary: {result['summary']}")
         tag = "discovery" if result.get("discovery") else "approved"
         print(f"  -> {tag.title()}: {result['approved']} ({result['reason']})\n")
@@ -124,6 +126,25 @@ def main():
     # silently skip the rest on the next run.
     if not args.no_record:
         mark_as_seen(candidates[:checked], state)
+
+    # Diagnostic report: always saved (cheap, useful history); pointed out
+    # explicitly only when the run came back empty, since that's when it
+    # actually helps to know why.
+    rejections = [r for r in all_results if not r["approved"]]
+    report = diagnostics.format_report(
+        config.INTEREST_PROMPT, discovery_diag,
+        curation={
+            "checked": checked,
+            "approved": len(approved),
+            "sample_rejections": [
+                {"title": r["title"], "reason": r["reason"]} for r in rejections
+            ],
+        },
+    )
+    report_path = diagnostics.save_report(report)
+    if (not candidates or not approved) and report_path:
+        print(f"\nNothing much came out of this run — a diagnostic report was saved to:\n  {report_path}\n"
+              f"Share that file if you're asking for help.")
 
 
 if __name__ == "__main__":

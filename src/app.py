@@ -9,6 +9,7 @@
 import os
 import random
 import uuid
+from datetime import datetime
 
 import streamlit as st
 
@@ -17,6 +18,7 @@ import autoquit
 import categories
 import checkpoint
 import config
+import diagnostics
 import feedback
 import settings
 from discovery_agent import discover_new_articles, mark_as_seen
@@ -226,7 +228,7 @@ if st.button("▶️ Run the agent"):
     limit_checked = int(max_checked) or None
 
     with st.spinner("Discovering new articles..."):
-        candidates, state = discover_new_articles()
+        candidates, state, discovery_diag = discover_new_articles()
 
     st.write(f"Found **{len(candidates)}** new articles to check.")
 
@@ -305,6 +307,31 @@ if st.button("▶️ Run the agent"):
                                file_name=os.path.basename(cp_path))
     else:
         st.warning("No articles matched your interest this run.")
+
+    # Diagnostic report: what each source actually returned, and (if any
+    # articles were checked) why the model approved or rejected each one.
+    # Always saved to logs/ as a paper trail; surfaced as a download whenever
+    # the run came back emptier than expected, since that's exactly the
+    # "why did I get 0 articles" question this can't otherwise answer.
+    rejections = [r for r in all_results if not r["approved"]]
+    report_text = diagnostics.format_report(
+        interest_prompt, discovery_diag,
+        curation={
+            "checked": checked, "approved": len(approved),
+            "sample_rejections": [{"title": r["title"], "reason": r["reason"]} for r in rejections],
+        },
+    )
+    diagnostics.save_report(report_text)
+    empty_run = not candidates or not approved
+    with st.expander("🩺 Diagnostic report" + (" — got 0 articles? start here" if empty_run else ""),
+                      expanded=empty_run):
+        st.caption("What each source actually returned, and why. Download this and send it "
+                   "to your facilitator if something looks wrong — it's also auto-saved to logs/.")
+        st.download_button(
+            "⬇️ Download diagnostic report", report_text,
+            file_name=datetime.now().strftime("diagnostic-report-%Y%m%d-%H%M%S.txt"),
+        )
+        st.code(report_text, language=None)
 
 # --- Review the last run and refine the interest prompt from it -------------
 if st.session_state.get("last_results"):

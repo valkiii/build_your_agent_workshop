@@ -21,6 +21,7 @@ MODEL_NAME = "gemma4:e2b"
 DAYS_LOOKBACK = 30
 STATE_FILE = str(PROJECT_ROOT / "state.json")
 OUTPUT_DIR = str(PROJECT_ROOT / "output")
+LOGS_DIR = str(PROJECT_ROOT / "logs")  # per-run diagnostic reports, see diagnostics.py
 
 # --- Demo limits --------------------------------------------------------------
 # Keep a live demo short: stop a run early instead of grinding through every

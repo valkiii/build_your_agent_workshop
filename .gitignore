@@ -17,6 +17,7 @@ my_settings.json
 feedback.json
 output/
 voices/
+logs/
 /Content Curator.app/
 
 # OS / editor cruft
