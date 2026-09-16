@@ -69,7 +69,14 @@
 
   * { box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
+  /* the whole stylesheet is rem-based, so scaling the root font-size is a
+     single lever that scales every size in the deck (type, padding, gaps,
+     radii) together as the window resizes — 14px on a narrow/half window
+     up to 20px on a wide one or a projector, ~16.6px at a typical 1440px
+     laptop width so nothing jumps at the common case. The headline
+     elements (h1/h2/.statement/.lead/.kicker-line) already had their own
+     vw-based clamp()s on top of this — those stay independently fluid. */
+  html { font-size: clamp(14px, 0.6vw + 8px, 20px); scroll-behavior: smooth; scroll-snap-type: y proximity; }
 
   body {
     margin: 0;
@@ -576,17 +583,17 @@
   <section class="slide" id="s1b" aria-label="Slide 2: Meet your presenters">
     <div class="inner">
       <p class="eyebrow">Today</p>
-      <h2>Who&rsquo;s talking</h2>
+      <h2>Today&rsquo;s Helpers</h2>
       <div class="intro-grid">
         <div>
           <p class="intro-name">Valerio Ciotti</p>
           <div class="intro-photo"><img src="Valerio.png" alt="Valerio Ciotti" style="object-position: 40% 20%;" onerror="this.onerror=null;this.src='/_blob/a5e498f18c3095ebaeae650ac1a446ca';"></div>
-          <p class="intro-bio">One or two sentences about Valerio — role, background, what you bring to today&rsquo;s session.</p>
+          <p class="intro-bio">Team lead for the Consumer and Affluent Data Science Team.</p>
         </div>
         <div>
           <p class="intro-name">Veeraraghavan Veerasubramanian</p>
           <div class="intro-photo"><img src="Veera.png" alt="Veeraraghavan Veerasubramanian" style="object-position: 45% 25%;" onerror="this.onerror=null;this.src='/_blob/967fc6f12a3192a696830e9e77e331b6';"></div>
-          <p class="intro-bio">One or two sentences about Veeraraghavan — role, background, what you bring to today&rsquo;s session.</p>
+          <p class="intro-bio">Senior Data Scientist for the Consumer and Affluent Data Science Team.</p>
         </div>
       </div>
     </div>
@@ -634,12 +641,12 @@
         <div class="tt-row">
           <div class="tt-time">9:45 – 10:00</div>
           <div class="tt-dot"></div>
-          <div class="tt-activity">What are we going to build today? A showcase of the agent</div>
+          <div class="tt-activity">What are we going to build today? An agent's demo.</div>
         </div>
         <div class="tt-row">
           <div class="tt-time">10:00 – 10:30</div>
           <div class="tt-dot"></div>
-          <div class="tt-activity">&ldquo;Be the agent&rdquo; activity. Understand what the agent does and how it makes decisions.</div>
+          <div class="tt-activity">Activity: &ldquo;Be the agent&rdquo;. Understand what the agent does and how it makes decisions.</div>
         </div>
         <div class="tt-row">
           <div class="tt-time">10:30 – 10:45</div>
