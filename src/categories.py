@@ -67,4 +67,30 @@ CATEGORIES = {
         {"name": "Legal Nomads", "homepage": "https://www.legalnomads.com/", "rss": "https://www.legalnomads.com/feed/"},
         {"name": "Atlas Obscura", "homepage": "https://www.atlasobscura.com/", "rss": "https://www.atlasobscura.com/feeds/latest"},
     ],
+    "Board Games": [
+        {"name": "Shut Up & Sit Down", "homepage": "https://www.shutupandsitdown.com/", "rss": "https://www.shutupandsitdown.com/feed/"},
+        {"name": "Dicebreaker", "homepage": "https://www.dicebreaker.com/", "rss": "https://www.dicebreaker.com/feed"},
+        {"name": "Meeple Mountain", "homepage": "https://www.meeplemountain.com/", "rss": "https://www.meeplemountain.com/feed/"},
+        {"name": "Opinionated Gamers", "homepage": "https://opinionatedgamers.com/", "rss": "https://opinionatedgamers.com/feed/"},
+        {"name": "iSlaytheDragon", "homepage": "https://islaythedragon.com/", "rss": "https://islaythedragon.com/feed/"},
+    ],
+    "Fantasy": [
+        {"name": "The Fantasy Hive", "homepage": "https://fantasy-hive.co.uk/", "rss": "https://fantasy-hive.co.uk/feed/"},
+        {"name": "Grimdark Magazine", "homepage": "https://www.grimdarkmagazine.com/", "rss": "https://www.grimdarkmagazine.com/feed/"},
+        {"name": "FanFiAddict", "homepage": "https://fanfiaddict.com/", "rss": "https://fanfiaddict.com/feed/"},
+        {"name": "Fantasy Book Critic", "homepage": "https://fantasybookcritic.blogspot.com/", "rss": "https://fantasybookcritic.blogspot.com/feeds/posts/default"},
+    ],
+    "Retirement": [
+        {"name": "The Retirement Manifesto", "homepage": "https://www.theretirementmanifesto.com/", "rss": "https://www.theretirementmanifesto.com/feed/"},
+        {"name": "Root of Good", "homepage": "https://rootofgood.com/", "rss": "https://rootofgood.com/feed/"},
+        {"name": "Retirement Researcher", "homepage": "https://retirementresearcher.com/", "rss": "https://retirementresearcher.com/feed/"},
+        {"name": "Kiplinger (retirement)", "homepage": "https://www.kiplinger.com/retirement", "rss": "https://www.kiplinger.com/feeds.xml"},
+    ],
+    "Fashion": [
+        {"name": "Who What Wear", "homepage": "https://www.whowhatwear.com/", "rss": "https://www.whowhatwear.com/feeds.xml"},
+        {"name": "The Sartorialist", "homepage": "https://www.thesartorialist.com/", "rss": "https://www.thesartorialist.com/feed/"},
+        {"name": "Highsnobiety", "homepage": "https://www.highsnobiety.com/", "rss": "https://www.highsnobiety.com/feed/"},
+        {"name": "FashionBeans", "homepage": "https://www.fashionbeans.com/", "rss": "https://www.fashionbeans.com/feed/"},
+        {"name": "The Zoe Report", "homepage": "https://www.thezoereport.com/", "rss": "https://www.thezoereport.com/rss"},
+    ],
 }
