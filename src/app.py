@@ -92,11 +92,26 @@ with st.expander("🤖 New here? Ask the assistant to help you set this up"):
         if st.button("✅ Use these suggestions"):
             if sugg_interest:
                 st.session_state["interest_prompt"] = sugg_interest
+            dropped_names = []
             if sugg_sources:
-                st.session_state.sources = [{**s, "id": _new_id()} for s in sugg_sources]
+                with st.spinner("Checking that the suggested sites are real…"):
+                    verified, dropped = assistant.verify_sources(sugg_sources)
+                dropped_names = [s["name"] for s in dropped]
+                # if every single one failed, a flaky connection right now is more
+                # likely than every suggestion being invented — keep them rather
+                # than leaving the source list empty
+                st.session_state.sources = [
+                    {**s, "id": _new_id()} for s in (verified or sugg_sources)
+                ]
             # persist so it survives closing / re-opening the app
             settings.save(st.session_state["interest_prompt"], st.session_state.sources)
-            st.toast("Applied and saved.")
+            if dropped_names:
+                st.toast(
+                    "Applied and saved — dropped " + ", ".join(dropped_names)
+                    + " (doesn't look like a real, reachable site).", icon="⚠️",
+                )
+            else:
+                st.toast("Applied and saved.")
             st.rerun()
 
 st.subheader("What are you interested in reading about?")
