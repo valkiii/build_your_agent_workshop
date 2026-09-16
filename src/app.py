@@ -14,6 +14,7 @@ import streamlit as st
 
 import assistant
 import autoquit
+import categories
 import checkpoint
 import config
 import feedback
@@ -56,6 +57,27 @@ with st.sidebar:
     if st.button("⏻ Quit the app"):
         st.write("Stopping… you can close this tab.")
         autoquit.quit_now()
+
+    st.divider()
+    st.subheader("📚 Categories")
+    st.caption("Ready-made sources, each with a real RSS feed already tested — click to add a whole topic at once.")
+    for cat_name, cat_sources in categories.CATEGORIES.items():
+        with st.expander(cat_name):
+            for s in cat_sources:
+                st.caption(f"• {s['name']}")
+            if st.button("➕ Add these", key=f"cat_{cat_name}"):
+                have = {s.get("homepage") for s in st.session_state.sources}
+                new_ones = [
+                    {**s, "id": _new_id()} for s in cat_sources
+                    if s["homepage"] not in have
+                ]
+                st.session_state.sources.extend(new_ones)
+                settings.save(st.session_state["interest_prompt"], st.session_state.sources)
+                if new_ones:
+                    st.toast(f"Added {len(new_ones)} source(s) from {cat_name}.")
+                else:
+                    st.toast("Already in your source list.")
+                st.rerun()
 
 # ============================================================================
 #  Step 1 — Curate
