@@ -13,13 +13,33 @@ from state import load_state, save_state
 
 
 def try_rss(source):
-    """Return a list of article dicts from the source's RSS feed, or None if it
-    has no usable feed (so the caller can fall back to homepage scraping)."""
+    """Returns (entries_or_None, diag) — entries is None when there's no usable
+    feed (so the caller falls back to homepage scraping); diag is a short
+    string describing what actually happened, for the diagnostic report.
+
+    Fetches over `requests` (a browser-like User-Agent + a real 10s timeout)
+    rather than letting feedparser make its own bare network request:
+    feedparser's default request carries an identifying User-Agent
+    ("feedparser/...") and has no timeout, either of which can make a feed
+    silently come back empty on a stricter network or corporate proxy with no
+    error surfacing anywhere — confirmed live: a participant got 0 entries
+    from four feeds that worked fine moments earlier from a different
+    network, with no way to tell why from the old report."""
     if not source.get("rss"):
-        return None
-    feed = feedparser.parse(source["rss"])
-    if not feed.entries:  # tolerate feed.bozo — many valid feeds set it over trivia
-        return None
+        return None, "no RSS URL configured"
+    try:
+        resp = requests.get(
+            source["rss"], headers={"User-Agent": "Mozilla/5.0"}, timeout=10
+        )
+    except requests.RequestException as e:
+        return None, f"feed request failed: {type(e).__name__}: {e}"
+    feed = feedparser.parse(resp.content)
+    diag = f"HTTP {resp.status_code}"
+    bozo_exc = feed.get("bozo_exception")
+    if bozo_exc:
+        diag += f"; parse issue: {type(bozo_exc).__name__}: {bozo_exc}"
+    if not feed.entries:  # tolerate feed.bozo over trivia when entries ARE present
+        return None, f"feed returned 0 entries ({diag})"
     return [
         {
             "url": e.link,
@@ -30,7 +50,7 @@ def try_rss(source):
             else None,
         }
         for e in feed.entries
-    ]
+    ], diag
 
 
 def looks_like_real_post(url):
@@ -96,19 +116,16 @@ def discover_new_articles():
             "after_seen_filter": 0,
         }
         try:
-            entries = try_rss(source)
+            entries, rss_diag = try_rss(source)
             if entries is None:
                 diag["method"] = "homepage fallback"
-                diag["detail"] = (
-                    "no RSS feed configured for this source"
-                    if not source.get("rss")
-                    else "RSS feed configured but returned no entries"
-                )
+                diag["detail"] = f"RSS: {rss_diag}"
                 print(f"  [{source['name']}] no working RSS feed, falling back to homepage scrape")
                 entries, status_note = fallback_homepage_scrape(source)
                 diag["detail"] += f"; homepage fetch: {status_note}"
             else:
                 diag["method"] = "rss"
+                diag["detail"] = rss_diag
         except Exception as e:
             diag["method"] = "error"
             diag["error"] = f"{type(e).__name__}: {e}"
