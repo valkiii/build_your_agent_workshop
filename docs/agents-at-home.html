@@ -619,8 +619,9 @@
     <aside class="note">
       <b>Run of show</b>
       Open (title, presenters, agenda, timetable), slides 1–4 — ~3 min · Block A (what is an
-      agent, incl. the metaphors on slide 6, the use-cases check on slide 7, the task/workflow/agent
-      distinction on slide 9, the live Ollama slide 11, and the model explainer 12), 5–13 — ~17 min ·
+      agent, incl. chatbot-vs-agent on slide 6, the metaphors on slide 7, the use-cases check
+      on slide 8, the task/workflow/agent distinction on slide 9, the live Ollama slide 11,
+      and the model explainer 12), 5–13 — ~17 min ·
       Block B (why local), 14–15 — ~5 min · hands-on setup (transition, the you-vs-Gemma exercise,
       what to click, then the break-it-on-purpose instructions for the own build), 16–20 —
       ~3 min to introduce, then straight into the 3:20 hands-on block (full breakdown on slide 4).
@@ -730,84 +731,8 @@
     </div>
   </section>
 
-  <!-- 3b (what is an agent?) ============================================ -->
-  <section class="slide" id="s3b" aria-label="Slide 6: What is an agent?">
-    <div class="inner">
-      <p class="eyebrow">Block A · What is an agent?</p>
-      <h2>What actually is an agent?</h2>
-      <p class="lead">Strip away the hype: an agent is software that <b>perceives</b> something, <b>decides</b>
-        what it means, and <b>acts</b> — on its own, in a loop — instead of waiting for you to do each step
-        by hand.</p>
-      <div class="agent-egs">
-        <div>
-          <span class="aicon">🌡️</span>
-          <b>A thermostat</b>
-          <p>Perceives the room's temperature, decides it's too cold, acts by turning on the heat. No AI
-            involved — the simplest possible agent.</p>
-        </div>
-        <div>
-          <span class="aicon">🧹</span>
-          <b>A robot vacuum</b>
-          <p>Perceives a wall through a bump sensor, decides to turn, acts by changing direction. Still
-            just a loop.</p>
-        </div>
-        <div>
-          <span class="aicon">📚</span>
-          <b>Today's build</b>
-          <p>Perceives a new article, decides — using a language model's judgment — whether it matches your
-            interest, acts by adding it to your book.</p>
-        </div>
-      </div>
-    </div>
-    <aside class="note">
-      <b>Speaker note</b>
-      The point of this slide: "agent" isn't a new idea invented for AI — thermostats and Roombas have been
-      agents for decades. What's new is using a language model for the "decide" step, so it can handle
-      judgment calls a fixed rule can't. Set that up here; the next few slides build on it.
-    </aside>
-  </section>
-
-  <!-- 7b (use cases, builds) =========================================== -->
-  <section class="slide" id="s7b" aria-label="Slide 7: Is this actually an agent problem?">
-    <div class="inner">
-      <p class="eyebrow">Block A · What is an agent?</p>
-      <h2>Is this actually an agent problem?</h2>
-      <p class="lead">The perceive → decide → act loop is worth the extra complexity only when
-        "decide" needs real judgment. A quick gut check <span class="c-local">↓</span></p>
-      <div class="usecases">
-        <div class="usecase usecase--good reveal">
-          <p class="usetag">✓ Good fit for an agent</p>
-          <p class="usewhy">The output depends on judgment a script can't cheaply encode.</p>
-          <ul class="uselist">
-            <li>Read a stack of PDFs and pull out the ones that actually match a research question</li>
-            <li>Triage support tickets by what the person actually means, not a keyword match</li>
-            <li>Draft a first-pass reply that references the right internal doc</li>
-            <li>Turn a messy meeting transcript into real action items</li>
-          </ul>
-        </div>
-        <div class="usecase usecase--bad reveal">
-          <p class="usetag">✗ Not an agent problem</p>
-          <p class="usewhy">The rule already exists — writing it down is the whole job.</p>
-          <ul class="uselist">
-            <li>Track a price on a page and alert if it drops below a number — a scheduled script + if/else</li>
-            <li>Rename ten thousand files to a fixed pattern</li>
-            <li>Poll an API every five minutes and log the response</li>
-            <li>Check that a CSV's columns match a fixed schema</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <aside class="note">
-      <b>Speaker note</b>
-      Both blocks start off-screen — press ↓ (or click one) to slide up the green one, ↓ again for
-      the red one; ↑ un-reveals them in reverse before it starts moving you back through the deck.
-      The price-tracker line is a real, deliberately boring example — resisting the temptation to
-      reach for an LLM when a five-line script would do is one of the running themes of the day.
-    </aside>
-  </section>
-
   <!-- 4 ============================================================= -->
-  <section class="slide" id="s4" aria-label="Slide 8: Chatbot vs Agent">
+  <section class="slide" id="s4" aria-label="Slide 6: Chatbot vs Agent">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>Chatbot vs. agent</h2>
@@ -864,6 +789,82 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- 3b (what is an agent?) ============================================ -->
+  <section class="slide" id="s3b" aria-label="Slide 7: What is an agent?">
+    <div class="inner">
+      <p class="eyebrow">Block A · What is an agent?</p>
+      <h2>What actually is an agent?</h2>
+      <p class="lead">Strip away the hype: an agent is software that <b>perceives</b> something, <b>decides</b>
+        what it means, and <b>acts</b> — on its own, in a loop — instead of waiting for you to do each step
+        by hand.</p>
+      <div class="agent-egs">
+        <div>
+          <span class="aicon">🌡️</span>
+          <b>A thermostat</b>
+          <p>Perceives the room's temperature, decides it's too cold, acts by turning on the heat. No AI
+            involved — the simplest possible agent.</p>
+        </div>
+        <div>
+          <span class="aicon">🧹</span>
+          <b>A robot vacuum</b>
+          <p>Perceives a wall through a bump sensor, decides to turn, acts by changing direction. Still
+            just a loop.</p>
+        </div>
+        <div>
+          <span class="aicon">📚</span>
+          <b>Today's build</b>
+          <p>Perceives a new article, decides — using a language model's judgment — whether it matches your
+            interest, acts by adding it to your book.</p>
+        </div>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      The point of this slide: "agent" isn't a new idea invented for AI — thermostats and Roombas have been
+      agents for decades. What's new is using a language model for the "decide" step, so it can handle
+      judgment calls a fixed rule can't. Set that up here; the next few slides build on it.
+    </aside>
+  </section>
+
+  <!-- 7b (use cases, builds) =========================================== -->
+  <section class="slide" id="s7b" aria-label="Slide 8: Is this actually an agent problem?">
+    <div class="inner">
+      <p class="eyebrow">Block A · What is an agent?</p>
+      <h2>Is this actually an agent problem?</h2>
+      <p class="lead">The perceive → decide → act loop is worth the extra complexity only when
+        "decide" needs real judgment. A quick gut check <span class="c-local">↓</span></p>
+      <div class="usecases">
+        <div class="usecase usecase--good reveal">
+          <p class="usetag">✓ Good fit for an agent</p>
+          <p class="usewhy">The output depends on judgment a script can't cheaply encode.</p>
+          <ul class="uselist">
+            <li>Read a stack of PDFs and pull out the ones that actually match a research question</li>
+            <li>Triage support tickets by what the person actually means, not a keyword match</li>
+            <li>Draft a first-pass reply that references the right internal doc</li>
+            <li>Turn a messy meeting transcript into real action items</li>
+          </ul>
+        </div>
+        <div class="usecase usecase--bad reveal">
+          <p class="usetag">✗ Not an agent problem</p>
+          <p class="usewhy">The rule already exists — writing it down is the whole job.</p>
+          <ul class="uselist">
+            <li>Track a price on a page and alert if it drops below a number — a scheduled script + if/else</li>
+            <li>Rename ten thousand files to a fixed pattern</li>
+            <li>Poll an API every five minutes and log the response</li>
+            <li>Check that a CSV's columns match a fixed schema</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      Both blocks start off-screen — press ↓ (or click one) to slide up the green one, ↓ again for
+      the red one; ↑ un-reveals them in reverse before it starts moving you back through the deck.
+      The price-tracker line is a real, deliberately boring example — resisting the temptation to
+      reach for an LLM when a five-line script would do is one of the running themes of the day.
+    </aside>
   </section>
 
   <!-- 4b ============================================================ -->
@@ -1608,7 +1609,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
 </script>
 
 <script>
-  // The "Chatbot vs Agent" slide's (#s4, currently slide 8) chat/agent demo
+  // The "Chatbot vs Agent" slide's (#s4, currently slide 6) chat/agent demo
   // plays once, the first time you land on the slide, then holds still
   // (see the #s4.play rules in the CSS). Reduced
   // motion shows the finished state immediately instead (own CSS override) —
