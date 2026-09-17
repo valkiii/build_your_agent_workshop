@@ -2,6 +2,17 @@
 
 No coding experience needed. Set aside about 20 minutes — mostly waiting for downloads.
 
+**Quick reference — what to double-click, and when:**
+
+| When | Mac | Windows |
+|---|---|---|
+| First time ever (one-time setup) | `run_app.command` | `run_app.bat` |
+| Every time after that | `Content Curator.app` | `Content Curator.vbs` |
+| Ahead of time, without opening the app | `setup.command` | `setup.bat` |
+
+No terminal, no typing, ever — just double-clicking. The rest of this guide walks
+through each of those in order.
+
 ---
 
 ## Step 1 — Download the workshop project
