@@ -5,7 +5,7 @@ CONTENT CURATOR — QUICK START
 
 2. Open the folder and double-click:
 
-     Mac      ->  run_app.command      (first time: right-click -> Open)
+     Mac      ->  run_app.command      (first time: see "Mac security warning" below)
      Windows  ->  run_app.bat
 
 That's it. The first run sets everything up for you — installs Python and Ollama
@@ -15,6 +15,13 @@ Python/Ollama install — click Yes.
 
   Mac without Homebrew: the window opens the Python and Ollama download pages
   instead. Install those two, then double-click run_app.command again.
+
+  Mac security warning: macOS will likely say run_app.command (or setup.command)
+  "can't be opened" because Apple can't verify it. Click Done, NOT "Move to
+  Trash". Then: System Settings -> Privacy & Security -> scroll to Security ->
+  click "Open Anyway" next to the file's name -> enter your password -> double-
+  click the file again and click Open. One-time; do it soon after the warning
+  shows, the "Open Anyway" button disappears after about an hour.
 
 After the first run, use the launcher it drops next to these files:
   Mac      ->  Content Curator.app

@@ -31,9 +31,14 @@ Open the folder and double-click:
 
 - **Windows**: `run_app.bat`
 - **Mac**: `run_app.command`
-  *(First time only: if double-clicking does nothing or shows a security
-  warning, right-click the file instead → **"Open"** → confirm. A one-time
-  macOS step for downloaded files.)*
+  *(First time only: macOS will likely say it "can't be opened" because
+  Apple can't verify the file. Click **Done** — not "Move to Trash." Then
+  open **System Settings → Privacy & Security**, scroll down to **Security**,
+  and you'll see `run_app.command` listed with an **Open Anyway** button —
+  click it, enter your Mac password, then double-click the file once more
+  and click **Open** on the final confirmation. This is a one-time step —
+  do it fairly soon after the warning appears, since the "Open Anyway"
+  option disappears after about an hour.)*
 
 A black window opens and shows progress. **The first time, it sets everything
 up for you:**
@@ -75,6 +80,10 @@ The AI-model download is the slow part. To get it out of the way before the
 session, double-click **`setup.bat`** (Windows) / **`setup.command`** (Mac)
 instead — same setup, but it stops when it's done rather than opening the app.
 When it says **"All done! Setup complete"**, you're set.
+
+*(Mac, first time only: `setup.command` can trigger the same "can't be opened"
+warning as `run_app.command` — see the fix under Step 2 above, it's the exact
+same steps for this file too.)*
 
 ---
 

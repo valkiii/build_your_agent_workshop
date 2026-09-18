@@ -9,8 +9,13 @@
 #    - the AI model  (a few GB — this is the slow part)
 #  After that, it just opens the app.
 #
-#  First time only: if double-clicking does nothing or shows a security
-#  warning, right-click this file and choose "Open" instead.
+#  First time only: macOS will likely say this file "can't be opened"
+#  because Apple can't verify it. Click Done (NOT "Move to Trash"), then:
+#  System Settings -> Privacy & Security -> Security -> "Open Anyway" next
+#  to this file's name -> enter your password -> double-click again -> Open.
+#  Do this soon after the warning appears — "Open Anyway" disappears after
+#  about an hour. (Right-click -> Open no longer bypasses this on current
+#  macOS — Apple removed that shortcut.)
 # ============================================================================
 cd "$(dirname "$0")" || exit 1
 
