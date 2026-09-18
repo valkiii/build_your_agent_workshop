@@ -839,16 +839,6 @@
       <p class="lead">The perceive → decide → act loop is worth the extra complexity only when
         "decide" needs real judgment. A quick gut check <span class="c-local">↓</span></p>
       <div class="usecases">
-        <div class="usecase usecase--good reveal">
-          <p class="usetag">✓ Good fit for an agent</p>
-          <p class="usewhy">The output depends on judgment a script can't cheaply encode.</p>
-          <ul class="uselist">
-            <li>Read a stack of PDFs and pull out the ones that actually match a research question</li>
-            <li>Triage support tickets by what the person actually means, not a keyword match</li>
-            <li>Draft a first-pass reply that references the right internal doc</li>
-            <li>Turn a messy meeting transcript into real action items</li>
-          </ul>
-        </div>
         <div class="usecase usecase--bad reveal">
           <p class="usetag">✗ Not an agent problem</p>
           <p class="usewhy">The rule already exists — writing it down is the whole job.</p>
@@ -857,6 +847,16 @@
             <li>Rename ten thousand files to a fixed pattern</li>
             <li>Pull an API every five minutes and log the response</li>
             <li>Check that a CSV's columns match a fixed schema</li>
+          </ul>
+        </div>
+        <div class="usecase usecase--good reveal">
+          <p class="usetag">✓ Good fit for an agent</p>
+          <p class="usewhy">The output depends on judgment a script can't cheaply encode.</p>
+          <ul class="uselist">
+            <li>Read a stack of PDFs and pull out the ones that actually match a research question</li>
+            <li>Triage support tickets by what the person actually means, not a keyword match</li>
+            <li>Draft a first-pass reply that references the right internal doc</li>
+            <li>Turn a messy meeting transcript into real action items</li>
           </ul>
         </div>
       </div>
@@ -882,7 +882,6 @@
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>Task, workflow, or agent?</h2>
-      <p class="lead">Anthropic draws a sharper line than the industry usually does:</p>
       <div class="twagrid">
         <div class="track">
           <div class="row">
@@ -891,7 +890,7 @@
           </div>
           <div class="row">
             <span class="k">Workflow</span>
-            <span class="v">Several model calls, chained through a control flow you wrote in code. The model fills in judgment at fixed points; you decided the order.</span>
+            <span class="v">Several model calls, chained through control flow you wrote — judgment at fixed points you decided.</span>
           </div>
           <div class="row">
             <span class="k">Agent</span>
@@ -900,16 +899,21 @@
         </div>
         <div class="twaside">
           <p class="kicker-line">The system we built today is a <span class="c-local">workflow</span>, not an agent.</p>
-          <p>That's about how our <em>code</em> uses the model — not a limit of Gemma itself. Our code hardcodes: discover → scrape → summarize → decide → publish, every run, same order. The model only fills in two judgment slots — "what's this about" and "does it match" — everything else, including writing the EPUB, is plain deterministic code. The same model could power a true agent, if the code let it choose its own next steps instead of following ours.</p>
+          <p>Our code hardcodes the order — <span class="c-local">discover → scrape → summarize → decide → publish</span>, every run. The model only fills in judgment; everything else is plain code. Same model, different code, and this could be a real agent instead.</p>
           <div class="callout">
-            <b>That's not a flaw — it's the right call.</b> Anthropic's own guidance recommends workflows over agents for well-defined tasks like this one: more predictable, cheaper, and errors don't compound the way they can when a model freely decides its own next steps. Full agentic autonomy is the harder, more expensive option — saved for genuinely open-ended problems.
+            <b>Not a flaw — the right call.</b> Anthropic recommends workflows for well-defined tasks like this one: predictable, cheap, errors don't compound. Full agentic autonomy is for genuinely open-ended problems.
           </div>
         </div>
       </div>
     </div>
     <aside class="note">
       <b>Speaker note</b>
-      Good moment for a closing provocation: "What would make this a real agent? Letting the model decide which sources to check, or whether to retry a failed scrape differently, based on its own judgment at runtime — rather than your fixed code."
+      "Not building/training the LLM" is NOT why this is a workflow, not an agent — using a
+      pre-trained model is normal either way. The real line: who decides what happens next.
+      Here, our code picks the order, always the same. A real agent would have the model
+      itself decide — e.g. which source to check next, or whether to retry a failed scrape —
+      at runtime, not something we wrote in advance. Good moment for a provocation: "What
+      would make this a real agent?"
     </aside>
   </section>
 
