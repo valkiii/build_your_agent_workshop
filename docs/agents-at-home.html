@@ -239,7 +239,7 @@
   #s4b { overflow: hidden; }
   #sdemo { overflow: hidden; }
 
-  /* shared background-video treatment — slide 1 and slide 9 each drop a
+  /* shared background-video treatment — slide 1 and slide 10 each drop a
      <video class="bgvideo"> in as their first child; same alpha .4, cover,
      sits behind the slide's own in-flow content via negative z-index */
   .bgvideo {
@@ -595,7 +595,7 @@
 
 <canvas class="bg-net" aria-hidden="true"></canvas>
 <div class="progress" id="progress" aria-hidden="true"></div>
-<div class="counter" aria-hidden="true"><b id="cur">01</b> / 21</div>
+<div class="counter" aria-hidden="true"><b id="cur">01</b> / 22</div>
 <div class="wordmark" aria-hidden="true">Build your agent</div>
 <div class="chrome">
   <button id="notesBtn" type="button" aria-pressed="false">Speaker notes <kbd>S</kbd></button>
@@ -620,14 +620,14 @@
     <div class="scrollcue" aria-hidden="true">Scroll to begin ↓</div>
     <aside class="note">
       <b>Run of show</b>
-      Open (title, presenters, agenda, timetable), slides 1–4 — ~3 min · Block A (what is an
-      agent, incl. chatbot-vs-agent on slide 6, the metaphors on slide 7, the use-cases check
-      on slide 8, the task/workflow/agent distinction on slide 9, the live Ollama slide 11,
-      and the model explainer 12), 5–13 — ~17 min ·
-      Block B (why local), 14–15 — ~5 min · demo time, 16 · hands-on setup (transition, the
+      Open (title, presenters, agenda, goals, timetable), slides 1–5 — ~3 min · Block A (what is
+      an agent, incl. chatbot-vs-agent on slide 7, the metaphors on slide 8, the use-cases check
+      on slide 9, the task/workflow/agent distinction on slide 10, the live Ollama slide 12,
+      and the model explainer 13), 6–14 — ~17 min ·
+      Block B (why local), 15–16 — ~5 min · demo time, 17 · hands-on setup (transition, the
       you-vs-Gemma exercise, what to click, then the break-it-on-purpose instructions for the
-      own build), 17–21 — ~3 min to introduce, then straight into the 3:20 hands-on block
-      (full breakdown on slide 4).
+      own build), 18–22 — ~3 min to introduce, then straight into the 3:20 hands-on block
+      (full breakdown on slide 5).
       Total talk ~28–30 min before hands-on begins.
       Press <kbd>S</kbd> anytime to hide these notes.
     </aside>
@@ -677,12 +677,40 @@
     <aside class="note">
       <b>Speaker note</b>
       Say the "nothing leaves your machine" line out loud, slowly. It's a genuine hook for a technical
-      room, and it sets up the "why local" block later — you'll call back to it on slide 14.
+      room, and it sets up the "why local" block later — you'll call back to it on slide 15.
+    </aside>
+  </section>
+
+  <!-- 2c (goals of the day) ============================================ -->
+  <section class="slide" id="s2c" aria-label="Slide 4: What today is actually for">
+    <div class="inner">
+      <p class="eyebrow">Today</p>
+      <h2>What today is actually for</h2>
+      <div class="reasons">
+        <div class="reason">
+          <h3>Explore</h3>
+          <p>Get inspired to use things locally — test it, break it, repair it, poke around.</p>
+        </div>
+        <div class="reason">
+          <h3>Enjoy</h3>
+          <p>Give yourself permission to just enjoy spending the time discovering what's possible.</p>
+        </div>
+        <div class="reason">
+          <h3>Automate</h3>
+          <p>Leave with one part of your own life a little more improved, or automated.</p>
+        </div>
+      </div>
+    </div>
+    <aside class="note">
+      <b>Speaker note</b>
+      Not a technical slide — a permission slide. Say it plainly: today isn't graded, there's
+      no "correct" outcome. If someone leaves having just enjoyed poking at something local, or
+      with one small automation idea for their own life, that's the whole win.
     </aside>
   </section>
 
   <!-- 2b (timetable) ================================================== -->
-  <section class="slide wide" id="s2b" aria-label="Slide 4: Workshop timetable">
+  <section class="slide wide" id="s2b" aria-label="Slide 5: Workshop timetable">
     <div class="inner">
       <p class="eyebrow">Today</p>
       <h2>The full 3 hours</h2>
@@ -727,7 +755,7 @@
   </section>
 
   <!-- 3 ============================================================= -->
-  <section class="slide" id="s3" aria-label="Slide 5: The hook">
+  <section class="slide" id="s3" aria-label="Slide 6: The hook">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <p class="statement long">You've all used a chatbot. Today we build something that <span class="c-local">does&nbsp;things</span>, not just answers.</p>
@@ -735,7 +763,7 @@
   </section>
 
   <!-- 4 ============================================================= -->
-  <section class="slide" id="s4" aria-label="Slide 6: Chatbot vs Agent">
+  <section class="slide" id="s4" aria-label="Slide 7: Chatbot vs Agent">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>Chatbot vs. agent</h2>
@@ -795,7 +823,7 @@
   </section>
 
   <!-- 3b (what is an agent?) ============================================ -->
-  <section class="slide" id="s3b" aria-label="Slide 7: What is an agent?">
+  <section class="slide" id="s3b" aria-label="Slide 8: What is an agent?">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>What actually is an agent?</h2>
@@ -832,7 +860,7 @@
   </section>
 
   <!-- 7b (use cases, builds) =========================================== -->
-  <section class="slide" id="s7b" aria-label="Slide 8: Is this actually an agent problem?">
+  <section class="slide" id="s7b" aria-label="Slide 9: Is this actually an agent problem?">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>Is this actually an agent problem?</h2>
@@ -871,7 +899,7 @@
   </section>
 
   <!-- 4b ============================================================ -->
-  <section class="slide wide" id="s4b" aria-label="Slide 9: Task, workflow, or agent?">
+  <section class="slide wide" id="s4b" aria-label="Slide 10: Task, workflow, or agent?">
     <!-- relative path resolves when the deck runs from docs/ (local double-click / a
          local server); the /_blob/ path resolves on the hosted Artifact link, which
          only ships this one HTML file. onerror only fires once both have failed. -->
@@ -918,7 +946,7 @@
   </section>
 
   <!-- 5 ============================================================= -->
-  <section class="slide wide" id="s5" aria-label="Slide 10: The loop">
+  <section class="slide wide" id="s5" aria-label="Slide 11: The loop">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>The loop</h2>
@@ -989,7 +1017,7 @@
   </section>
 
   <!-- 6b (live widget) ================================================ -->
-  <section class="slide" id="s6live" aria-label="Slide 11: Try it live">
+  <section class="slide" id="s6live" aria-label="Slide 12: Try it live">
     <div class="inner">
       <p class="eyebrow">Block A · Live</p>
       <h2>Talk to your model, right here <span class="c-local">↓</span></h2>
@@ -1027,7 +1055,7 @@
   </section>
 
   <!-- 6c (model explainer) ============================================= -->
-  <section class="slide wide" id="s6b" aria-label="Slide 12: Meet gemma4:e2b">
+  <section class="slide wide" id="s6b" aria-label="Slide 13: Meet gemma4:e2b">
     <div class="inner">
       <p class="eyebrow">Block A · The model</p>
       <h2>What you actually just talked to</h2>
@@ -1067,7 +1095,7 @@
   </section>
 
   <!-- 7 ============================================================= -->
-  <section class="slide" id="s7" aria-label="Slide 13: Today's build mapped onto the loop">
+  <section class="slide" id="s7" aria-label="Slide 14: Today's build mapped onto the loop">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
       <h2>Today's build, on the same loop</h2>
@@ -1082,7 +1110,7 @@
   </section>
 
   <!-- 8 ============================================================= -->
-  <section class="slide" id="s8" aria-label="Slide 14: Why local — three reasons">
+  <section class="slide" id="s8" aria-label="Slide 15: Why local — three reasons">
     <div class="inner">
       <p class="eyebrow">Block B · Why local?</p>
       <h2>Three reasons</h2>
@@ -1104,7 +1132,7 @@
   </section>
 
   <!-- 9 ============================================================= -->
-  <section class="slide" id="s9" aria-label="Slide 15: The honest trade-off">
+  <section class="slide" id="s9" aria-label="Slide 16: The honest trade-off">
     <div class="inner">
       <p class="eyebrow">Block B · Why local?</p>
       <p class="statement long">Small local models are weaker than the <span class="c-else">giant cloud ones</span>.</p>
@@ -1235,7 +1263,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   end Block C comment -->
 
   <!-- demo (live demo cue) ================================================ -->
-  <section class="slide" id="sdemo" aria-label="Slide 16: Demo time">
+  <section class="slide" id="sdemo" aria-label="Slide 17: Demo time">
     <!-- relative path resolves when the deck runs from docs/ (local double-click / a
          local server); the /_blob/ path resolves on the hosted Artifact link, which
          only ships this one HTML file. onerror only fires once both have failed. -->
@@ -1255,7 +1283,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- 16 ============================================================ -->
-  <section class="slide" id="s16" aria-label="Slide 17: Transition to hands-on">
+  <section class="slide" id="s16" aria-label="Slide 18: Transition to hands-on">
     <div class="inner">
       <p class="eyebrow">Hands-on</p>
       <p class="statement">Now you're going to be the agent — <span class="c-local">literally</span>.</p>
@@ -1272,7 +1300,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- ex1 (hands-on exercise: the prompt) ================================ -->
-  <section class="slide" id="sex1" aria-label="Slide 18: Your turn — the prompt">
+  <section class="slide" id="sex1" aria-label="Slide 19: Your turn — the prompt">
     <div class="inner">
       <p class="eyebrow">Hands-on · You vs. Gemma</p>
       <h2>Judge five articles, then check Gemma's homework</h2>
@@ -1299,7 +1327,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- ex2 (hands-on exercise: the articles) =============================== -->
-  <section class="slide wide" id="sex2" aria-label="Slide 19: Five articles">
+  <section class="slide wide" id="sex2" aria-label="Slide 20: Five articles">
     <div class="inner">
       <p class="eyebrow">Hands-on · You vs. Gemma</p>
       <h2>Five articles — scan and read</h2>
@@ -1355,7 +1383,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- ex1b (what to click) ================================================= -->
-  <section class="slide wide" id="sex1b" aria-label="Slide 20: What to click, and when">
+  <section class="slide wide" id="sex1b" aria-label="Slide 21: What to click, and when">
     <div class="inner">
       <p class="eyebrow">Hands-on</p>
       <h2>What to click, and when</h2>
@@ -1385,7 +1413,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
   </section>
 
   <!-- ex3 (own build: break it on purpose) ================================= -->
-  <section class="slide" id="sex3" aria-label="Slide 21: Now break it on purpose">
+  <section class="slide" id="sex3" aria-label="Slide 22: Now break it on purpose">
     <div class="inner">
       <p class="eyebrow">Hands-on · Your own run</p>
       <h2>Now break it on purpose</h2>
@@ -1495,7 +1523,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
 </script>
 
 <script>
-  // Live Ollama widget (slide 11). Talks straight to a local Ollama server via
+  // Live Ollama widget (slide 12). Talks straight to a local Ollama server via
   // fetch — nothing goes through Claude or any third party. Needs Ollama
   // running on this machine. Ollama allows http://localhost:* origins by
   // default (verified), so serving this page locally — e.g.
@@ -1625,7 +1653,7 @@ content.removeprefix(<span class="str">"```json"</span>).removesuffix(<span clas
 </script>
 
 <script>
-  // The "Chatbot vs Agent" slide's (#s4, currently slide 6) chat/agent demo
+  // The "Chatbot vs Agent" slide's (#s4, currently slide 7) chat/agent demo
   // plays once, the first time you land on the slide, then holds still
   // (see the #s4.play rules in the CSS). Reduced
   // motion shows the finished state immediately instead (own CSS override) —
