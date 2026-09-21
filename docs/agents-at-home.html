@@ -3,7 +3,7 @@
 <meta name="description" content="Opening deck for a hands-on workshop on local, offline AI agents: the loop, why local, and what breaks.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Bangers&display=swap">
 
 <style>
   :root {
@@ -181,6 +181,17 @@
      behind this slide makes the normal light/dark ink tokens hard to read,
      especially --ink-soft/--ink-faint in dark mode against moving footage */
   #s1 { justify-content: center; overflow: hidden; color: #000; }
+  /* comic-book title treatment — title slide's headline only, everything
+     else on the slide stays the plain solid-black styling above */
+  #s1 h1 {
+    font-family: "Bangers", var(--font-display);
+    font-weight: 400; /* Bangers only ships one weight; the display fallback's 700 would fake-bold it */
+    letter-spacing: .03em;
+    color: #FFD400;
+    -webkit-text-stroke: 3px #1E3FE0;
+    paint-order: stroke fill;
+    text-shadow: 4px 4px 0 #1E3FE0;
+  }
   #s1 .sub {
     font: 500 clamp(1.05rem, 2vw, 1.5rem)/1.4 var(--font-body);
     color: #000; margin: 1.6rem 0 0; max-width: 24ch;
@@ -682,10 +693,10 @@
   </section>
 
   <!-- 2c (goals of the day) ============================================ -->
-  <section class="slide" id="s2c" aria-label="Slide 4: What today is actually for">
+  <section class="slide" id="s2c" aria-label="Slide 4: What is today about">
     <div class="inner">
       <p class="eyebrow">Today</p>
-      <h2>What today is actually for</h2>
+      <h2>What is today about?</h2>
       <div class="reasons">
         <div class="reason">
           <h3>Explore</h3>
@@ -826,7 +837,7 @@
   <section class="slide" id="s3b" aria-label="Slide 8: What is an agent?">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
-      <h2>What actually is an agent?</h2>
+      <h2>What is an agent?</h2>
       <p class="lead">Strip away the hype: an agent is software that <b>perceives</b> something, <b>decides</b>
         what it means, and <b>acts</b> — on its own, in a loop — instead of waiting for you to do each step
         by hand.</p>
@@ -863,7 +874,7 @@
   <section class="slide" id="s7b" aria-label="Slide 9: Is this actually an agent problem?">
     <div class="inner">
       <p class="eyebrow">Block A · What is an agent?</p>
-      <h2>Is this actually an agent problem?</h2>
+      <h2>When is the use of an agent appropriate?</h2>
       <p class="lead">The perceive → decide → act loop is worth the extra complexity only when
         "decide" needs real judgment. A quick gut check <span class="c-local">↓</span></p>
       <div class="usecases">
