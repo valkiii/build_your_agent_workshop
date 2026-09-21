@@ -186,11 +186,12 @@
   #s1 h1 {
     font-family: "Bangers", var(--font-display);
     font-weight: 400; /* Bangers only ships one weight; the display fallback's 700 would fake-bold it */
+    font-size: clamp(3.8rem, 9.5vw, 7.8rem);
     letter-spacing: .03em;
     color: #FFD400;
-    -webkit-text-stroke: 3px #1E3FE0;
+    -webkit-text-stroke: 6px #1E3FE0;
     paint-order: stroke fill;
-    text-shadow: 4px 4px 0 #1E3FE0;
+    text-shadow: 7px 7px 0 #1E3FE0;
   }
   #s1 .sub {
     font: 500 clamp(1.05rem, 2vw, 1.5rem)/1.4 var(--font-body);
