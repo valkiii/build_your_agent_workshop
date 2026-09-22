@@ -20,8 +20,13 @@ through each of those in order.
 1. Go to the link your workshop organizer gave you (a GitHub page)
 2. Click the green **"Code"** button, then **"Download ZIP"**
 3. Find the ZIP (usually in your Downloads folder) and unzip it — on Mac,
-   double-click it; on Windows, right-click → "Extract All"
-4. Move the unzipped folder somewhere easy to find, like your Desktop
+   double-click it; **on Windows, right-click → "Extract All"** (this step
+   matters: Windows lets you open files *inside* a zip without ever really
+   extracting it, which looks like it's working but can fail partway through
+   setup with a confusing error — always use "Extract All" first)
+4. Move the unzipped folder somewhere easy to find, like your Desktop —
+   pick a short path (`C:\workshop` works well) rather than somewhere deeply
+   nested
 
 ---
 

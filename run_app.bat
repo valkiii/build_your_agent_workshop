@@ -12,6 +12,32 @@ REM ==========================================================================
 setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
+REM Catch "running straight out of the zip" early -- Windows lets you
+REM double-click a file inside a .zip without ever really extracting it,
+REM silently unpacking to a deeply-nested temp folder instead
+REM (...\Temp\{guid}_reponame.zip.###\...). Stacked with onnxruntime's own
+REM long internal paths, that combination can blow past Windows' 260-char
+REM path limit -- confirmed live: pip died 46/73 packages in with
+REM "OSError: No such file or directory" on exactly such a path, deep
+REM enough into the install that it wasted several minutes before failing.
+echo %CD% | findstr /I /c:"\Temp\" >nul
+if not errorlevel 1 (
+  echo.
+  echo ============================================================
+  echo  This looks like it's running from inside the zip file you
+  echo  downloaded, not from a properly extracted folder.
+  echo.
+  echo  Fix: close this window, right-click the zip, choose
+  echo  "Extract All..." and pick a short folder like C:\workshop --
+  echo  then run this file again from THAT folder, not from inside
+  echo  the zip. (Running from inside the zip can fail partway
+  echo  through setup with an unrelated-looking file-path error.)
+  echo ============================================================
+  echo.
+  call :pause
+  exit /b 1
+)
+
 set "NO_LAUNCH=0"
 if /i "%~1"=="--no-launch" set "NO_LAUNCH=1"
 REM CURATOR_SKIP_MODEL=1 (env) -> skip Ollama + the model download (used by CI smoke test)
