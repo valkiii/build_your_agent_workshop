@@ -141,6 +141,11 @@ exit /b 0
 :find_python
 REM Sets PYTHON to the first launcher that reports version >= 3.10.
 REM (Comparison is done in batch with GEQ to avoid < > redirection characters.)
+REM No upper cap needed here, unlike run_app.command's Mac equivalent:
+REM checked PyPI directly -- onnxruntime (our TTS engine's dependency)
+REM ships win_amd64 AND win_arm64 wheels through Python 3.14 with no gap.
+REM The Mac problem is specifically "no Intel wheel past onnxruntime 1.23.2,
+REM which itself has no build past cp313" -- doesn't apply on Windows.
 set "PYTHON="
 for %%P in (python py python3) do (
   if not defined PYTHON (

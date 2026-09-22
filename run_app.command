@@ -27,18 +27,27 @@ SKIP_MODEL=0
 pause() { [ -t 0 ] || return 0; read -n 1 -s -r -p "Press any key to close this window..."; echo; }
 have()  { command -v "$1" >/dev/null 2>&1; }
 
+# Accepts 3.10 through 3.13 -- NOT "3.10 or newer" unbounded. Confirmed on
+# PyPI: onnxruntime (a dependency of kokoro-onnx, our TTS engine) dropped
+# Intel Mac wheels after 1.23.2, and 1.23.2 has no build past cp313 --
+# so Python 3.14 has no working onnxruntime on Intel at all (works fine on
+# Apple Silicon, which onnxruntime still ships cp314 wheels for -- this is
+# specifically an Intel-Mac-plus-too-new-Python problem). Capping here means
+# a machine that already has a too-new Python self-installed gets steered to
+# an explicit `brew install python@3.12` below instead of silently accepting
+# the newer one and hitting a wall deep inside pip.
 python_ok() {
   for c in python3 python3.13 python3.12 python3.11 python3.10; do
-    if have "$c" && "$c" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3,10) else 1)' 2>/dev/null; then
+    if have "$c" && "$c" -c 'import sys; raise SystemExit(0 if (3,10) <= sys.version_info < (3,14) else 1)' 2>/dev/null; then
       PYTHON="$c"; return 0
     fi
   done
   return 1
 }
 
-# --- 1. Python 3.10+ --------------------------------------------------------
+# --- 1. Python 3.10-3.13 -----------------------------------------------------
 if ! python_ok; then
-  echo "Python 3.10+ is not installed."
+  echo "Need Python 3.10-3.13 (3.14+ isn't supported yet -- see the comment above)."
   if have brew; then
     echo "Installing Python with Homebrew..."
     brew install python@3.12
@@ -46,9 +55,10 @@ if ! python_ok; then
   fi
   if ! python_ok; then
     echo
-    echo "Opening the Python download page. Install it (just run the downloaded"
-    echo ".pkg), then double-click this file again to continue."
-    open "https://www.python.org/downloads/" 2>/dev/null
+    echo "Opening the Python 3.12 download page (NOT the newest Python -- 3.14+"
+    echo "breaks the text-to-speech dependency on Intel Macs). Install it (just"
+    echo "run the downloaded .pkg), then double-click this file again to continue."
+    open "https://www.python.org/downloads/release/python-31210/" 2>/dev/null
     pause; exit 1
   fi
 fi
