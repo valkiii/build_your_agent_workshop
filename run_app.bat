@@ -37,7 +37,15 @@ if not defined PYTHON (
     exit /b 1
   )
   echo Installing Python with winget...
-  winget install --id Python.Python.3.12 -e --accept-package-agreements --accept-source-agreements
+  REM Force x64, even on an ARM64 machine: winget's native ARM64 build of
+  REM Python has no prebuilt PyPI wheels for several of our dependencies
+  REM (pyarrow, httptools -- pulled in by streamlit) so pip falls back to
+  REM compiling them from source, which then fails without Visual C++ Build
+  REM Tools installed. Windows-on-ARM runs x64 apps transparently via
+  REM emulation, and x64 wheels exist for everything this project needs, so
+  REM x64 Python sidesteps the whole problem -- confirmed against a real
+  REM ARM64 Windows failure (build\lib.win-arm64-cpython-312 in the pip log).
+  winget install --id Python.Python.3.12 --architecture x64 -e --accept-package-agreements --accept-source-agreements
   set "NEED_RESTART=1"
 )
 
